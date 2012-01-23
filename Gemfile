@@ -1,7 +1,11 @@
 source "http://rubygems.org"
 
 group :development do
-  # gem 'pygments.rb'
+  gem 'rake'
+  gem 'rack'
+  gem 'jekyll'
+  gem 'rdiscount'
+  gem 'pygments.rb'
   gem 'RedCloth'
   gem 'haml', '>= 3.1'
   gem 'compass', '>= 0.11'
@@ -11,8 +15,4 @@ group :development do
   gem 'liquid', '2.2.2'
 end
 
-gem 'rake'
-gem 'rack'
-gem 'jekyll'
-gem 'rdiscount'
 gem 'sinatra', '1.2.6'
