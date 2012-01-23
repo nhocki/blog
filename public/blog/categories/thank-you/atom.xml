@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: thank you | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/thank-you/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-01-23T16:54:57-05:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[TimeHub, the first winner!]]></title>
+    <link href="http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/"/>
+    <updated>2011-08-26T00:00:00-04:00</updated>
+    <id>http://blog.nhocki.com/2011/08/26/timehub-the-first-winner</id>
+    <content type="html"><![CDATA[<p>I just wanted to "personally" say thanks to everyone who voted for my entry on
+the <a href="http://rallyonrails.com">Rally on Rails</a> (Latinamerican Rails Rumble).</p>
+
+<p><a href="http://timehub.net">Timehub</a> won! And this couldn't be possible without the
+people who voted.</p>
+
+<p>I would like to thank the Rally on Rails team &amp; judges. They made an excellent
+job and even though there are somethings to improve (like the voting rules),
+<strong>I think that the contest was great!</strong></p>
+
+<p>We had already posted a "<a href="http://blog.timehub.net/post/9404894926/from-medellin-with-love">thank you
+note</a>", in
+the <a href="http://timehub.net">Timehub</a> blog, but I really wanted to write one
+myself.</p>
+
+<p>I was pretty spammer during these last 3 days! That will stop now!</p>
+
+<p><strong>Thanks again!</strong> Hope to see you in <a href="http://timehub.net">Timehub</a> v2!</p>
+]]></content>
+  </entry>
+  
+</feed>

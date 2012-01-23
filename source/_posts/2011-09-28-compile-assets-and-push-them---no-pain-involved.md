@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Compile assets and push them - no pain involved!
-tags:
+date: 2011-09-28
+comments: true
+categories:
 - heroku
 - asset-pipeline
 - rake

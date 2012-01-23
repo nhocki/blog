@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: tips | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/tips/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-01-23T16:54:57-05:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Upgrade to Rails 3.1 Quickfix]]></title>
+    <link href="http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix/"/>
+    <updated>2011-08-24T00:00:00-04:00</updated>
+    <id>http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix</id>
+    <content type="html"><![CDATA[<p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
+
+<p><strong>Short Version; TL;DR</strong></p>
+
+<p><strong>If you're can't see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
+
+<p><div><script src='https://gist.github.com/1185431.js?file='></script>
+<noscript><pre><code># Capistrano task to compile assets
+# Make sure that you have `config.assets.compile = true` in production.rb when running this
+# This (the `compile=true`) won't be needed for Rails 3.1.1
+
+desc &quot;Precompile assets on production&quot;
+task :assets do
+  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
+  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
+end</code></pre></noscript></div>
+</p>
+
+<p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
+
+<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We've been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
+
+<p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
+
+<p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
+
+<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn't care about it!</p>
+
+<p>This means that the server was looking for <code>/assets/rails.png</code> instead of
+<code>/assets/rails-3289328982JAKSDJK.png</code></p>
+
+<p>I looked to the awesome <a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline Guide</a>, I asked around with Twitter, I restarted the server several times. I did everything and nothing worked until <a href="https://twitter.com/#!/guilleiguaran">@guilleiguaran </a>gave me the answer on twitter!</p>
+
+<p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
+
+<p>The problem is that it wasn't really documented and that the release candidates didn't have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
+
+<p>After that, we could easily update and now we're 100% on Rails 3.1!</p>
+
+<p>Hope this helps you too!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Transfer data from one Heroku app to another]]></title>
+    <link href="http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another/"/>
+    <updated>2011-07-20T00:00:00-04:00</updated>
+    <id>http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another</id>
+    <content type="html"><![CDATA[<p>Today I needed to transfer all the data from one application (production
+environment) to another (staging environment).</p>
+
+<p>I'm pretty aware that the <a href="https://rubygems.org/gems/taps">taps gem</a> exists
+(which is great btw, and I use to pull the data from the production
+environment to my development environment), but the problem with the taps gem
+is that a table with a lot of data and some indexes will take a while to
+migrate.</p>
+
+<p>I guess it was my lucky day because <a href="http://thoughtbot.com/">Thoughtbot</a>
+<a href="https://twitter.com/thoughtbot/status/92957355330904064">tweeted</a> with
+exactly what I needed. Turns out that using the <a href="http://addons.heroku.com/pgbackups">PG Backups
+addon</a> it's really easy and fast!</p>
+
+<p><div><script src='https://gist.github.com/1089598.js?file='></script>
+<noscript><pre><code>heroku addons:add pgbackups --remote staging
+heroku addons:add pgbackups --remote production
+heroku pgbackups:capture --remote production
+heroku pgbackups:restore DATABASE `heroku pgbackups:url --remote production` --remote staging</code></pre></noscript></div>
+</p>
+
+<p>That's all you need! Those 4 lines (actually, the last 2) will backup your
+production database and then restore that backup in your staging database.</p>
+
+<p>Here is the <a href="https://gist.github.com/1089598">original gist</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

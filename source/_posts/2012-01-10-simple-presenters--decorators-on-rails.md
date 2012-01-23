@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Simple Presenters & Decorators on Rails
-tags:
+date: 2012-01-10
+comments: true
+categories:
 - rails
 - presenters
 - objects

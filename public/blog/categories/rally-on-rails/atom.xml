@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rally on rails | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/rally-on-rails/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-01-23T16:54:57-05:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[TimeHub, the first winner!]]></title>
+    <link href="http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/"/>
+    <updated>2011-08-26T00:00:00-04:00</updated>
+    <id>http://blog.nhocki.com/2011/08/26/timehub-the-first-winner</id>
+    <content type="html"><![CDATA[<p>I just wanted to "personally" say thanks to everyone who voted for my entry on
+the <a href="http://rallyonrails.com">Rally on Rails</a> (Latinamerican Rails Rumble).</p>
+
+<p><a href="http://timehub.net">Timehub</a> won! And this couldn't be possible without the
+people who voted.</p>
+
+<p>I would like to thank the Rally on Rails team &amp; judges. They made an excellent
+job and even though there are somethings to improve (like the voting rules),
+<strong>I think that the contest was great!</strong></p>
+
+<p>We had already posted a "<a href="http://blog.timehub.net/post/9404894926/from-medellin-with-love">thank you
+note</a>", in
+the <a href="http://timehub.net">Timehub</a> blog, but I really wanted to write one
+myself.</p>
+
+<p>I was pretty spammer during these last 3 days! That will stop now!</p>
+
+<p><strong>Thanks again!</strong> Hope to see you in <a href="http://timehub.net">Timehub</a> v2!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TimeHub]]></title>
+    <link href="http://blog.nhocki.com/2011/08/15/timehub/"/>
+    <updated>2011-08-15T00:00:00-04:00</updated>
+    <id>http://blog.nhocki.com/2011/08/15/timehub</id>
+    <content type="html"><![CDATA[<p>The <a href="http://rallyonrails.com">Rally on Rails</a> contest took place this weekend,
+we launched <a href="http://timehub.net">TimeHub</a>, a neat simple app to create
+invoices from your Github commits.</p>
+
+<p>The problem we're trying to solve here is simple. Most of us use Github, and
+we add some commit messages to what we do. Then, we had to go to an invoice
+app and write what we did (again!).</p>
+
+<p><strong>Just so you know, we DO NOT access your code or anything related to it. We just need the commit messages. So you can sleep well at night knowing that your private repositories are safe.</strong></p>
+
+<p>This was a waste of time and not fun at all! So we created TimeHub in about
+30hours.</p>
+
+<p>We created a <a href="http://blog.timehub.net/">blog</a> and posted a small insight on
+how it works. <a href="http://blog.timehub.net/post/8973816486/launched">Read it
+here</a>.</p>
+
+<p>You should <a href="http://timehub.net">give it a try</a>! And if you like it, <strong><a href="http://rallyonrails.com/teams/47">please
+vote for us</a></strong>!</p>
+
+<p>To keep it simple, here's what you should do in your commit messages and let
+<a href="http://timehub.net">TimeHub</a> handle the rest.</p>
+
+<p><div><script src='https://gist.github.com/1156101.js?file='></script>
+<noscript><pre><code>Commit Message [T: 2:03]
+Commit Message [t:2:3]
+Commit Message [t:2]
+Commit Message [T: 3]
+Commit Message [ t : 4]
+Commit Message [  T:  5]
+Commit Message [t:120]
+Commit Message [t:2 : 03]
+Commit Message [t: 2 : 03 ]
+Commit Message [t:2h:03]
+Commit Message [t:2:3min]
+Commit Message [t:2h:3m]
+Commit Message [t:2hours:3minutes]
+Commit Message [t:2 hours:3 minutes]
+Commit Message [t:2 hours : 3 minutes]
+Commit Message [T: 2 HOURS : 3 MiNuTeS]
+Commit Message [t:2h3m]
+Commit Message [t:2h3]
+Commit Message [t: 2 hours 3 minutes]
+Commit Message [t:2h 3min]
+Commit Message [t:2    hours       3 minutes ]
+Commit Message [T:2 hours and 3 minutes]
+Commit Message [t:2 h &amp; 4 m]
+Commit Message [t: 2h 5m ]
+Commit Message [t:2 hours]
+Commit Message [ t:2m]
+Commit Message [ T : 2 minutes]
+Commit Message [ t: 2h]
+</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+</feed>

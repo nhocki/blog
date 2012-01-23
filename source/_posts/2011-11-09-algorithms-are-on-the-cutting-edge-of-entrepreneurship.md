@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Algorithms are on the cutting edge of entrepreneurship.
-tags:
+date: 2011-11-09
+comments: true
+categories:
 - algorithms
 - entrepreneurship
 ---

@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Simply put, there’s almost no code worse than no code.
-tags: Quotes
+date: 2011-03-28
+comments: true
+categories: quotes
 ---
 > Simply put, there’s almost no code worse than no code.
 

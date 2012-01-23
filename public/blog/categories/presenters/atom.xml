@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: presenters | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/presenters/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-01-23T16:54:57-05:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Simple Presenters & Decorators on Rails]]></title>
+    <link href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/"/>
+    <updated>2012-01-10T00:00:00-05:00</updated>
+    <id>http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails</id>
+    <content type="html"><![CDATA[<p>There's been a <a href="http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design">lot</a> of <a href="http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters">talk</a> <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">about</a><a href="http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in">decorators</a> and <a href="http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators">presenters</a> (<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">which are almost the same</a>) in Rails and how they help you with a "real" OO code. There are great gems and there's even a <a href="http://railscasts.com/episodes/287-presenters-from-scratch">Railscast</a> (pro) on how to build a presenter from scratch. But, in the new project I'm working on, we (&lt;- <a href="https://github.com/febuiles">he</a>) has this <strong>really</strong> simple setup which I feel kind of cleaner.</p>
+
+<p>What we wanted to have was a <code>present</code> method in the controller and build the view from its methods. So, we created an <a href="http://api.rubyonrails.org/classes/ActiveSupport/Concern.html">ActiveSupport::Concern</a> called <code>Presentable</code> and included it in our application controller. Here's our (once again, his) code for that module.</p>
+
+<p><div><script src='https://gist.github.com/1592754.js?file=presentable.rb'></script>
+<noscript><pre><code># app/concerns/controllers/presentable.rb
+
+# Presentable Concern
+# Include this module in the controllers where
+# you need the `present` method.
+module Presentable
+  # This method returns a Presenter Object to work
+  # with in the view.
+  #
+  # Attributes:
+  #   object:   The object to present
+  #
+  # Supported Options
+  #    as:   The presenter class. If this is not suplied 
+  #          the method will try to guess the class
+  #          e.g: UserPresenter for a User object.
+  def present(object, options = { })
+    if object.respond_to?(:first)
+      return [] if object.empty?
+      presenter = &quot;#{object.first.class.to_s.pluralize}Presenter&quot;
+    else
+      presenter = &quot;#{object.class}Presenter&quot;
+    end
+
+    presenter = options.fetch(:as) { eval(presenter) }
+    presenter.new(object)
+  end
+end
+</code></pre></noscript></div>
+</p>
+
+<p>Now, we just need to create each presenter. But, since there's a lot of shared logic between presenters we (he) just created a parent <code>Presenter class</code> with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you <code>method missing</code>) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here's our <code>Presenter base class</code>.</p>
+
+<p><div><script src='https://gist.github.com/1592754.js?file=presenter.rb'></script>
+<noscript><pre><code># Base presenter class
+# All presenters should inherit from this one.
+class Presenter
+  # Include all the modules you need or
+  # send the view context to access rails helpers.
+  include Rails.application.routes.url_helpers
+  # ...
+
+  include Presentable
+
+  attr_reader :record
+
+  def initialize(record)
+    @record = record
+    @klass = record.class
+  end
+
+  def method_missing(name, *arguments, &amp;block)
+    super unless record.respond_to?(name)
+    record.send(name, *arguments, &amp;block)
+  end
+
+  def translate_field_name(name)
+    @klass.human_attribute_name(name)
+  end
+
+  # UrlHelper was being an ass, easier to go commando.
+  def link_to(name, url, options={})
+    href = { :href =&gt; url }
+    content_tag(:a, name, options.merge(href))
+  end
+end
+</code></pre></noscript></div>
+</p>
+
+<p>Then, we just need to inherit from the <code>Presenter</code> class and add our custom, clean methods. Using <code>delegate and method missing</code> will help us keep the class clean. I won't show you a presenter here, they'll look a lot like Ryan's one in his Railscasts so check that out first.</p>
+
+<p>I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here's 1 of them:</p>
+
+<p><div><script src='https://gist.github.com/1592754.js?file=requests_controller.rb'></script>
+<noscript><pre><code>class RequestsController &lt; ApplicationController
+  expose(:filter) { params.fetch(:filter) { :all} }
+  expose(:filtered_requests) { Request.filter(filter) }
+  expose(:requests) { present(filtered_requests) }
+
+  before_filter :find_request, :only =&gt; [:show, :destroy]
+
+  def index
+  end
+
+  def show
+    extend(RequestRedirector) # Another concern
+    redirect_to_request
+  end
+
+  def destroy
+    @request.destroy
+    redirect_to requests_path(:filter =&gt; &quot;new_requests&quot;), :notice =&gt; &quot;Se ha eliminado la solicitud&quot;
+  end
+
+  private
+  def find_request
+    @request = Request.find(params[:id])
+  end
+end
+</code></pre></noscript></div>
+</p>
+
+<p>Combining <code>presenters</code> and <code>form builders</code> will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.</p>
+
+<p>You'll be amazed how different you'll feel when reading some old code or some co-worker's code.</p>
+]]></content>
+  </entry>
+  
+</feed>

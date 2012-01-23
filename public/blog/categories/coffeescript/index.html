@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Upgrade to Rails 3.1 Quickfix - Nicolás Hock Isaza</title>
+  <title>Category: coffeescript - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="In case you missed it, Rails 3.1 is out! So please, stop using the release candidates and update now! Short Version; TL;DR If you&#8217;re can&#8217; &hellip;">
+  <meta name="description" content="Category: coffeescript">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.com/2011/09/01/upgrade-to-rails-31-quickfix">
+  <link rel="canonical" href="http://blog.nhocki.comblog/categories/coffeescript">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -75,125 +75,35 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Upgrade to Rails 3.1 Quickfix</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-09-01T00:00:00-04:00" pubdate data-updated="true">Sep 1<span>st</span>, 2011</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
+    <h1 class="entry-title">Category: Coffeescript</h1>
     
   </header>
+  
+  <div id="blog-archives" class="category">
 
 
-<div class="entry-content"><p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
 
-<p><strong>Short Version; TL;DR</strong></p>
+  
+  <h2>2011</h2>
 
-<p><strong>If you&#8217;re can&#8217;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
+<article>
+  
+<h1><a href="/2011/09/21/simple-scrollbar-synchronization-with-jquery/">Simple scrollbar synchronization with jQuery</a></h1>
+<time datetime="2011-09-21T00:00:00-04:00" pubdate><span class='month'>Sep</span> <span class='day'>21</span> <span class='year'>2011</span></time>
 
-<div><script src='https://gist.github.com/1185431.js?file='></script>
-<noscript><pre><code># Capistrano task to compile assets
-# Make sure that you have `config.assets.compile = true` in production.rb when running this
-# This (the `compile=true`) won't be needed for Rails 3.1.1
-
-desc &quot;Precompile assets on production&quot;
-task :assets do
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
-end</code></pre></noscript></div>
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/coffeescript/'>coffeescript</a>, <a class='category' href='/blog/categories/collatzio/'>collatzio</a>, <a class='category' href='/blog/categories/jquery/'>jquery</a></span>
+</footer>
 
 
-<p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
+</article>
 
-<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#8217;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
-
-<p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
-
-<p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
-
-<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#8217;t care about it!</p>
-
-<p>This means that the server was looking for <code>/assets/rails.png</code> instead of
-<code>/assets/rails-3289328982JAKSDJK.png</code></p>
-
-<p>I looked to the awesome <a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline Guide</a>, I asked around with Twitter, I restarted the server several times. I did everything and nothing worked until <a href="https://twitter.com/#!/guilleiguaran">@guilleiguaran </a>gave me the answer on twitter!</p>
-
-<p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
-
-<p>The problem is that it wasn&#8217;t really documented and that the release candidates didn&#8217;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
-
-<p>After that, we could easily update and now we&#8217;re 100% on Rails 3.1!</p>
-
-<p>Hope this helps you too!</p>
 </div>
 
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">Nicolás Hock Isaza</span></span>
-
-      
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-09-01T00:00:00-04:00" pubdate data-updated="true">Sep 1<span>st</span>, 2011</time>
-      
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.nhocki.com/2011/09/01/upgrade-to-rails-31-quickfix/" data-via="nhocki" data-counturl="http://blog.nhocki.com/2011/09/01/upgrade-to-rails-31-quickfix/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="small"></div>
-  
-  
-    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/2011/08/26/timehub-the-first-winner/" title="Previous Post: TimeHub, the first winner!">&laquo; TimeHub, the first winner!</a>
-      
-      
-        <a class="basic-alignment right" href="/2011/09/21/simple-scrollbar-synchronization-with-jquery/" title="next Post: Simple scrollbar synchronization with jQuery">Simple scrollbar synchronization with jQuery &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
 </div>

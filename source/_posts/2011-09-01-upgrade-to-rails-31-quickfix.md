@@ -1,7 +1,12 @@
 ---
 layout: post
 title: Upgrade to Rails 3.1 Quickfix
-tags: 
+date: 2011-08-24
+comments: true
+categories:
+  - rails
+  - patches
+  - tips
 ---
 In case you missed it, [Rails 3.1 is out](http://guides.rubyonrails.org/3_1_release_notes.html)! So please, stop using the release candidates and update now!
 

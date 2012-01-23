@@ -1,7 +1,9 @@
 ---
 layout: post
 title: But free web services are not like free software
-tags:
+date: 2011-12-06
+comments: true
+categories:
 - free web
 - free software
 ---

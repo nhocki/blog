@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Simple scrollbar synchronization with jQuery
-tags:
+date: 2011-09-21
+comments: true
+categories:
 - coffeescript
 - jquery
 - collatzio

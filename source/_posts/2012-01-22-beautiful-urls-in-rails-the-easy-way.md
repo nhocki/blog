@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Beautiful URLs in Rails. The easy way.
-tags:
+date: 2012-01-22
+comments: true
+categories:
 - rails
 - url design
 - metaprogramming

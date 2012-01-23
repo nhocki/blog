@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Colorize your rake output
-tags:
+date: 2011-11-30
+comments: true
+categories:
 - rake
 - ruby
 - rails

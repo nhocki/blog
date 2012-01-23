@@ -1,7 +1,9 @@
 ---
 layout: post
 title: TimeHub, the first winner!
-tags:
+date: 2011-08-26
+comments: true
+categories:
 - timehub
 - rally on rails
 - thank you

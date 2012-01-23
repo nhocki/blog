@@ -1,7 +1,9 @@
 ---
 layout: post
 title: TimeHub 48 hours after
-tags:
+date: 2011-08-24
+comments: true
+categories:
 - timehub
 - analytics
 - stats

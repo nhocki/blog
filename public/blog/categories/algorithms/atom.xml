@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: algorithms | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/algorithms/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-01-23T16:54:57-05:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Algorithms are on the cutting edge of entrepreneurship.]]></title>
+    <link href="http://blog.nhocki.com/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/"/>
+    <updated>2011-11-09T00:00:00-05:00</updated>
+    <id>http://blog.nhocki.com/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship</id>
+    <content type="html"><![CDATA[<blockquote><p>Algorithms are on the cutting edge of entrepreneurship. If you're talking
+about just re-implementing stuff that people did ten years ago, performance
+isn't that important at some level. But, if you're talking about doing stuff
+that nobody has done before, one of the reasons often that they haven't done
+it is because it's too time-consuming.</p></blockquote>
+
+<p>By Charles Leiserson</p>
+]]></content>
+  </entry>
+  
+</feed>

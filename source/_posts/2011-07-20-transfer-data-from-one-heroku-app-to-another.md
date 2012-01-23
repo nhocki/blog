@@ -1,7 +1,9 @@
 ---
 layout: post
 title: Transfer data from one Heroku app to another
-tags: 
+date: 2011-07-20
+comments: true
+categories: heroku, tips
 ---
 Today I needed to transfer all the data from one application (production
 environment) to another (staging environment).

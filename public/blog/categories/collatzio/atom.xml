@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: collatzio | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/collatzio/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-01-23T16:54:57-05:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Simple scrollbar synchronization with jQuery]]></title>
+    <link href="http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery/"/>
+    <updated>2011-09-21T00:00:00-04:00</updated>
+    <id>http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery</id>
+    <content type="html"><![CDATA[<p>I'm working on a really cool project on my University. It's a web application
+to compare book editions and help professors build what is know as the
+Collatzio. The Collatzio is simply the "original" version of the book. That
+means, to have the book the author wanted to write and not the one that the
+editors wanted to publish.</p>
+
+<p>I needed to have two versions of the book aligned side by side. So, the
+HTML/CSS was pretty simple. Just have two simple divs with <strong>overflow-y:
+auto;</strong> to make the scrollbar appears on each div.</p>
+
+<p>The coffeescript code I used is really simple, here it is:</p>
+
+<p><div><script src='https://gist.github.com/1233545.js?file='></script>
+<noscript><pre><code>jQuery ($) -&gt;
+  ($ &quot;.scroll-text&quot;).scroll (event) -&gt;
+    trigger = ($ @)
+    element = trigger.data(&quot;scrolls&quot;)
+    $(element).scrollTop(trigger.scrollTop())
+    event.preventDefault()
+    return false</code></pre></noscript></div>
+</p>
+
+<p>Hope it helps someone. I struggled a little bit with the "common" way of
+scrolling things. People usually use the <code>animate</code> method to scroll the body,
+but I couldn't use it because it kept triggering the scroll event on the
+elements, so it was an infinite loop.</p>
+
+<p><code>javascript
+$("html, body").animate({ scrollTop: 0 }, "slow");
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>
