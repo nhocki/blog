@@ -4,7 +4,7 @@
   <title><![CDATA[Category: free software | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/free-software/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-01-23T16:54:57-05:00</updated>
+  <updated>2012-01-25T15:52:41-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,12 +18,9 @@
     <link href="http://blog.nhocki.com/2011/12/06/but-free-web-services-are-not-like-free-software/"/>
     <updated>2011-12-06T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/12/06/but-free-web-services-are-not-like-free-software</id>
-    <content type="html"><![CDATA[<blockquote><p>But free web services are not like free software</p></blockquote>
+    <content type="html"><![CDATA[<blockquote><p>But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in. If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode.</p></blockquote>
 
-<p>--But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in. If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode.</p>
-
-<p>Don't be a Free User - <a href="http://blog.pinboard.in/2011/12/don_t_be_a_free_user/">Pinboard
-Blog</a></p>
+<p>Don't be a Free User - <a href="http://blog.pinboard.in/2011/12/don_t_be_a_free_user/">Pinboard Blog</a></p>
 ]]></content>
   </entry>
   
