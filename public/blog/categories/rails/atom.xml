@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-01-25T15:52:41-05:00</updated>
+  <updated>2012-01-31T22:34:32-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -12,6 +12,89 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thoughts on Decorators & Presenters]]></title>
+    <link href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/"/>
+    <updated>2012-01-31T18:12:00-05:00</updated>
+    <id>http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters</id>
+    <content type="html"><![CDATA[<p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I've been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big.</p>
+
+<p><strong>I want to warn you that I am (by any means) an expert on the subject. So I'm more than open to any feedback you can give me.</strong></p>
+
+<p>First, let's make clear that a <code>decorator</code> is a class that adds functionality to another class. A <code>presenter</code> is a class that adds <strong>presentation formatting</strong> functionality to another class. So all presenters are decorators.</p>
+
+<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
+
+<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \'markup\'. So, they can be treated as templates.</p>
+
+<h3>So, where do the logic in the template goes?</h3>
+
+<p>I had this discussion with a friend, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \'<strong><em>You are logged in as nhocki</em></strong>\' if there's a user logged in.</p>
+
+<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new JBuilder). You could bundle up these methods and re-use them in your projects too.</p>
+
+<p>Here's an example:</p>
+
+<p><div><script src='https://gist.github.com/1714913.js?file='></script>
+<noscript><pre><code># app/models/user.rb
+#
+# User model has name &amp; username
+#
+# Only the username is required (signup with Github for example)
+class User &lt; ActiveRecord::Base
+  validates :username, presence: true
+end
+
+
+
+# app/decorators/user_decorator.rb
+#
+# Let's use the Draper gem for the decorators
+class UserDecorator &lt; ApplicationDecorator
+  decorates :user
+
+  def display_name
+    user.name.presence || user.username
+  end
+
+  # Formatting the data is OK. I'm against adding the markup
+  def salary
+    h.number_to_currency(user.salary)
+  end
+end
+
+
+# app/views/users/index.html.erb
+
+# current_user is a presenter
+&lt;%= logged_in_area do %&gt;
+  You are logged in as &lt;%= current_user.display_name %&gt;
+&lt;% end %&gt;
+
+# viewing @some_users's profile (which is also a presenter)
+&lt;%= admin_area do %&gt;
+  &lt;span class=&quot;salary&quot;&gt;&lt;%= @some_user.salary %&gt;&lt;/span&gt;
+&lt;% end %&gt;
+
+
+# app/helpers/application_helpers.rb
+#
+# We all hate helpers, but this time, they're useful.
+def admin_area(&amp;block)
+  content_tag :div, capture(&amp;block), class: 'admin'
+end</code></pre></noscript></div>
+</p>
+
+<h3>Maybe I have the names wrong</h3>
+
+<p>As I mentioned before, I'm no expert on design patterns. And I'm pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don't really care how this is called, I feel it's a more natural approach and it keeps the template and the processed data in different parts.</p>
+
+<h3>Please provide feedback</h3>
+
+<p>It is also possible that I have it all wrong, that's why I'm really interested in your opinion. I'm eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Beautiful URLs in Rails. The easy way.]]></title>
@@ -232,14 +315,7 @@ end
     <link href="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/"/>
     <updated>2011-11-30T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output</id>
-    <content type="html"><![CDATA[<p>I've been writing a lot of rake tasks lately. I like to have a lot of output
-(feedback) from my tasks, at least while I'm writing them. I have colors in my
-tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some
-code</a> from
-<a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a
-<a href="http://andr.esmejia.com/">friend</a> (and awesome
-<a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some
-modifications for it. Here's my module right now…</p>
+    <content type="html"><![CDATA[<p>I've been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I'm writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here's my module right now…</p>
 
 <p><div><script src='https://gist.github.com/1410582.js?file='></script>
 <noscript><pre><code>module Colors
@@ -267,11 +343,9 @@ end
 #   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
 </p>
 
-<p>Now, you just need to <code>include Colors</code> in your tasks.</p>
+<p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
-<p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out
-there, but I don't like their syntax. I prefer Andres' approach much more, so
-maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
+<p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don't like their syntax. I prefer Andres' approach much more, so maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
 ]]></content>
   </entry>
   
@@ -349,54 +423,6 @@ Here's the code. Hope it helps.</p>
   end
 end</code></pre></noscript></div>
 </p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Upgrade to Rails 3.1 Quickfix]]></title>
-    <link href="http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix/"/>
-    <updated>2011-08-24T00:00:00-04:00</updated>
-    <id>http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix</id>
-    <content type="html"><![CDATA[<p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
-
-<p><strong>Short Version; TL;DR</strong></p>
-
-<p><strong>If you're can't see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
-
-<p><div><script src='https://gist.github.com/1185431.js?file='></script>
-<noscript><pre><code># Capistrano task to compile assets
-# Make sure that you have `config.assets.compile = true` in production.rb when running this
-# This (the `compile=true`) won't be needed for Rails 3.1.1
-
-desc &quot;Precompile assets on production&quot;
-task :assets do
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
-end</code></pre></noscript></div>
-</p>
-
-<p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
-
-<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We've been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
-
-<p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
-
-<p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
-
-<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn't care about it!</p>
-
-<p>This means that the server was looking for <code>/assets/rails.png</code> instead of
-<code>/assets/rails-3289328982JAKSDJK.png</code></p>
-
-<p>I looked to the awesome <a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline Guide</a>, I asked around with Twitter, I restarted the server several times. I did everything and nothing worked until <a href="https://twitter.com/#!/guilleiguaran">@guilleiguaran </a>gave me the answer on twitter!</p>
-
-<p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
-
-<p>The problem is that it wasn't really documented and that the release candidates didn't have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
-
-<p>After that, we could easily update and now we're 100% on Rails 3.1!</p>
-
-<p>Hope this helps you too!</p>
 ]]></content>
   </entry>
   

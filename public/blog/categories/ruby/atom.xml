@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-01-25T15:52:41-05:00</updated>
+  <updated>2012-01-31T22:34:32-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,14 +18,7 @@
     <link href="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/"/>
     <updated>2011-11-30T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output</id>
-    <content type="html"><![CDATA[<p>I've been writing a lot of rake tasks lately. I like to have a lot of output
-(feedback) from my tasks, at least while I'm writing them. I have colors in my
-tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some
-code</a> from
-<a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a
-<a href="http://andr.esmejia.com/">friend</a> (and awesome
-<a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some
-modifications for it. Here's my module right now…</p>
+    <content type="html"><![CDATA[<p>I've been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I'm writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here's my module right now…</p>
 
 <p><div><script src='https://gist.github.com/1410582.js?file='></script>
 <noscript><pre><code>module Colors
@@ -53,11 +46,9 @@ end
 #   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
 </p>
 
-<p>Now, you just need to <code>include Colors</code> in your tasks.</p>
+<p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
-<p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out
-there, but I don't like their syntax. I prefer Andres' approach much more, so
-maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
+<p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don't like their syntax. I prefer Andres' approach much more, so maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
 ]]></content>
   </entry>
   

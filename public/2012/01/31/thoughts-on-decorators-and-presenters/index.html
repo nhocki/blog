@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Colorize your rake output - Nicolás Hock Isaza</title>
+  <title>Thoughts on Decorators & Presenters - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I&#8217;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#8217;m writing them. I &hellip;">
+  <meta name="description" content="I have been developing a new app using a lot of decorators and presenters. I&#8217;ve been highly influenced by Avdi (both his blog and his Objects &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output">
+  <link rel="canonical" href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -79,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">Colorize Your Rake Output</h1>
+      <h1 class="entry-title">Thoughts on Decorators & Presenters</h1>
     
     
       <p class="meta">
@@ -95,7 +95,7 @@
   
 
 
-<time datetime="2011-11-30T00:00:00-05:00" pubdate data-updated="true">Nov 30<span>th</span>, 2011</time>
+<time datetime="2012-01-31T18:12:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -104,37 +104,81 @@
   </header>
 
 
-<div class="entry-content"><p>I&#8217;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#8217;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here&#8217;s my module right now…</p>
+<div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#8217;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big.</p>
 
-<div><script src='https://gist.github.com/1410582.js?file='></script>
-<noscript><pre><code>module Colors
-  def colorize(text, color_code)
-    &quot;\033[#{color_code}m#{text}\033[0m&quot;
+<p><strong>I want to warn you that I am (by any means) an expert on the subject. So I&#8217;m more than open to any feedback you can give me.</strong></p>
+
+<p>First, let&#8217;s make clear that a <code>decorator</code> is a class that adds functionality to another class. A <code>presenter</code> is a class that adds <strong>presentation formatting</strong> functionality to another class. So all presenters are decorators.</p>
+
+<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#8217;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
+
+<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> &#39;markup&#39;. So, they can be treated as templates.</p>
+
+<h3>So, where do the logic in the template goes?</h3>
+
+<p>I had this discussion with a friend, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous &#39;<strong><em>You are logged in as nhocki</em></strong>&#39; if there&#8217;s a user logged in.</p>
+
+<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new JBuilder). You could bundle up these methods and re-use them in your projects too.</p>
+
+<p>Here&#8217;s an example:</p>
+
+<div><script src='https://gist.github.com/1714913.js?file='></script>
+<noscript><pre><code># app/models/user.rb
+#
+# User model has name &amp; username
+#
+# Only the username is required (signup with Github for example)
+class User &lt; ActiveRecord::Base
+  validates :username, presence: true
+end
+
+
+
+# app/decorators/user_decorator.rb
+#
+# Let's use the Draper gem for the decorators
+class UserDecorator &lt; ApplicationDecorator
+  decorates :user
+
+  def display_name
+    user.name.presence || user.username
   end
 
-  {
-    :black    =&gt; 30,
-    :red      =&gt; 31,
-    :green    =&gt; 32,
-    :yellow   =&gt; 33,
-    :blue     =&gt; 34,
-    :magenta  =&gt; 35,
-    :cyan     =&gt; 36,
-    :white    =&gt; 37
-  }.each do |key, color_code|
-    define_method key do |text|
-      colorize(text, color_code)
-    end
+  # Formatting the data is OK. I'm against adding the markup
+  def salary
+    h.number_to_currency(user.salary)
   end
 end
 
-# green &quot;Hello&quot;
-#   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
+
+# app/views/users/index.html.erb
+
+# current_user is a presenter
+&lt;%= logged_in_area do %&gt;
+  You are logged in as &lt;%= current_user.display_name %&gt;
+&lt;% end %&gt;
+
+# viewing @some_users's profile (which is also a presenter)
+&lt;%= admin_area do %&gt;
+  &lt;span class=&quot;salary&quot;&gt;&lt;%= @some_user.salary %&gt;&lt;/span&gt;
+&lt;% end %&gt;
 
 
-<p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
+# app/helpers/application_helpers.rb
+#
+# We all hate helpers, but this time, they're useful.
+def admin_area(&amp;block)
+  content_tag :div, capture(&amp;block), class: 'admin'
+end</code></pre></noscript></div>
 
-<p>I know there&#8217;s a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don&#8217;t like their syntax. I prefer Andres&#8217; approach much more, so maybe I&#8217;ll turn this into a really simple gem. Do you think it&#8217;s worth it?</p>
+
+<h3>Maybe I have the names wrong</h3>
+
+<p>As I mentioned before, I&#8217;m no expert on design patterns. And I&#8217;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#8217;t really care how this is called, I feel it&#8217;s a more natural approach and it keeps the template and the processed data in different parts.</p>
+
+<h3>Please provide feedback</h3>
+
+<p>It is also possible that I have it all wrong, that&#8217;s why I&#8217;m really interested in your opinion. I&#8217;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 </div>
 
 
@@ -157,12 +201,12 @@ end
   
 
 
-<time datetime="2011-11-30T00:00:00-05:00" pubdate data-updated="true">Nov 30<span>th</span>, 2011</time>
+<time datetime="2012-01-31T18:12:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rake/'>rake</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+    <a class='category' href='/blog/categories/decorators/'>decorators</a>, <a class='category' href='/blog/categories/oop/'>oop</a>, <a class='category' href='/blog/categories/presenters/'>presenters</a>, <a class='category' href='/blog/categories/rails/'>rails</a>
   
 </span>
 
@@ -171,7 +215,7 @@ end
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/" data-via="nhocki" data-counturl="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/" data-via="nhocki" data-counturl="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="small"></div>
@@ -184,10 +228,8 @@ end
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/" title="Previous Post: Algorithms are on the cutting edge of entrepreneurship.">&laquo; Algorithms are on the cutting edge of entrepreneurship.</a>
+        <a class="basic-alignment left" href="/2012/01/23/from-tumblr-to-octopress/" title="Previous Post: From Tumblr to Octopress">&laquo; From Tumblr to Octopress</a>
       
-      
-        <a class="basic-alignment right" href="/2011/12/06/but-free-web-services-are-not-like-free-software/" title="next Post: But free web services are not like free software">But free web services are not like free software &raquo;</a>
       
     </p>
   </footer>
@@ -266,8 +308,8 @@ end
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/';
-        var disqus_url = 'http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/';
+        var disqus_identifier = 'http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/';
+        var disqus_url = 'http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -9,9 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="As you may know, we created Timehub in under 48
-hours for the Rally on Rails contest. I wanted to write this post because it&#8217;s
-been 48 hours &hellip;">
+  <meta name="description" content="In case you missed it, Rails 3.1 is out! So please, stop using the release candidates and update now! Short Version; TL;DR If you&#8217;re can&#8217; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +76,83 @@ been 48 hours &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/08/24/upgrade-to-rails-31-quickfix/">Upgrade to Rails 3.1 Quickfix</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-24T00:00:00-04:00" pubdate data-updated="true">Aug 24<span>th</span>, 2011</time>
+        
+         | <a href="/2011/08/24/upgrade-to-rails-31-quickfix/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
+
+<p><strong>Short Version; TL;DR</strong></p>
+
+<p><strong>If you&#8217;re can&#8217;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
+
+<div><script src='https://gist.github.com/1185431.js?file='></script>
+<noscript><pre><code># Capistrano task to compile assets
+# Make sure that you have `config.assets.compile = true` in production.rb when running this
+# This (the `compile=true`) won't be needed for Rails 3.1.1
+
+desc &quot;Precompile assets on production&quot;
+task :assets do
+  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
+  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
+end</code></pre></noscript></div>
+
+
+<p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
+
+<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#8217;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
+
+<p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
+
+<p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
+
+<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#8217;t care about it!</p>
+
+<p>This means that the server was looking for <code>/assets/rails.png</code> instead of
+<code>/assets/rails-3289328982JAKSDJK.png</code></p>
+
+<p>I looked to the awesome <a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline Guide</a>, I asked around with Twitter, I restarted the server several times. I did everything and nothing worked until <a href="https://twitter.com/#!/guilleiguaran">@guilleiguaran </a>gave me the answer on twitter!</p>
+
+<p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
+
+<p>The problem is that it wasn&#8217;t really documented and that the release candidates didn&#8217;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
+
+<p>After that, we could easily update and now we&#8217;re 100% on Rails 3.1!</p>
+
+<p>Hope this helps you too!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -452,6 +527,10 @@ production database and then restore that backup in your staging database.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2012/01/31/thoughts-on-decorators-and-presenters/">Thoughts on Decorators & Presenters</a>
+      </li>
+    
+      <li class="post">
         <a href="/2012/01/23/from-tumblr-to-octopress/">From Tumblr to Octopress</a>
       </li>
     
@@ -465,10 +544,6 @@ production database and then restore that backup in your staging database.</p>
     
       <li class="post">
         <a href="/2011/12/06/but-free-web-services-are-not-like-free-software/">But free web services are not like free software</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/11/30/colorize-your-rake-output/">Colorize your rake output</a>
       </li>
     
   </ul>
