@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-01-31T23:08:36-05:00</updated>
+  <updated>2012-01-31T23:11:21-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -28,7 +28,7 @@
 class. A presenter is a class that adds some sort of presentation
 formatting functionality to another class.</p></blockquote>
 
-<p>(<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Source</a>)</p>
+<p>(Steve Klabnik <a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">here</a>)</p>
 
 <p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#8217;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
 

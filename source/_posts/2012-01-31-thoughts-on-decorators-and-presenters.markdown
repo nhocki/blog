@@ -20,7 +20,7 @@ I have been developing a new app using a lot of [decorators and presenters](http
 class. A presenter is a class that adds some sort of presentation
 formatting functionality to another class.
 
-([Source](https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ))
+(Steve Klabnik [here](https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ))
 
 I think that what a decorator *should* do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows *how* it is being shown to the user.
 
