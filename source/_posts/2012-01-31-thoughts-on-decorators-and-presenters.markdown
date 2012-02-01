@@ -22,7 +22,7 @@ That said, I think the **same** decorator should be used to build the JSON respo
 
 ### So, where do the logic in the template goes?
 
-I had this discussion with a friend, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \'***You are logged in as nhocki***\' if there's a user logged in.
+I had this discussion with a [friend](http://mheroin.com/), and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \'***You are logged in as nhocki***\' if there's a user logged in.
 
 I think this should be created inside helper methods that takes a block. Inside that block you can use the **decorator** methods to show the needed data. You can use those methods in your JSON builder too (try out the new JBuilder). You could bundle up these methods and re-use them in your projects too.  
 
