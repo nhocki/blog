@@ -14,7 +14,13 @@ I have been developing a new app using a lot of [decorators and presenters](http
 
 **I want to warn you that I am (by any means) an expert on the subject. So I'm more than open to any feedback you can give me.**
 
-First, let's make clear that a `decorator` is a class that adds functionality to another class. A `presenter` is a class that adds **presentation formatting** functionality to another class. So all presenters are decorators.
+> All presenters are decorators, but not all decorators are presenters.
+
+> A decorator is a class that adds some sort of functionality to another
+class. A presenter is a class that adds some sort of presentation
+formatting functionality to another class.
+
+([Source](https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ))
 
 I think that what a decorator *should* do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows *how* it is being shown to the user.
 
@@ -24,7 +30,7 @@ That said, I think the **same** decorator should be used to build the JSON respo
 
 I had this discussion with a [friend](http://mheroin.com/), and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \'***You are logged in as nhocki***\' if there's a user logged in.
 
-I think this should be created inside helper methods that takes a block. Inside that block you can use the **decorator** methods to show the needed data. You can use those methods in your JSON builder too (try out the new JBuilder). You could bundle up these methods and re-use them in your projects too.  
+I think this should be created inside helper methods that takes a block. Inside that block you can use the **decorator** methods to show the needed data. You can use those methods in your JSON builder too (try out the new [Jbuilder](https://github.com/rails/jbuilder)). You could bundle up these methods and re-use them in your projects too.  
 
 Here's an example:
 

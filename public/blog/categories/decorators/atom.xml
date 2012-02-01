@@ -4,7 +4,7 @@
   <title><![CDATA[Category: decorators | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/decorators/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-01-31T22:52:22-05:00</updated>
+  <updated>2012-01-31T23:08:36-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -22,7 +22,13 @@
 
 <p><strong>I want to warn you that I am (by any means) an expert on the subject. So I'm more than open to any feedback you can give me.</strong></p>
 
-<p>First, let's make clear that a <code>decorator</code> is a class that adds functionality to another class. A <code>presenter</code> is a class that adds <strong>presentation formatting</strong> functionality to another class. So all presenters are decorators.</p>
+<blockquote><p>All presenters are decorators, but not all decorators are presenters.</p>
+
+<p>A decorator is a class that adds some sort of functionality to another
+class. A presenter is a class that adds some sort of presentation
+formatting functionality to another class.</p></blockquote>
+
+<p>(<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Source</a>)</p>
 
 <p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
 
@@ -32,7 +38,7 @@
 
 <p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \'<strong><em>You are logged in as nhocki</em></strong>\' if there's a user logged in.</p>
 
-<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new JBuilder). You could bundle up these methods and re-use them in your projects too.</p>
+<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.</p>
 
 <p>Here's an example:</p>
 
