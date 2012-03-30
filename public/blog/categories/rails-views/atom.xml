@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rails views | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/rails-views/atom.xml" rel="self"/>
+  <link href="http://blog.nhocki.com/"/>
+  <updated>2012-03-29T23:46:24-04:00</updated>
+  <id>http://blog.nhocki.com/</id>
+  <author>
+    <name><![CDATA[Nicolás Hock Isaza]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Flexible and friendly layouts on rails]]></title>
+    <link href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/"/>
+    <updated>2012-03-29T23:16:00-04:00</updated>
+    <id>http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails</id>
+    <content type="html"><![CDATA[<p><strong>TL;DR</strong> Use a combination of <code>content_for</code> and template inheritance to have flexible layouts with "content boxes" to add action-specific sections &amp; content.</p>
+
+<p>I've been working on a "new" project (I'm new to the project, the project itself is 'old') and at the beginning I had to edit a bunch of stuff in the views.</p>
+
+<p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
+
+<p>It's pretty common to have a <code>header</code> partial rendered on the view. If you're a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you're working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+
+<p>This wasn't the problem. We were lucky it was like that (inheritance friendly) anyway. But, the problem is that there was an action that needed a different header (only one action, not the whole controller). This doesn't really justifies a new layout. So... here's my solution:</p>
+
+<p><div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
+<noscript><pre><code># This method will allow a section to be rendered form a view or
+# to render a partial instead.
+# 
+# It's really useful to have 'flexible' sections in the layout. E.g
+# add this to your layout file:
+#
+# content_or_partial(:header)
+#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
+#
+# content_or_partial(:header, 'users/hello')
+#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
+#
+# application.html.erb
+#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
+#
+# users/show.html.erb
+#   &lt;%= content_for :header do %&gt;
+#     My action specific content
+#   &lt;% end %&gt;
+#
+def content_or_partial(content, partial = content)
+  content_for?(content) ? content_for(content) : render(partial.to_s)
+end</code></pre></noscript></div>
+</p>
+
+<p>This helper method will give you a painless method for that. So all you have to do is fill your layouts with "content boxes" that can be changed on an action-specific need, giving great flexibility (more when combined with the Template Inheritance).</p>
+
+<p>How would you achieve something like this?</p>
+]]></content>
+  </entry>
+  
+</feed>

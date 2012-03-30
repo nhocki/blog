@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I have been developing a new app using a lot of decorators and presenters. I&#8217;ve been highly influenced by Avdi (both his blog and his Objects &hellip;">
+  <meta name="description" content="TL;DR Use a combination of content_for and template inheritance to have flexible layouts with &#8220;content boxes&#8221; to add action-specific &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,82 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/03/29/flexible-and-friendly-layouts-on-rails/">Flexible and Friendly Layouts on Rails</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T23:16:00-04:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
+        
+         | <a href="/2012/03/29/flexible-and-friendly-layouts-on-rails/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>TL;DR</strong> Use a combination of <code>content_for</code> and template inheritance to have flexible layouts with &#8220;content boxes&#8221; to add action-specific sections &amp; content.</p>
+
+<p>I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I had to edit a bunch of stuff in the views.</p>
+
+<p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
+
+<p>It&#8217;s pretty common to have a <code>header</code> partial rendered on the view. If you&#8217;re a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#8217;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+
+<p>This wasn&#8217;t the problem. We were lucky it was like that (inheritance friendly) anyway. But, the problem is that there was an action that needed a different header (only one action, not the whole controller). This doesn&#8217;t really justifies a new layout. So&#8230; here&#8217;s my solution:</p>
+
+<div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
+<noscript><pre><code># This method will allow a section to be rendered form a view or
+# to render a partial instead.
+# 
+# It's really useful to have 'flexible' sections in the layout. E.g
+# add this to your layout file:
+#
+# content_or_partial(:header)
+#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
+#
+# content_or_partial(:header, 'users/hello')
+#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
+#
+# application.html.erb
+#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
+#
+# users/show.html.erb
+#   &lt;%= content_for :header do %&gt;
+#     My action specific content
+#   &lt;% end %&gt;
+#
+def content_or_partial(content, partial = content)
+  content_for?(content) ? content_for(content) : render(partial.to_s)
+end</code></pre></noscript></div>
+
+
+<p>This helper method will give you a painless method for that. So all you have to do is fill your layouts with &#8220;content boxes&#8221; that can be changed on an action-specific need, giving great flexibility (more when combined with the Template Inheritance).</p>
+
+<p>How would you achieve something like this?</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -850,61 +926,6 @@ elements, so it was an infinite loop.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/08/26/timehub-the-first-winner/">TimeHub, the First Winner!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-26T00:00:00-04:00" pubdate data-updated="true">Aug 26<span>th</span>, 2011</time>
-        
-         | <a href="/2011/08/26/timehub-the-first-winner/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I just wanted to &#8220;personally&#8221; say thanks to everyone who voted for my entry on
-the <a href="http://rallyonrails.com">Rally on Rails</a> (Latinamerican Rails Rumble).</p>
-
-<p><a href="http://timehub.net">Timehub</a> won! And this couldn&#8217;t be possible without the
-people who voted.</p>
-
-<p>I would like to thank the Rally on Rails team &amp; judges. They made an excellent
-job and even though there are somethings to improve (like the voting rules),
-<strong>I think that the contest was great!</strong></p>
-
-<p>We had already posted a &#8221;<a href="http://blog.timehub.net/post/9404894926/from-medellin-with-love">thank you
-note</a>&#8221;, in
-the <a href="http://timehub.net">Timehub</a> blog, but I really wanted to write one
-myself.</p>
-
-<p>I was pretty spammer during these last 3 days! That will stop now!</p>
-
-<p><strong>Thanks again!</strong> Hope to see you in <a href="http://timehub.net">Timehub</a> v2!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -920,6 +941,10 @@ myself.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2012/03/29/flexible-and-friendly-layouts-on-rails/">Flexible and friendly layouts on rails</a>
+      </li>
+    
+      <li class="post">
         <a href="/2012/01/31/thoughts-on-decorators-and-presenters/">Thoughts on Decorators & Presenters</a>
       </li>
     
@@ -933,10 +958,6 @@ myself.</p>
     
       <li class="post">
         <a href="/2012/01/10/simple-presenters--decorators-on-rails/">Simple Presenters & Decorators on Rails</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/12/06/but-free-web-services-are-not-like-free-software/">But free web services are not like free software</a>
       </li>
     
   </ul>

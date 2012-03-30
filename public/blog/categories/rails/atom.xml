@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-01-31T23:11:21-05:00</updated>
+  <updated>2012-03-29T23:46:24-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -12,6 +12,53 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Flexible and friendly layouts on rails]]></title>
+    <link href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/"/>
+    <updated>2012-03-29T23:16:00-04:00</updated>
+    <id>http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails</id>
+    <content type="html"><![CDATA[<p><strong>TL;DR</strong> Use a combination of <code>content_for</code> and template inheritance to have flexible layouts with "content boxes" to add action-specific sections &amp; content.</p>
+
+<p>I've been working on a "new" project (I'm new to the project, the project itself is 'old') and at the beginning I had to edit a bunch of stuff in the views.</p>
+
+<p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
+
+<p>It's pretty common to have a <code>header</code> partial rendered on the view. If you're a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you're working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+
+<p>This wasn't the problem. We were lucky it was like that (inheritance friendly) anyway. But, the problem is that there was an action that needed a different header (only one action, not the whole controller). This doesn't really justifies a new layout. So... here's my solution:</p>
+
+<p><div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
+<noscript><pre><code># This method will allow a section to be rendered form a view or
+# to render a partial instead.
+# 
+# It's really useful to have 'flexible' sections in the layout. E.g
+# add this to your layout file:
+#
+# content_or_partial(:header)
+#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
+#
+# content_or_partial(:header, 'users/hello')
+#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
+#
+# application.html.erb
+#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
+#
+# users/show.html.erb
+#   &lt;%= content_for :header do %&gt;
+#     My action specific content
+#   &lt;% end %&gt;
+#
+def content_or_partial(content, partial = content)
+  content_for?(content) ? content_for(content) : render(partial.to_s)
+end</code></pre></noscript></div>
+</p>
+
+<p>This helper method will give you a painless method for that. So all you have to do is fill your layouts with "content boxes" that can be changed on an action-specific need, giving great flexibility (more when combined with the Template Inheritance).</p>
+
+<p>How would you achieve something like this?</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thoughts on Decorators & Presenters]]></title>
@@ -352,83 +399,6 @@ end
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
 <p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don't like their syntax. I prefer Andres' approach much more, so maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Compile assets and push them - no pain involved!]]></title>
-    <link href="http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/"/>
-    <updated>2011-09-28T00:00:00-04:00</updated>
-    <id>http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved</id>
-    <content type="html"><![CDATA[<p>This week, I've been working on a side project with <a href="http://andr.esmejia.com/">Andrés
-Mejía</a> (<a href="http://twitter.com/andmej">@andmej</a>) and
-for some really really sad reason <a href="http://heroku.com">Heroku</a> is not working
-as expected (a simple git push should do the trick, but we're having a really
-<a href="https://github.com/ddollar/rails_log_stdout/issues/4">weird issue</a>).</p>
-
-<p>At first, I thought it had something to do with the assets. Even-though
-<a href="http://heroku.com">Heroku</a> has <a href="h%0Attp://devcenter.heroku.com/articles/rails31_heroku_cedar#the_asset_pipeline">asset compiling tasks on their Cedar stack</a>,
-it didn't really worked for us at first. So I just decided to create a small
-rake task to compile the assets and push them to Github.</p>
-
-<p>The good thing about this rake task is that it will only push the assets. This
-means, that <strong>you'll need a clean git tree to run this task or it will die</strong>.
-This ensures that the automatic push <strong>won't commit any non-related change to
-the compilation of the assets</strong>.</p>
-
-<p>Now, you only have to run <strong>rake assets:compile</strong> and sleep well at night.
-Here's the code. Hope it helps.</p>
-
-<p><div><script src='https://gist.github.com/1241135.js?file='></script>
-<noscript><pre><code>namespace :assets do
-  desc &quot;Compile all the assets named in config.assets.precompile and push them&quot;
-  task :compile do
-    AssetsCompiler.new.compile
-  end
-
-  class AssetsCompiler
-    def compile
-      ensure_clean_git
-      removed_previous_assets
-      compile_assets
-      commit_compiled_assets
-      push
-    end
-
-    def ensure_clean_git
-      raise &quot;Can't deploy without a clean git status.&quot; if git_dirty?
-    end
-
-    def removed_previous_assets
-      run &quot;bundle exec rake RAILS_ENV=production assets:clean&quot;
-    end
-
-    def compile_assets
-      run &quot;bundle exec rake RAILS_ENV=production assets:precompile&quot;
-    end
-
-    def commit_compiled_assets
-      run &quot;git add -u &amp;&amp; git add . &amp;&amp; git commit -am 'Compiled assets'&quot;
-    end
-
-    def push
-      run &quot;git push&quot;
-    end
-
-    private
-
-    def run(command)
-      puts &quot;+ Running: #{command}&quot;
-      puts &quot;-- #{system command}&quot;
-    end
-
-    def git_dirty?
-      `[[ $(git diff --shortstat 2&gt; /dev/null | tail -n1) != &quot;&quot; ]]`
-      dirty = $?.success?
-    end
-  end
-end</code></pre></noscript></div>
-</p>
 ]]></content>
   </entry>
   

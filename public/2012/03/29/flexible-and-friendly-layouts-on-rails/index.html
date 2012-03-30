@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: asset-pipeline - Nicolás Hock Isaza</title>
+  <title>Flexible and friendly layouts on rails - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="Category: asset-pipeline">
+  <meta name="description" content="TL;DR Use a combination of content_for and template inheritance to have flexible layouts with &#8220;content boxes&#8221; to add action-specific &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.comblog/categories/asset-pipeline">
+  <link rel="canonical" href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -75,36 +75,135 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Asset-pipeline</h1>
+    
+      <h1 class="entry-title">Flexible and Friendly Layouts on Rails</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T23:16:00-04:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p><strong>TL;DR</strong> Use a combination of <code>content_for</code> and template inheritance to have flexible layouts with &#8220;content boxes&#8221; to add action-specific sections &amp; content.</p>
 
-  
-  <h2>2011</h2>
+<p>I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I had to edit a bunch of stuff in the views.</p>
 
-<article>
-  
-<h1><a href="/2011/09/28/compile-assets-and-push-them---no-pain-involved/">Compile assets and push them - no pain involved!</a></h1>
-<time datetime="2011-09-28T00:00:00-04:00" pubdate><span class='month'>Sep</span> <span class='day'>28</span> <span class='year'>2011</span></time>
+<p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/asset-pipeline/'>asset-pipeline</a>, <a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rake/'>rake</a></span>
-</footer>
+<p>It&#8217;s pretty common to have a <code>header</code> partial rendered on the view. If you&#8217;re a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#8217;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+
+<p>This wasn&#8217;t the problem. We were lucky it was like that (inheritance friendly) anyway. But, the problem is that there was an action that needed a different header (only one action, not the whole controller). This doesn&#8217;t really justifies a new layout. So&#8230; here&#8217;s my solution:</p>
+
+<div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
+<noscript><pre><code># This method will allow a section to be rendered form a view or
+# to render a partial instead.
+# 
+# It's really useful to have 'flexible' sections in the layout. E.g
+# add this to your layout file:
+#
+# content_or_partial(:header)
+#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
+#
+# content_or_partial(:header, 'users/hello')
+#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
+#
+# application.html.erb
+#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
+#
+# users/show.html.erb
+#   &lt;%= content_for :header do %&gt;
+#     My action specific content
+#   &lt;% end %&gt;
+#
+def content_or_partial(content, partial = content)
+  content_for?(content) ? content_for(content) : render(partial.to_s)
+end</code></pre></noscript></div>
 
 
-</article>
+<p>This helper method will give you a painless method for that. So all you have to do is fill your layouts with &#8220;content boxes&#8221; that can be changed on an action-specific need, giving great flexibility (more when combined with the Template Inheritance).</p>
 
+<p>How would you achieve something like this?</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Nicolás Hock Isaza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T23:16:00-04:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/html/'>html</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rails-views/'>rails views</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/" data-via="nhocki" data-counturl="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="small"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/01/31/thoughts-on-decorators-and-presenters/" title="Previous Post: Thoughts on Decorators & Presenters">&laquo; Thoughts on Decorators & Presenters</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -172,7 +271,10 @@
       var disqus_shortname = 'nhocki';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/';
+        var disqus_url = 'http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
