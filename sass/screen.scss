@@ -2,9 +2,21 @@
 @include global-reset;
 @include reset-html5;
 
-@import "custom/colors";
-@import "custom/fonts";
-@import "custom/layout";
-@import "base";
-@import "partials";
-@import "custom/styles";
+body {
+  width: 750px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: middle;
+  background: #FFF;
+  font-family: "PT Serif", Georgia, Times, "Times New Roman", serif;
+}
+
+p{
+  margin-bottom: 20px;
+}
+
+@import "partials/header";
+@import "partials/navigation";
+
+@import "partials/blog"

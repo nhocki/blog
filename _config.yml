@@ -6,8 +6,8 @@ url: http://blog.nhocki.com
 title: Nicolás Hock Isaza
 subtitle: Ruby, Rails, Programming and Random Thoughts
 author: Nicolás Hock Isaza
-simple_search: http://google.com/search
-description:
+# simple_search: http://google.com/search
+description: My random thoughts about web development and some other stuff
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in

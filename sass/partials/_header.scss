@@ -1,18 +1,22 @@
 body > header {
-  background: $header-bg;
   h1 {
-    display: inline-block;
+    text-align: center;
+    font-size: 3.0em;
+    display: block;
     margin: 0;
+    @include text-shadow(-1px -1px 0px #FFF);
     a, a:visited, a:hover {
-      color: $title_color;
+      color: #000;
       text-decoration: none;
     }
   }
   h2 {
+    text-align: center;
+    @include text-shadow(-1px 0px 1px #FFF);
     margin: .2em 0 0;
-    @extend .sans;
-    font-size: 1em;
-    color: $subtitle-color;
+    font-size: 1.2em;
+    color: #333;
     font-weight: normal;
   }
+  margin: 35px auto;
 }
