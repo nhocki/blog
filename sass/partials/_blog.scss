@@ -1,6 +1,6 @@
 $text-color: #000;
 $text-color-light: #333;
-$link-color-hover: #666;
+$link-color-hover: #000;
 $img-border: transparent;
 $main-bg: #EEE;
 
@@ -12,8 +12,8 @@ article {
     padding-bottom: 1em;
     margin-bottom: 1.5em;
     background: $img-border bottom left repeat-x;
-    h1 {
-      margin: 0;
+    h1.entry-title {
+      margin: 0 0 0.2em;
       a { text-decoration: none;
         &:hover { text-decoration: underline; } }
     }
@@ -80,32 +80,28 @@ article + article {
     background: $img-border top left repeat-x;
   }
 }
+
 #content .blog-index {
   padding: { top: 0; bottom: 0; }
-  article { padding-top: 2em; }
+  article { padding-top: 2em; padding-bottom: 1em; border-bottom: 1px dotted #333; margin-bottom: 0.5em;}
   article header { background: none; padding-bottom: 0; }
-  article h1 {
-    font-size: 2.2em;
-    a { color: inherit; &:hover { color: $link-color-hover; } }
-  }
-  a[rel=full-article] {
-    background: darken($main-bg, 5);
-    display: inline-block;
-    padding: .4em .8em;
-    margin-right: .5em;
-    text-decoration: none;
-    color: mix($text-color, $text-color-light);
-    @extend .serif;
-    @include transition(background-color .5s);
-    &:hover {
-      background: $link-color-hover;
-      text-shadow: none;
-      color: $main-bg;
+  article{
+    h1{
+      font-size: 2.2em;
+      line-height: 1em;
+      a { color: inherit; &:hover { color: $link-color-hover; } }
     }
-  }
-  footer {
-    @extend .sans;
-    margin-top: 1em;
+
+    h2, h3{
+      font-size: 1.6em;
+      margin: 1.3em 0 0.5em;
+    }
+
+    blockquote{
+      width: 75%;
+      margin: 0.5em auto;
+      font-style: italic;
+    }
   }
 }
 

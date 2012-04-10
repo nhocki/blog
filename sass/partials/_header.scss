@@ -10,10 +10,11 @@ body > header {
       text-decoration: none;
     }
   }
+
   h2 {
     text-align: center;
     @include text-shadow(-1px 0px 1px #FFF);
-    margin: .2em 0 0;
+    margin: .5em 0 0;
     font-size: 1.2em;
     color: #333;
     font-weight: normal;

@@ -3,20 +3,52 @@
 @include reset-html5;
 
 body {
+  color: #000;
   width: 750px;
   margin: 0 auto;
   font-size: 16px;
   line-height: 24px;
   text-align: middle;
-  background: #FFF;
+  background: #FDFDFD;
   font-family: "PT Serif", Georgia, Times, "Times New Roman", serif;
 }
 
 p{
   margin-bottom: 20px;
+  code, pre {
+    font-family: Georgia, serif;
+    color: #444;
+    background: #EEE;
+    background: rgba(200, 200, 200, 0.3);
+    padding: 0 5px;
+    font-weight: lighter;
+  }
+}
+
+a{
+  color: #22A;
+  font-size: 1.1em;
+  text-decoration: none;
+  &:hover, &:active, &:focus{
+    text-decoration: underline;
+  }
+}
+
+b, strong { font-weight: bold; }
+i, em { text-style: italic; }
+
+.gist{ font-size: 14px; line-height: 22px;}
+.centered {text-align: center;}
+.smaller { font-size: 0.8em;}
+
+footer{
+  .site-end-note{
+    @extend .centered;
+    @extend .smaller;
+    margin: 0.8em auto;
+  }
 }
 
 @import "partials/header";
 @import "partials/navigation";
-
 @import "partials/blog"
