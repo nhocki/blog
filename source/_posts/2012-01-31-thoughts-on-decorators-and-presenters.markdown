@@ -12,7 +12,7 @@ categories:
 
 I have been developing a new app using a lot of [decorators and presenters](http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/). I've been highly influenced by [Avdi](http://about.avdi.org/) (both his [blog](http://avdi.org/devblog/) and his [Objects in Rails book](http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/)) and [Steve Klabnik](http://steveklabnik.com), but now I have a problem. My decorators are starting to get big. I'll have to use `concerns` for that. Expect another post about it (maybe).
 
-**I want to warn you that I am (by any means) an expert on the subject. So I'm more than open to any feedback you can give me.**
+**I want to warn you that I am not by any means an expert on the subject. So I'm more than open to any feedback you can give me.**
 
 > All presenters are decorators, but not all decorators are presenters.
 
@@ -20,7 +20,7 @@ I have been developing a new app using a lot of [decorators and presenters](http
 class. A presenter is a class that adds some sort of presentation
 formatting functionality to another class.
 
-(Steve Klabnik [here](https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ))
+> [Steve Klabnik](https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ)
 
 I think that what a decorator *should* do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows *how* it is being shown to the user.
 
