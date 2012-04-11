@@ -59,34 +59,37 @@ article {
       }
     }
   }
-  > footer {
+  footer {
     padding-bottom: 2.5em;
     margin-top: 2em;
     @extend .sans;
     p.meta {
+      font-family: Georgia;
+      margin: 0;
       margin-bottom: .8em;
       font-size: .85em;
       clear: both;
       overflow: hidden;
+      color: $text-color-light;
     }
     .byline + time:before, time +time:before, .comments:before, .byline ~ .categories:before {
       @extend .separator;
     }
   }
-
 }
+
 article + article {
   .blog-index & {
     background: $img-border top left repeat-x;
   }
 }
 
-#content .blog-index {
+#content {
   padding: { top: 0; bottom: 0; }
   article { padding-top: 2em; padding-bottom: 1em; border-bottom: 1px dotted #333; margin-bottom: 0.5em;}
   article header { background: none; padding-bottom: 0; }
   article{
-    h1{
+    h1.entry-title{
       font-size: 2.2em;
       line-height: 1em;
       a { color: inherit; &:hover { color: $link-color-hover; } }
@@ -127,4 +130,9 @@ article + article {
       &:before, &:after { content: '\2014'; padding: 0 .3em; }
     }
   }
+}
+
+.meta.posts{
+  margin-top: 1.5em !important;
+  margin-bottom: -2em;
 }

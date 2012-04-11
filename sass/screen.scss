@@ -41,6 +41,11 @@ i, em { text-style: italic; }
 .centered {text-align: center;}
 .smaller { font-size: 0.8em;}
 
+.basic-alignment{
+  &.left{ float: left; }
+  &.right{ float: right; }
+}
+
 footer{
   .site-end-note{
     @extend .centered;
@@ -51,4 +56,5 @@ footer{
 
 @import "partials/header";
 @import "partials/navigation";
-@import "partials/blog"
+@import "partials/blog";
+@import "partials/archive";

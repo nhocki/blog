@@ -1,3 +1,4 @@
+$link-color-hover: #22A;
 #archive {
   #content > div { &, > article { padding-top: 0; } }
 }
@@ -10,6 +11,7 @@
       background: none;
     }
     footer { padding: 0; margin: 0;}
+    border: 0 !important;
   }
   h1 { color: $text-color; margin-bottom: .3em; }
   h2 { display: none; }
@@ -18,14 +20,13 @@
     a {
       @include hover-link;
       color: inherit;
-      &:hover { color: $link-color-hover; }
       font-weight: normal;
       display: inline-block;
     }
   }
   a.category, time {
     @extend .sans;
-    color: $text-color-light;
+    color: #22A;
   }
   color: $text-color-light;
   .entry-content { display: none; }
@@ -41,12 +42,10 @@
   @media only screen and (min-width: 550px) {
     article { margin-left: 5em; }
     h2 {
-      margin-bottom: .3em;
       font-weight: normal;
-      display: inline-block;
-      position: relative; top: -1px;
-      float: left;
-      &:first-child { padding-top: .75em; }
+      display: block;
+      border-top: 1px dotted #DDD;
+      &:first-child { padding-top: .75em; border-top: 0 !important;}
     }
     time {
       position: absolute;
@@ -69,4 +68,11 @@
     padding-left: 6.8em;
   }
   .year { display: inline; }
+}
+
+article{
+  h1{
+    line-height: 1em;
+    a { color: inherit; &:hover { color: $link-color-hover; } }
+  }
 }
