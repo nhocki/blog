@@ -4,7 +4,7 @@
   <title><![CDATA[Category: oop | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/oop/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-03-29T23:46:24-04:00</updated>
+  <updated>2012-04-10T20:35:25-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -20,15 +20,15 @@
     <id>http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters</id>
     <content type="html"><![CDATA[<p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I've been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I'll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
 
-<p><strong>I want to warn you that I am (by any means) an expert on the subject. So I'm more than open to any feedback you can give me.</strong></p>
+<p><strong>I want to warn you that I am not by any means an expert on the subject. So I'm more than open to any feedback you can give me.</strong></p>
 
 <blockquote><p>All presenters are decorators, but not all decorators are presenters.</p>
 
 <p>A decorator is a class that adds some sort of functionality to another
 class. A presenter is a class that adds some sort of presentation
-formatting functionality to another class.</p></blockquote>
+formatting functionality to another class.</p>
 
-<p>(Steve Klabnik <a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">here</a>)</p>
+<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p></blockquote>
 
 <p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
 

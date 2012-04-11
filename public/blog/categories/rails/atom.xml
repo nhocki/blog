@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-03-29T23:46:24-04:00</updated>
+  <updated>2012-04-10T20:35:25-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,15 +18,13 @@
     <link href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/"/>
     <updated>2012-03-29T23:16:00-04:00</updated>
     <id>http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails</id>
-    <content type="html"><![CDATA[<p><strong>TL;DR</strong> Use a combination of <code>content_for</code> and template inheritance to have flexible layouts with "content boxes" to add action-specific sections &amp; content.</p>
-
-<p>I've been working on a "new" project (I'm new to the project, the project itself is 'old') and at the beginning I had to edit a bunch of stuff in the views.</p>
+    <content type="html"><![CDATA[<p>I've been working on a "new" project (I'm new to the project, the project itself is 'old') and at the beginning I had to edit a bunch of stuff in the views.</p>
 
 <p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
 
 <p>It's pretty common to have a <code>header</code> partial rendered on the view. If you're a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you're working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
 
-<p>This wasn't the problem. We were lucky it was like that (inheritance friendly) anyway. But, the problem is that there was an action that needed a different header (only one action, not the whole controller). This doesn't really justifies a new layout. So... here's my solution:</p>
+<p>But this is a <em>controller wide</em> solution, since all the actions from that controller will render the same partial. So, how do you achieve this on a single action? My solution is a 3 line helper:</p>
 
 <p><div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
 <noscript><pre><code># This method will allow a section to be rendered form a view or
@@ -54,9 +52,9 @@ def content_or_partial(content, partial = content)
 end</code></pre></noscript></div>
 </p>
 
-<p>This helper method will give you a painless method for that. So all you have to do is fill your layouts with "content boxes" that can be changed on an action-specific need, giving great flexibility (more when combined with the Template Inheritance).</p>
+<p>Now all you have to do is fill your layouts with "content boxes" that can be changed on an controller or action-specific need, giving great flexibility.</p>
 
-<p>How would you achieve something like this?</p>
+<p>How would you get around this?</p>
 ]]></content>
   </entry>
   
@@ -67,15 +65,15 @@ end</code></pre></noscript></div>
     <id>http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters</id>
     <content type="html"><![CDATA[<p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I've been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I'll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
 
-<p><strong>I want to warn you that I am (by any means) an expert on the subject. So I'm more than open to any feedback you can give me.</strong></p>
+<p><strong>I want to warn you that I am not by any means an expert on the subject. So I'm more than open to any feedback you can give me.</strong></p>
 
 <blockquote><p>All presenters are decorators, but not all decorators are presenters.</p>
 
 <p>A decorator is a class that adds some sort of functionality to another
 class. A presenter is a class that adds some sort of presentation
-formatting functionality to another class.</p></blockquote>
+formatting functionality to another class.</p>
 
-<p>(Steve Klabnik <a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">here</a>)</p>
+<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p></blockquote>
 
 <p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don't think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
 
