@@ -136,3 +136,39 @@ article + article {
   margin-top: 1.5em !important;
   margin-bottom: -2em;
 }
+
+@media screen and (max-width: 480px){
+  #main{
+    margin-top: 1.2em;
+  }
+
+  .disquss_link{
+    display: none;
+  }
+
+  .entry-title{
+    font-size: 1.2em !important;
+    line-height: 1em !important;
+  }
+  
+  #content{
+    article{
+      h2, h3{
+        font-size: 1.1em !important;
+      }
+    }
+  }
+  
+  #blog-archives{
+    h2{
+      display: block !important;
+    }
+    h1{
+      font-size: 1.1em !important;
+    }
+    .categories{
+      &, & a {font-size: 0.9em !important;}
+    }
+  }
+}
+

@@ -21,3 +21,23 @@ body > header {
   }
   margin: 35px auto;
 }
+
+@media screen and (max-width: 480px){
+  body > header[role='banner']{
+    z-index: 99999;
+    background: black;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    margin: 0;
+    padding: 0.3em 0;
+    &, h1, a {
+      color: white !important;
+      @include text-shadow(-1px -1px 0px #000);
+    }
+    h1, h1 > a{
+      font-size: 1.3em !important;
+      line-height: 1em !important;
+    }
+    h2{ display: none; }
+  }
+}
