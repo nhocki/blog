@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-05-04T16:58:28-04:00</updated>
+  <updated>2012-05-08T20:08:46-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -12,6 +12,76 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mixing Presenters and Helpers]]></title>
+    <link href="http://blog.nhocki.com/2012/05/08/mixing-presenters-and-helpers/"/>
+    <updated>2012-05-08T18:28:00-04:00</updated>
+    <id>http://blog.nhocki.com/2012/05/08/mixing-presenters-and-helpers</id>
+    <content type="html"><![CDATA[<p>I just finished <a href="http://pragprog.com/book/warv/the-rails-view">The Rails View</a> and the best chapter for me was about presenters. I&#8217;ve been <a href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/">working with this</a> for a while and I have to admit I love the approach presented on the view.</p>
+
+<p>All the presenters I&#8217;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#8217;t depend on params or session variables it&#8217;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#8217;re presenting various objects on the same view. Here&#8217;s an example to present users in our application, let&#8217;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#8217;s make it in a really simple way!</p>
+
+<h3>The Helper &amp; View</h3>
+
+<p>Let&#8217;s create the helper method first. It&#8217;s really simple and will take a block that we can use to build a custom markup &#8220;on the fly&#8221;.</p>
+
+<div><script src='https://gist.github.com/2640442.js?file=user_helpers.rb'></script>
+<noscript><pre><code># app/helpers/user_helpers.rb
+def basic_information_for(user = @user, options = {})
+  presenter = UserBasicPresenter.new(user, self, options)
+  if block_given?
+    yield(presenter)
+  else
+    presenter
+  end
+end</code></pre></noscript></div>
+
+
+<p>Now, let&#8217;s take a look at the views. In the <strong>show</strong> action, we&#8217;re going to present only one user, and we can easily build the custom view for this. In the <strong>index</strong> action, we&#8217;ll present all a &#8220;basic info&#8221; for the each user. We have that in a partial because this is used for all the collections of users in our application. Here&#8217;s the view code:</p>
+
+<div><script src='https://gist.github.com/2640442.js?file=user_views.html.erb'></script>
+<noscript><pre><code># app/views/show.html.erb
+&lt;% basic_information_for do |user|  %&gt;
+  &lt;p&gt;&lt;%= user.name %&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;%= user.status %&gt;&lt;/p&gt;
+  ...
+&lt;% end %&gt;
+
+# app/views/index.html
+&lt;% @users.each do |user| %&gt;
+  &lt;%= basic_information_for(user) %&gt;
+&lt;% end %&gt;</code></pre></noscript></div>
+
+
+<h3>The Presenter, A.K.A What&#8217;s happening here?</h3>
+
+<p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#8217;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#8217;s the code for that:</p>
+
+<div><script src='https://gist.github.com/2640442.js?file=user_basic_presenter.rb'></script>
+<noscript><pre><code># app/presenters/user_basic_presenter.rb
+class UserBasicPresenter
+  def initialize(user, template, options = {})
+    @user     = user
+    @options  = options
+    @template = template
+  end
+
+  def to_s
+    @template.render partial: 'user/basic', object: self
+  end
+end</code></pre></noscript></div>
+
+
+<p>Is <strong>that</strong> simple! We have a unique interface (the helper) that will work great in both places! We could obviously make the presenter more complex, otherwise, why use it?</p>
+
+<p>Even though I haven&#8217;t used this approach a lot, I&#8217;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
+
+<h3>Feedback</h3>
+
+<p>I&#8217;m also really interested in how people are using presenters. I&#8217;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Flexible and friendly layouts on rails]]></title>

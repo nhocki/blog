@@ -9,8 +9,8 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I just wanted to &#8220;personally&#8221; say thanks to everyone who voted for my entry on
-the Rally on Rails (Latinamerican Rails Rumble). Timehub &hellip;">
+  <meta name="description" content="I&#8217;m working on a really cool project on my University. It&#8217;s a web application
+to compare book editions and help professors build what is &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -59,6 +59,76 @@ the Rally on Rails (Latinamerican Rails Rumble). Timehub &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/09/21/simple-scrollbar-synchronization-with-jquery/">Simple Scrollbar Synchronization With jQuery</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-21T00:00:00-04:00" pubdate data-updated="true">Sep 21<span>st</span>, 2011</time>
+        
+         | <a href="/2011/09/21/simple-scrollbar-synchronization-with-jquery/#disqus_thread" class="disquss_link">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;m working on a really cool project on my University. It&#8217;s a web application
+to compare book editions and help professors build what is know as the
+Collatzio. The Collatzio is simply the &#8220;original&#8221; version of the book. That
+means, to have the book the author wanted to write and not the one that the
+editors wanted to publish.</p>
+
+<p>I needed to have two versions of the book aligned side by side. So, the
+HTML/CSS was pretty simple. Just have two simple divs with <strong>overflow-y:
+auto;</strong> to make the scrollbar appears on each div.</p>
+
+<p>The coffeescript code I used is really simple, here it is:</p>
+
+<div><script src='https://gist.github.com/1233545.js?file='></script>
+<noscript><pre><code>jQuery ($) -&gt;
+  ($ &quot;.scroll-text&quot;).scroll (event) -&gt;
+    trigger = ($ @)
+    element = trigger.data(&quot;scrolls&quot;)
+    $(element).scrollTop(trigger.scrollTop())
+    event.preventDefault()
+    return false</code></pre></noscript></div>
+
+
+<p>Hope it helps someone. I struggled a little bit with the &#8220;common&#8221; way of
+scrolling things. People usually use the <code>animate</code> method to scroll the body,
+but I couldn&#8217;t use it because it kept triggering the scroll event on the
+elements, so it was an infinite loop.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html, body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">scrollTop</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span><span class="err"> </span><span class="s2">&quot;slow&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

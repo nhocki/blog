@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I &hellip;">
+  <meta name="description" content="I just finished The Rails View and the best chapter for me was about presenters. I&#8217;ve been working with this for a while and I have to admit I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,105 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/05/08/mixing-presenters-and-helpers/">Mixing Presenters and Helpers</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-08T18:28:00-04:00" pubdate data-updated="true">May 8<span>th</span>, 2012</time>
+        
+         | <a href="/2012/05/08/mixing-presenters-and-helpers/#disqus_thread" class="disquss_link">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I just finished <a href="http://pragprog.com/book/warv/the-rails-view">The Rails View</a> and the best chapter for me was about presenters. I&#8217;ve been <a href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/">working with this</a> for a while and I have to admit I love the approach presented on the view.</p>
+
+<p>All the presenters I&#8217;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#8217;t depend on params or session variables it&#8217;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#8217;re presenting various objects on the same view. Here&#8217;s an example to present users in our application, let&#8217;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#8217;s make it in a really simple way!</p>
+
+<h3>The Helper &amp; View</h3>
+
+<p>Let&#8217;s create the helper method first. It&#8217;s really simple and will take a block that we can use to build a custom markup &#8220;on the fly&#8221;.</p>
+
+<div><script src='https://gist.github.com/2640442.js?file=user_helpers.rb'></script>
+<noscript><pre><code># app/helpers/user_helpers.rb
+def basic_information_for(user = @user, options = {})
+  presenter = UserBasicPresenter.new(user, self, options)
+  if block_given?
+    yield(presenter)
+  else
+    presenter
+  end
+end</code></pre></noscript></div>
+
+
+<p>Now, let&#8217;s take a look at the views. In the <strong>show</strong> action, we&#8217;re going to present only one user, and we can easily build the custom view for this. In the <strong>index</strong> action, we&#8217;ll present all a &#8220;basic info&#8221; for the each user. We have that in a partial because this is used for all the collections of users in our application. Here&#8217;s the view code:</p>
+
+<div><script src='https://gist.github.com/2640442.js?file=user_views.html.erb'></script>
+<noscript><pre><code># app/views/show.html.erb
+&lt;% basic_information_for do |user|  %&gt;
+  &lt;p&gt;&lt;%= user.name %&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;%= user.status %&gt;&lt;/p&gt;
+  ...
+&lt;% end %&gt;
+
+# app/views/index.html
+&lt;% @users.each do |user| %&gt;
+  &lt;%= basic_information_for(user) %&gt;
+&lt;% end %&gt;</code></pre></noscript></div>
+
+
+<h3>The Presenter, A.K.A What&#8217;s happening here?</h3>
+
+<p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#8217;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#8217;s the code for that:</p>
+
+<div><script src='https://gist.github.com/2640442.js?file=user_basic_presenter.rb'></script>
+<noscript><pre><code># app/presenters/user_basic_presenter.rb
+class UserBasicPresenter
+  def initialize(user, template, options = {})
+    @user     = user
+    @options  = options
+    @template = template
+  end
+
+  def to_s
+    @template.render partial: 'user/basic', object: self
+  end
+end</code></pre></noscript></div>
+
+
+<p>Is <strong>that</strong> simple! We have a unique interface (the helper) that will work great in both places! We could obviously make the presenter more complex, otherwise, why use it?</p>
+
+<p>Even though I haven&#8217;t used this approach a lot, I&#8217;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
+
+<h3>Feedback</h3>
+
+<p>I&#8217;m also really interested in how people are using presenters. I&#8217;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -826,76 +925,6 @@ Here&#8217;s the code. Hope it helps.</p>
     end
   end
 end</code></pre></noscript></div>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/09/21/simple-scrollbar-synchronization-with-jquery/">Simple Scrollbar Synchronization With jQuery</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-09-21T00:00:00-04:00" pubdate data-updated="true">Sep 21<span>st</span>, 2011</time>
-        
-         | <a href="/2011/09/21/simple-scrollbar-synchronization-with-jquery/#disqus_thread" class="disquss_link">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&#8217;m working on a really cool project on my University. It&#8217;s a web application
-to compare book editions and help professors build what is know as the
-Collatzio. The Collatzio is simply the &#8220;original&#8221; version of the book. That
-means, to have the book the author wanted to write and not the one that the
-editors wanted to publish.</p>
-
-<p>I needed to have two versions of the book aligned side by side. So, the
-HTML/CSS was pretty simple. Just have two simple divs with <strong>overflow-y:
-auto;</strong> to make the scrollbar appears on each div.</p>
-
-<p>The coffeescript code I used is really simple, here it is:</p>
-
-<div><script src='https://gist.github.com/1233545.js?file='></script>
-<noscript><pre><code>jQuery ($) -&gt;
-  ($ &quot;.scroll-text&quot;).scroll (event) -&gt;
-    trigger = ($ @)
-    element = trigger.data(&quot;scrolls&quot;)
-    $(element).scrollTop(trigger.scrollTop())
-    event.preventDefault()
-    return false</code></pre></noscript></div>
-
-
-<p>Hope it helps someone. I struggled a little bit with the &#8220;common&#8221; way of
-scrolling things. People usually use the <code>animate</code> method to scroll the body,
-but I couldn&#8217;t use it because it kept triggering the scroll event on the
-elements, so it was an infinite loop.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html, body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">scrollTop</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span><span class="err"> </span><span class="s2">&quot;slow&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
 
