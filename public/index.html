@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I just finished The Rails View and the best chapter for me was about presenters. I&#8217;ve been working with this for a while and I have to admit I &hellip;">
+  <meta name="description" content="I updated my Xcode version this week and to my surprise they moved it from /Developer to /Applications/Xcode, the problem is that now all the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,48 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/05/09/fix-xcode-path/">Fix Xcode Path</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-09T19:38:00-04:00" pubdate data-updated="true">May 9<span>th</span>, 2012</time>
+        
+         | <a href="/2012/05/09/fix-xcode-path/#disqus_thread" class="disquss_link">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here&#8217;s the easy solution for this:</p>
+
+<p><code>sudo /usr/bin/xcode-select -switch /Applications/Xcode.app/Contents/Developer/</code></p>
+
+<p>That&#8217;s it. Just let Xcode know where to look for the developer tools again.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -820,114 +862,6 @@ that nobody has done before, one of the reasons often that they haven&#8217;t do
 it is because it&#8217;s too time-consuming.</p></blockquote>
 
 <p>By Charles Leiserson</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/09/28/compile-assets-and-push-them---no-pain-involved/">Compile Assets and Push Them - No Pain Involved!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-09-28T00:00:00-04:00" pubdate data-updated="true">Sep 28<span>th</span>, 2011</time>
-        
-         | <a href="/2011/09/28/compile-assets-and-push-them---no-pain-involved/#disqus_thread" class="disquss_link">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This week, I&#8217;ve been working on a side project with <a href="http://andr.esmejia.com/">Andrés
-Mejía</a> (<a href="http://twitter.com/andmej">@andmej</a>) and
-for some really really sad reason <a href="http://heroku.com">Heroku</a> is not working
-as expected (a simple git push should do the trick, but we&#8217;re having a really
-<a href="https://github.com/ddollar/rails_log_stdout/issues/4">weird issue</a>).</p>
-
-<p>At first, I thought it had something to do with the assets. Even-though
-<a href="http://heroku.com">Heroku</a> has <a href="h%0Attp://devcenter.heroku.com/articles/rails31_heroku_cedar#the_asset_pipeline">asset compiling tasks on their Cedar stack</a>,
-it didn&#8217;t really worked for us at first. So I just decided to create a small
-rake task to compile the assets and push them to Github.</p>
-
-<p>The good thing about this rake task is that it will only push the assets. This
-means, that <strong>you&#8217;ll need a clean git tree to run this task or it will die</strong>.
-This ensures that the automatic push <strong>won&#8217;t commit any non-related change to
-the compilation of the assets</strong>.</p>
-
-<p>Now, you only have to run <strong>rake assets:compile</strong> and sleep well at night.
-Here&#8217;s the code. Hope it helps.</p>
-
-<div><script src='https://gist.github.com/1241135.js?file='></script>
-<noscript><pre><code>namespace :assets do
-  desc &quot;Compile all the assets named in config.assets.precompile and push them&quot;
-  task :compile do
-    AssetsCompiler.new.compile
-  end
-
-  class AssetsCompiler
-    def compile
-      ensure_clean_git
-      removed_previous_assets
-      compile_assets
-      commit_compiled_assets
-      push
-    end
-
-    def ensure_clean_git
-      raise &quot;Can't deploy without a clean git status.&quot; if git_dirty?
-    end
-
-    def removed_previous_assets
-      run &quot;bundle exec rake RAILS_ENV=production assets:clean&quot;
-    end
-
-    def compile_assets
-      run &quot;bundle exec rake RAILS_ENV=production assets:precompile&quot;
-    end
-
-    def commit_compiled_assets
-      run &quot;git add -u &amp;&amp; git add . &amp;&amp; git commit -am 'Compiled assets'&quot;
-    end
-
-    def push
-      run &quot;git push&quot;
-    end
-
-    private
-
-    def run(command)
-      puts &quot;+ Running: #{command}&quot;
-      puts &quot;-- #{system command}&quot;
-    end
-
-    def git_dirty?
-      `[[ $(git diff --shortstat 2&gt; /dev/null | tail -n1) != &quot;&quot; ]]`
-      dirty = $?.success?
-    end
-  end
-end</code></pre></noscript></div>
-
-
-
 </div>
   
   
