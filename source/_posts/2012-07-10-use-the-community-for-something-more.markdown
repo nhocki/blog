@@ -26,7 +26,7 @@ But I would love to put all that lovin' to some "charity" work. Get real
 projects for people that need it. **It doesn't have to be 100% free**,
 but not charging nearly as much as you would normally do it!
 
-For example, I know a [Fire Fighter Department](http://www.bomberosenvigado.org/)
+For example, I know a [**Volonteer** Fire Fighter Department](http://www.bomberosenvigado.org/)
 that needs to build a simple learning system to distribute knowledge because
 **ignorance is taking a lot of lives** (from firefighters and people they're
 trying to save). Hell, they also need a new website!
