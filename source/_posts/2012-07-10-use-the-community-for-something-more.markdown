@@ -39,6 +39,10 @@ from the ones that are just learning. I've found that working on a real
 project is way better than learning on your backyard. So why not take something
 that could use more man-power and pair program on these websites?
 
+I'm not saying we should not have presentations! Presentations should still
+be the center of this. Sharing new stuff is the most important part for the
+community. But maybe having some _hackathons_ where we work on these projects.
+
 So, what do you think? Would something like this work? Would people be
 interested? Those organizations could, for example, sponsor the meetings
 giving some beer and food! Developing companies could also sponsor this
