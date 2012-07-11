@@ -135,6 +135,8 @@ class UserBasicPresenter
     @template = template
   end
 
+  # more methods ...
+
   def to_s
     @template.render partial: 'user/basic', object: self
   end

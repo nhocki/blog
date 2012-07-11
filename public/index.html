@@ -9,7 +9,8 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I updated my Xcode version this week and to my surprise they moved it from /Developer to /Applications/Xcode, the problem is that now all the &hellip;">
+  <meta name="description" content="For a while, this idea has been wondering around in my head. I would love to have some web-development community in Medellín, but I would
+like it to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +59,84 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/07/10/use-the-community-for-something-more/">Use the Community for Something More</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-10T23:25:00-04:00" pubdate data-updated="true">Jul 10<span>th</span>, 2012</time>
+        
+         | <a href="/2012/07/10/use-the-community-for-something-more/#disqus_thread" class="disquss_link">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>For a while, this idea has been wondering around in my head.</p>
+
+<p>I would love to have some web-development community in Medellín, but I would
+like it to be &#8220;something more&#8221;. I love the idea of learning from others,
+teaching and getting people involved. I know there are
+<a href="http://coffeegrid.org/">more people</a> that are looking forward for this.</p>
+
+<p>Sadly, we don&#8217;t have a community like the one in Boston. It&#8217;s amazing how
+many events there are here. <a href="http://bostonrb.org/">Boston.rb</a> meets up to
+3 times a month! It&#8217;s just crazy! You just need to go to
+<a href="http://www.meetup.com/">Meetup</a> to find an event of your interest! All
+filled with people eager to share and help!</p>
+
+<p>But I would love to put all that lovin&#8217; to some &#8220;charity&#8221; work. Get real
+projects for people that need it. <strong>It doesn&#8217;t have to be 100% free</strong>,
+but not charging nearly as much as you would normally do it!</p>
+
+<p>For example, I know a <a href="http://www.bomberosenvigado.org/">Fire Fighter Department</a>
+that needs to build a simple learning system to distribute knowledge because
+<strong>ignorance is taking a lot of lives</strong> (from firefighters and people they&#8217;re
+trying to save). Hell, they also need a new website!</p>
+
+<p>I also know about a guy that needs a website for an organization that helps
+small kids with cancer in Africa.</p>
+
+<p>All these projects could use the expertise of &#8220;old&#8221; developers and enthusiasm
+from the ones that are just learning. I&#8217;ve found that working on a real
+project is way better than learning on your backyard. So why not take something
+that could use more man-power and pair program on these websites?</p>
+
+<p>So, what do you think? Would something like this work? Would people be
+interested? Those organizations could, for example, sponsor the meetings
+giving some beer and food! Developing companies could also sponsor this
+and get some mention on the created websites. I know
+<a href="http://www.zinergia.co">we</a> would do it!</p>
+
+<p>I can&#8217;t do it right now. I&#8217;m 2.5K miles away! And I don&#8217;t think it&#8217;s an
+easy thing to organize, but I would like to know if people is actually
+interested before I throw myself sending emails and talking to people,
+so please contact me if you are, either by leaving a comment or
+<a href="http://twitter.com/nhocki">pinging me on Twitter(@nhocki)</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -179,6 +258,8 @@ class UserBasicPresenter
     @options  = options
     @template = template
   end
+
+  # more methods ...
 
   def to_s
     @template.render partial: 'user/basic', object: self
@@ -374,7 +455,7 @@ end
 #
 # We all hate helpers, but this time, they're useful.
 def admin_area(&amp;block)
-  content_tag :div, capture(&amp;block), class: 'admin'
+  content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
 end</code></pre></noscript></div>
 
 
@@ -818,50 +899,6 @@ end
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
 <p>I know there&#8217;s a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don&#8217;t like their syntax. I prefer Andres&#8217; approach much more, so maybe I&#8217;ll turn this into a really simple gem. Do you think it&#8217;s worth it?</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/">Algorithms Are on the Cutting Edge of Entrepreneurship.</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-09T00:00:00-05:00" pubdate data-updated="true">Nov 9<span>th</span>, 2011</time>
-        
-         | <a href="/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/#disqus_thread" class="disquss_link">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>Algorithms are on the cutting edge of entrepreneurship. If you&#8217;re talking
-about just re-implementing stuff that people did ten years ago, performance
-isn&#8217;t that important at some level. But, if you&#8217;re talking about doing stuff
-that nobody has done before, one of the reasons often that they haven&#8217;t done
-it is because it&#8217;s too time-consuming.</p></blockquote>
-
-<p>By Charles Leiserson</p>
 </div>
   
   

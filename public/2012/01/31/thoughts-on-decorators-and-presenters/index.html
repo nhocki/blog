@@ -156,7 +156,7 @@ end
 #
 # We all hate helpers, but this time, they're useful.
 def admin_area(&amp;block)
-  content_tag :div, capture(&amp;block), class: 'admin'
+  content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
 end</code></pre></noscript></div>
 
 
