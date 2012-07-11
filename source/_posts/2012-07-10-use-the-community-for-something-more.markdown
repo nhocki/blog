@@ -54,3 +54,5 @@ easy thing to organize, but I would like to know if people is actually
 interested before I throw myself sending emails and talking to people,
 so please contact me if you are, either by leaving a comment or
 [pinging me on Twitter(@nhocki)](http://twitter.com/nhocki).
+
+If you liked this idea, you might one to [up vote it in Hackernews](http://news.ycombinator.com/item?id=4227721).
