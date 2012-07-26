@@ -6,6 +6,7 @@ comments: false
 categories: 
   - mit
   - random thoughts
+  - management
 ---
 
 I have finished my first "working season" at [MIT](http://mit.edu). I got here
