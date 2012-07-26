@@ -2,7 +2,7 @@
 layout: post
 title: "Seriously just do it"
 date: 2012-07-26 01:07
-comments: false
+comments: true
 categories: 
   - mit
   - random thoughts
