@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails views | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails-views/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-07-26T16:44:28-04:00</updated>
+  <updated>2012-08-27T16:14:11-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Flexible and friendly layouts on rails]]></title>
     <link href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/"/>
-    <updated>2012-03-29T23:16:00-04:00</updated>
+    <updated>2012-03-29T23:16:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails</id>
     <content type="html"><![CDATA[<p>I've been working on a "new" project (I'm new to the project, the project itself is 'old') and at the beginning I had to edit a bunch of stuff in the views.</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: heroku, | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/heroku-/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-07-26T16:44:28-04:00</updated>
+  <updated>2012-08-27T16:14:11-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Transfer data from one Heroku app to another]]></title>
     <link href="http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another/"/>
-    <updated>2011-07-20T00:00:00-04:00</updated>
+    <updated>2011-07-20T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another</id>
     <content type="html"><![CDATA[<p>Today I needed to transfer all the data from one application (production
 environment) to another (staging environment).</p>

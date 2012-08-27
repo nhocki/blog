@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-07-26T16:44:28-04:00</updated>
+  <updated>2012-08-27T16:14:11-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Seriously just do it]]></title>
     <link href="http://blog.nhocki.com/2012/07/26/seriously-just-do-it/"/>
-    <updated>2012-07-26T01:07:00-04:00</updated>
+    <updated>2012-07-26T01:07:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/07/26/seriously-just-do-it</id>
     <content type="html"><![CDATA[<p>I have finished my first &#8220;working season&#8221; at <a href="http://mit.edu">MIT</a>. I got here
 on October 4. It&#8217;s been an amazing and weird journey.</p>
@@ -59,7 +59,7 @@ try it. <strong>Close this post and every other distracting thing and do somethi
   <entry>
     <title type="html"><![CDATA[Use the community for something more]]></title>
     <link href="http://blog.nhocki.com/2012/07/10/use-the-community-for-something-more/"/>
-    <updated>2012-07-10T23:25:00-04:00</updated>
+    <updated>2012-07-10T23:25:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/07/10/use-the-community-for-something-more</id>
     <content type="html"><![CDATA[<p>For a while, this idea has been wondering around in my head.</p>
 
@@ -114,7 +114,7 @@ so please contact me if you are, either by leaving a comment or
   <entry>
     <title type="html"><![CDATA[Fix Xcode Path]]></title>
     <link href="http://blog.nhocki.com/2012/05/09/fix-xcode-path/"/>
-    <updated>2012-05-09T19:38:00-04:00</updated>
+    <updated>2012-05-09T19:38:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/05/09/fix-xcode-path</id>
     <content type="html"><![CDATA[<p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here&#8217;s the easy solution for this:</p>
 
@@ -127,7 +127,7 @@ so please contact me if you are, either by leaving a comment or
   <entry>
     <title type="html"><![CDATA[Mixing Presenters and Helpers]]></title>
     <link href="http://blog.nhocki.com/2012/05/08/mixing-presenters-and-helpers/"/>
-    <updated>2012-05-08T18:28:00-04:00</updated>
+    <updated>2012-05-08T18:28:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/05/08/mixing-presenters-and-helpers</id>
     <content type="html"><![CDATA[<p>I just finished <a href="http://pragprog.com/book/warv/the-rails-view">The Rails View</a> and the best chapter for me was about presenters. I&#8217;ve been <a href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/">working with this</a> for a while and I have to admit I love the approach presented on the view.</p>
 
@@ -199,7 +199,7 @@ end</code></pre></noscript></div>
   <entry>
     <title type="html"><![CDATA[Flexible and friendly layouts on rails]]></title>
     <link href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/"/>
-    <updated>2012-03-29T23:16:00-04:00</updated>
+    <updated>2012-03-29T23:16:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails</id>
     <content type="html"><![CDATA[<p>I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I had to edit a bunch of stuff in the views.</p>
 
@@ -636,7 +636,7 @@ it is because it&#8217;s too time-consuming.</p></blockquote>
   <entry>
     <title type="html"><![CDATA[Compile assets and push them - no pain involved!]]></title>
     <link href="http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/"/>
-    <updated>2011-09-28T00:00:00-04:00</updated>
+    <updated>2011-09-28T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them&#8212;no-pain-involved</id>
     <content type="html"><![CDATA[<p>This week, I&#8217;ve been working on a side project with <a href="http://andr.esmejia.com/">Andrés
 Mejía</a> (<a href="http://twitter.com/andmej">@andmej</a>) and
@@ -715,7 +715,7 @@ end</code></pre></noscript></div>
   <entry>
     <title type="html"><![CDATA[Simple scrollbar synchronization with jQuery]]></title>
     <link href="http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery/"/>
-    <updated>2011-09-21T00:00:00-04:00</updated>
+    <updated>2011-09-21T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery</id>
     <content type="html"><![CDATA[<p>I&#8217;m working on a really cool project on my University. It&#8217;s a web application
 to compare book editions and help professors build what is know as the
@@ -756,7 +756,7 @@ elements, so it was an infinite loop.</p>
   <entry>
     <title type="html"><![CDATA[TimeHub, the first winner!]]></title>
     <link href="http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/"/>
-    <updated>2011-08-26T00:00:00-04:00</updated>
+    <updated>2011-08-26T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/08/26/timehub-the-first-winner</id>
     <content type="html"><![CDATA[<p>I just wanted to &#8220;personally&#8221; say thanks to everyone who voted for my entry on
 the <a href="http://rallyonrails.com">Rally on Rails</a> (Latinamerican Rails Rumble).</p>
@@ -782,7 +782,7 @@ myself.</p>
   <entry>
     <title type="html"><![CDATA[Upgrade to Rails 3.1 Quickfix]]></title>
     <link href="http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix/"/>
-    <updated>2011-08-24T00:00:00-04:00</updated>
+    <updated>2011-08-24T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix</id>
     <content type="html"><![CDATA[<p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
 
@@ -830,7 +830,7 @@ end</code></pre></noscript></div>
   <entry>
     <title type="html"><![CDATA[TimeHub 48 hours after]]></title>
     <link href="http://blog.nhocki.com/2011/08/24/timehub-48-hours-after/"/>
-    <updated>2011-08-24T00:00:00-04:00</updated>
+    <updated>2011-08-24T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/08/24/timehub-48-hours-after</id>
     <content type="html"><![CDATA[<p>As you may know, we created <strong><a href="http://timehub.net">Timehub</a></strong> in under 48
 hours for the Rally on Rails contest. I wanted to write this post because it&#8217;s
@@ -964,7 +964,7 @@ that!</strong></p>
   <entry>
     <title type="html"><![CDATA[TimeHub]]></title>
     <link href="http://blog.nhocki.com/2011/08/15/timehub/"/>
-    <updated>2011-08-15T00:00:00-04:00</updated>
+    <updated>2011-08-15T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/08/15/timehub</id>
     <content type="html"><![CDATA[<p>The <a href="http://rallyonrails.com">Rally on Rails</a> contest took place this weekend,
 we launched <a href="http://timehub.net">TimeHub</a>, a neat simple app to create
@@ -1028,7 +1028,7 @@ Commit Message [ t: 2h]
   <entry>
     <title type="html"><![CDATA[Transfer data from one Heroku app to another]]></title>
     <link href="http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another/"/>
-    <updated>2011-07-20T00:00:00-04:00</updated>
+    <updated>2011-07-20T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another</id>
     <content type="html"><![CDATA[<p>Today I needed to transfer all the data from one application (production
 environment) to another (staging environment).</p>
@@ -1061,7 +1061,7 @@ production database and then restore that backup in your staging database.</p>
   <entry>
     <title type="html"><![CDATA[Simply put, there’s almost no code worse than no code.]]></title>
     <link href="http://blog.nhocki.com/2011/03/28/simply-put-theres-almost-no-code-worse-than-no-code/"/>
-    <updated>2011-03-28T00:00:00-04:00</updated>
+    <updated>2011-03-28T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/03/28/simply-put-theres-almost-no-code-worse-than-no-code</id>
     <content type="html"><![CDATA[<blockquote><p>Simply put, there’s almost no code worse than no code.</p></blockquote>
 

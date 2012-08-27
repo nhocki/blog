@@ -4,7 +4,7 @@
   <title><![CDATA[Category: xcode | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/xcode/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-07-26T16:44:28-04:00</updated>
+  <updated>2012-08-27T16:14:11-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Fix Xcode Path]]></title>
     <link href="http://blog.nhocki.com/2012/05/09/fix-xcode-path/"/>
-    <updated>2012-05-09T19:38:00-04:00</updated>
+    <updated>2012-05-09T19:38:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/05/09/fix-xcode-path</id>
     <content type="html"><![CDATA[<p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here's the easy solution for this:</p>
 
