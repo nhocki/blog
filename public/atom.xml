@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-09-05T18:01:42-04:00</updated>
+  <updated>2012-09-05T18:15:53-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -30,7 +30,7 @@ template.</p>
 
 <p>The way you normally accomplish this is by using an <code>include</code> tag, but I needed
 a little bit more control. Not all the clients will have the same partials and
-I also wanted thee clients to be able to edit these partials.</p>
+I also wanted the clients to be able to edit these partials.</p>
 
 <p>So after reading the <a href="https://github.com/Shopify/liquid/blob/master/lib/liquid/tags/include.rb#L49-61" title="Liquid include source code">Liquid source code</a>, I found a really easy way to do
 this.</p>
