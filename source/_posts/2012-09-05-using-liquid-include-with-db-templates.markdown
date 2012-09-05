@@ -21,7 +21,7 @@ template.
 
 The way you normally accomplish this is by using an `include` tag, but I needed
 a little bit more control. Not all the clients will have the same partials and
-I also wanted thee clients to be able to edit these partials.
+I also wanted the clients to be able to edit these partials.
 
 So after reading the [Liquid source code][2], I found a really easy way to do
 this.
