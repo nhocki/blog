@@ -9,8 +9,8 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I have finished my first &#8220;working season&#8221; at MIT. I got here
-on October 4. It&#8217;s been an amazing and weird journey. But I have to &hellip;">
+  <meta name="description" content="I am working on a new application that will use some Liquid templates to
+allow our clients to edit some templates. We will store these templates in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,95 @@ on October 4. It&#8217;s been an amazing and weird journey. But I have to &helli
       
   <header>
     
+      <h1 class="entry-title"><a href="/2012/09/05/using-liquid-include-with-db-templates/">Using Liquid `include` With DB Templates</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-05T17:37:00-04:00" pubdate data-updated="true">Sep 5<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I am working on a new application that will use some <a href="http://liquidmarkup.org/" title="Liquid Markup">Liquid</a> templates to
+allow our clients to edit some templates.</p>
+
+<p>We will store these templates in the Database, load them, parse them and render
+them. So far, no magic.</p>
+
+<p>But, I needed to have some &#8220;partials&#8221; for these. I wanted some common elements
+(like image galleries) to be available for the client to use in that specific
+template.</p>
+
+<p>The way you normally accomplish this is by using an <code>include</code> tag, but I needed
+a little bit more control. Not all the clients will have the same partials and
+I also wanted thee clients to be able to edit these partials.</p>
+
+<p>So after reading the <a href="https://github.com/Shopify/liquid/blob/master/lib/liquid/tags/include.rb#L49-61" title="Liquid include source code">Liquid source code</a>, I found a really easy way to do
+this.</p>
+
+<p>You just need an object that responds to <code>read_template_file</code> and it can take
+1 or 2 arguments (please, go for 2). This method must return the Liquid <strong>source</strong>
+of the partial (not a parsed template).</p>
+
+<p>So, here&#8217;s a really simple one that will work:</p>
+
+<div><script src='https://gist.github.com/3645632.js?file='></script>
+<noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
+class LiquidTemplateSystem
+  attr_reader :user
+
+  def initialize(user)
+    @user = user
+  end
+
+  # Return a valid liquid template string
+  def read_template_file(template_path, context)
+    user.partials.find_by_name(template_path).liquid_source
+  end
+end
+
+
+# In the view:
+# This `template` has an {% include %} tag.
+&lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
+
+
+<h2>Default FileSystem</h2>
+
+<p>You could also set the default <code>FileSystem</code> with
+<code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
+want the partials to be shared on the database but not different for every user.</p>
+
+<h2>Any other way?</h2>
+
+<p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
+of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/2012/07/26/seriously-just-do-it/">Seriously Just Do It</a></h1>
     
     
@@ -81,7 +170,7 @@ on October 4. It&#8217;s been an amazing and weird journey. But I have to &helli
   
 
 
-<time datetime="2012-07-26T01:07:00-05:00" pubdate data-updated="true">Jul 26<span>th</span>, 2012</time>
+<time datetime="2012-07-26T01:07:00-04:00" pubdate data-updated="true">Jul 26<span>th</span>, 2012</time>
         
       </p>
     
@@ -151,7 +240,7 @@ try it. <strong>Close this post and every other distracting thing and do somethi
   
 
 
-<time datetime="2012-07-10T23:25:00-05:00" pubdate data-updated="true">Jul 10<span>th</span>, 2012</time>
+<time datetime="2012-07-10T23:25:00-04:00" pubdate data-updated="true">Jul 10<span>th</span>, 2012</time>
         
       </p>
     
@@ -233,7 +322,7 @@ so please contact me if you are, either by leaving a comment or
   
 
 
-<time datetime="2012-05-09T19:38:00-05:00" pubdate data-updated="true">May 9<span>th</span>, 2012</time>
+<time datetime="2012-05-09T19:38:00-04:00" pubdate data-updated="true">May 9<span>th</span>, 2012</time>
         
       </p>
     
@@ -273,7 +362,7 @@ so please contact me if you are, either by leaving a comment or
   
 
 
-<time datetime="2012-05-08T18:28:00-05:00" pubdate data-updated="true">May 8<span>th</span>, 2012</time>
+<time datetime="2012-05-08T18:28:00-04:00" pubdate data-updated="true">May 8<span>th</span>, 2012</time>
         
       </p>
     
@@ -372,7 +461,7 @@ end</code></pre></noscript></div>
   
 
 
-<time datetime="2012-03-29T23:16:00-05:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
+<time datetime="2012-03-29T23:16:00-04:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
         
       </p>
     
@@ -851,44 +940,6 @@ end
 <p>Combining <code>presenters</code> and <code>form builders</code> will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.</p>
 
 <p>You&#8217;ll be amazed how different you&#8217;ll feel when reading some old code or some co-worker&#8217;s code.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/12/06/but-free-web-services-are-not-like-free-software/">But Free Web Services Are Not Like Free Software</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-06T00:00:00-05:00" pubdate data-updated="true">Dec 6<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in. If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode.</p></blockquote>
-
-<p>Don&#8217;t be a Free User - <a href="http://blog.pinboard.in/2011/12/don_t_be_a_free_user/">Pinboard Blog</a></p>
 </div>
   
   

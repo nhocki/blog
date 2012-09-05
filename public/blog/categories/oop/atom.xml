@@ -4,7 +4,7 @@
   <title><![CDATA[Category: oop | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/oop/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-08-27T16:14:11-05:00</updated>
+  <updated>2012-09-05T18:01:42-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Mixing Presenters and Helpers]]></title>
     <link href="http://blog.nhocki.com/2012/05/08/mixing-presenters-and-helpers/"/>
-    <updated>2012-05-08T18:28:00-05:00</updated>
+    <updated>2012-05-08T18:28:00-04:00</updated>
     <id>http://blog.nhocki.com/2012/05/08/mixing-presenters-and-helpers</id>
     <content type="html"><![CDATA[<p>I just finished <a href="http://pragprog.com/book/warv/the-rails-view">The Rails View</a> and the best chapter for me was about presenters. I've been <a href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/">working with this</a> for a while and I have to admit I love the approach presented on the view.</p>
 

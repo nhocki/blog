@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: rails views - Nicolás Hock Isaza</title>
+  <title>Using Liquid `include` with DB templates - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="Category: rails views">
+  <meta name="description" content="I am working on a new application that will use some Liquid templates to
+allow our clients to edit some templates. We will store these templates in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.comblog/categories/rails-views">
+  <link rel="canonical" href="http://blog.nhocki.com/2012/09/05/using-liquid-include-with-db-templates">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -57,59 +58,113 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Rails Views</h1>
+    
+      <h1 class="entry-title">Using Liquid `include` With DB Templates</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-05T17:37:00-04:00" pubdate data-updated="true">Sep 5<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>I am working on a new application that will use some <a href="http://liquidmarkup.org/" title="Liquid Markup">Liquid</a> templates to
+allow our clients to edit some templates.</p>
 
-  
-  <h2>2012</h2>
+<p>We will store these templates in the Database, load them, parse them and render
+them. So far, no magic.</p>
 
-<article class="post">
-  
-<h1><a href="/2012/09/05/using-liquid-include-with-db-templates/">Using Liquid `include` with DB templates</a></h1>
-<time datetime="2012-09-05T17:37:00-04:00" pubdate><span class='month'>Sep</span> <span class='day'>05</span> <span class='year'>2012</span></time>
+<p>But, I needed to have some &#8220;partials&#8221; for these. I wanted some common elements
+(like image galleries) to be available for the client to use in that specific
+template.</p>
 
-<div>
-  <span class="categories">posted in <a class='category' href='/blog/categories/liquid/'>liquid</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rails-views/'>rails views</a></span>
+<p>The way you normally accomplish this is by using an <code>include</code> tag, but I needed
+a little bit more control. Not all the clients will have the same partials and
+I also wanted thee clients to be able to edit these partials.</p>
+
+<p>So after reading the <a href="https://github.com/Shopify/liquid/blob/master/lib/liquid/tags/include.rb#L49-61" title="Liquid include source code">Liquid source code</a>, I found a really easy way to do
+this.</p>
+
+<p>You just need an object that responds to <code>read_template_file</code> and it can take
+1 or 2 arguments (please, go for 2). This method must return the Liquid <strong>source</strong>
+of the partial (not a parsed template).</p>
+
+<p>So, here&#8217;s a really simple one that will work:</p>
+
+<div><script src='https://gist.github.com/3645632.js?file='></script>
+<noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
+class LiquidTemplateSystem
+  attr_reader :user
+
+  def initialize(user)
+    @user = user
+  end
+
+  # Return a valid liquid template string
+  def read_template_file(template_path, context)
+    user.partials.find_by_name(template_path).liquid_source
+  end
+end
+
+
+# In the view:
+# This `template` has an {% include %} tag.
+&lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
+
+
+<h2>Default FileSystem</h2>
+
+<p>You could also set the default <code>FileSystem</code> with
+<code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
+want the partials to be shared on the database but not different for every user.</p>
+
+<h2>Any other way?</h2>
+
+<p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
+of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
 </div>
 
 
+  <footer>
+    <p class="meta">
+      
+
+<span class="categories">
+  Posted under: 
+  
+    <a class='category' href='/blog/categories/liquid/'>liquid</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rails-views/'>rails views</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta posts">
+      
+        <a class="basic-alignment left" href="/2012/07/26/seriously-just-do-it/" title="Previous Post: Seriously just do it">&laquo; Seriously just do it</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
-
-
-<article class="post">
-  
-<h1><a href="/2012/03/29/flexible-and-friendly-layouts-on-rails/">Flexible and friendly layouts on rails</a></h1>
-<time datetime="2012-03-29T23:16:00-04:00" pubdate><span class='month'>Mar</span> <span class='day'>29</span> <span class='year'>2012</span></time>
-
-<div>
-  <span class="categories">posted in <a class='category' href='/blog/categories/html/'>html</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rails-views/'>rails views</a></span>
 </div>
-
-
-</article>
-
-</div>
-
-  
-</article>
-
-</div>
-
-<aside class="sidebar">
-  
-    
-  
-</aside>
-
 
     </div>
   </div>

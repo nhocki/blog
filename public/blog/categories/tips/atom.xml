@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tips | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/tips/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-08-27T16:14:11-05:00</updated>
+  <updated>2012-09-05T18:01:42-04:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Upgrade to Rails 3.1 Quickfix]]></title>
     <link href="http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix/"/>
-    <updated>2011-08-24T00:00:00-05:00</updated>
+    <updated>2011-08-24T00:00:00-04:00</updated>
     <id>http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix</id>
     <content type="html"><![CDATA[<p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
 
@@ -64,7 +64,7 @@ end</code></pre></noscript></div>
   <entry>
     <title type="html"><![CDATA[Transfer data from one Heroku app to another]]></title>
     <link href="http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another/"/>
-    <updated>2011-07-20T00:00:00-05:00</updated>
+    <updated>2011-07-20T00:00:00-04:00</updated>
     <id>http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another</id>
     <content type="html"><![CDATA[<p>Today I needed to transfer all the data from one application (production
 environment) to another (staging environment).</p>
