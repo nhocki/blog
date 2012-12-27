@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-09-21T00:50:54-04:00</updated>
+  <updated>2012-12-27T17:05:21-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -12,6 +12,61 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Reverse a list in O(n)]]></title>
+    <link href="http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/"/>
+    <updated>2012-12-27T16:53:00-05:00</updated>
+    <id>http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n</id>
+    <content type="html"><![CDATA[<p>For about a year, I&#8217;ve always had a question I ask someone I&#8217;m interviewing for
+a programming position. I&#8217;ve asked this around 3 times and got some nice
+answers, but I had never implemented it. The question is really simple:</p>
+
+<p><strong>Given a linked list, how would you reverse it in <code>O(n)</code>?</strong></p>
+
+<p>Here&#8217;s my solution:</p>
+
+<div><script src='https://gist.github.com/4392454.js?file='></script>
+<noscript><pre><code>Node = Struct.new(:id, :next)
+
+# Build the list
+first = Node.new(1, nil)
+nodes = 10.times.map{|x| Node.new(x + 2, nil)}
+nodes.each_with_index{|node, index| node.next = nodes[index + 1] }
+first.next = nodes.first
+
+def reverse_list(node)
+  prox = node.next  # Get the next node on the list.
+  node.next = nil   # Make the new tail point to nil (end of the new list).
+
+  last = node       # Save that new tail on a tmp variable (to point to it later)
+  node = prox       # Change the `current` node to the `next` one. Move ahead.
+
+  while node          # If I'm not at the end of the list.
+    prox = node.next  # Save the next node on the original list.
+    node.next = last  # Reverse the list (point back from `current`)
+    last = node       # Save the current node to point later.
+    node = prox       # Move ahead once.
+  end
+  last
+end
+
+def print_list(node)
+  while node
+    puts node.id
+    node = node.next
+  end
+end
+
+print_list(first)
+puts &quot;\n&quot;
+print_list(reverse_list(first))
+</code></pre></noscript></div>
+
+
+<p>How would you do it? I&#8217;d love to hear it on <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using Liquid `include` with DB templates]]></title>
@@ -140,12 +195,12 @@ filled with people eager to share and help!</p>
 projects for people that need it. <strong>It doesn&#8217;t have to be 100% free</strong>,
 but not charging nearly as much as you would normally do it!</p>
 
-<p>For example, I know a <a href="http://www.bomberosenvigado.org/"><strong>Volonteer</strong> Fire Fighter Department</a>
+<p>For example, I know a <a href="http://www.bomberosenvigado.org/"><strong>Volunteer</strong> Fire Fighter Department</a>
 that needs to build a simple learning system to distribute knowledge because
 <strong>ignorance is taking a lot of lives</strong> (from firefighters and people they&#8217;re
 trying to save). Hell, they also need a new website!</p>
 
-<p>I also know about a guy that needs a website for an organization that helps
+<p>I also know about a guy that needs a website for an organisation that helps
 small kids with cancer in Africa.</p>
 
 <p>All these projects could use the expertise of &#8220;old&#8221; developers and enthusiasm
@@ -1084,39 +1139,6 @@ Commit Message [ t: 2h]
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Transfer data from one Heroku app to another]]></title>
-    <link href="http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another/"/>
-    <updated>2011-07-20T00:00:00-04:00</updated>
-    <id>http://blog.nhocki.com/2011/07/20/transfer-data-from-one-heroku-app-to-another</id>
-    <content type="html"><![CDATA[<p>Today I needed to transfer all the data from one application (production
-environment) to another (staging environment).</p>
-
-<p>I&#8217;m pretty aware that the <a href="https://rubygems.org/gems/taps">taps gem</a> exists
-(which is great btw, and I use to pull the data from the production
-environment to my development environment), but the problem with the taps gem
-is that a table with a lot of data and some indexes will take a while to
-migrate.</p>
-
-<p>I guess it was my lucky day because <a href="http://thoughtbot.com/">Thoughtbot</a>
-<a href="https://twitter.com/thoughtbot/status/92957355330904064">tweeted</a> with
-exactly what I needed. Turns out that using the <a href="http://addons.heroku.com/pgbackups">PG Backups
-addon</a> it&#8217;s really easy and fast!</p>
-
-<div><script src='https://gist.github.com/1089598.js?file='></script>
-<noscript><pre><code>heroku addons:add pgbackups --remote staging
-heroku addons:add pgbackups --remote production
-heroku pgbackups:capture --remote production
-heroku pgbackups:restore DATABASE `heroku pgbackups:url --remote production` --remote staging</code></pre></noscript></div>
-
-
-<p>That&#8217;s all you need! Those 4 lines (actually, the last 2) will backup your
-production database and then restore that backup in your staging database.</p>
-
-<p>Here is the <a href="https://gist.github.com/1089598">original gist</a>.</p>
 ]]></content>
   </entry>
   

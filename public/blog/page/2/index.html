@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and &hellip;">
+  <meta name="description" content="There&#8217;s been a lot of talk aboutdecorators and presenters (which are almost the same) in Rails and how they help you with a &#8220;real&#8221; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -61,6 +61,151 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/01/10/simple-presenters--decorators-on-rails/">Simple Presenters & Decorators on Rails</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-10T00:00:00-05:00" pubdate data-updated="true">Jan 10<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There&#8217;s been a <a href="http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design">lot</a> of <a href="http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters">talk</a> <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">about</a><a href="http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in">decorators</a> and <a href="http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators">presenters</a> (<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">which are almost the same</a>) in Rails and how they help you with a &#8220;real&#8221; OO code. There are great gems and there&#8217;s even a <a href="http://railscasts.com/episodes/287-presenters-from-scratch">Railscast</a> (pro) on how to build a presenter from scratch. But, in the new project I&#8217;m working on, we (&lt;- <a href="https://github.com/febuiles">he</a>) has this <strong>really</strong> simple setup which I feel kind of cleaner.</p>
+
+<p>What we wanted to have was a <code>present</code> method in the controller and build the view from its methods. So, we created an <a href="http://api.rubyonrails.org/classes/ActiveSupport/Concern.html">ActiveSupport::Concern</a> called <code>Presentable</code> and included it in our application controller. Here&#8217;s our (once again, his) code for that module.</p>
+
+<div><script src='https://gist.github.com/1592754.js?file=presentable.rb'></script>
+<noscript><pre><code># app/concerns/controllers/presentable.rb
+
+# Presentable Concern
+# Include this module in the controllers where
+# you need the `present` method.
+module Presentable
+  # This method returns a Presenter Object to work
+  # with in the view.
+  #
+  # Attributes:
+  #   object:   The object to present
+  #
+  # Supported Options
+  #    as:   The presenter class. If this is not suplied 
+  #          the method will try to guess the class
+  #          e.g: UserPresenter for a User object.
+  def present(object, options = { })
+    if object.respond_to?(:first)
+      return [] if object.empty?
+      presenter = &quot;#{object.first.class.to_s.pluralize}Presenter&quot;
+    else
+      presenter = &quot;#{object.class}Presenter&quot;
+    end
+
+    presenter = options.fetch(:as) { eval(presenter) }
+    presenter.new(object)
+  end
+end
+</code></pre></noscript></div>
+
+
+<p>Now, we just need to create each presenter. But, since there&#8217;s a lot of shared logic between presenters we (he) just created a parent <code>Presenter class</code> with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you <code>method missing</code>) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&#8217;s our <code>Presenter base class</code>.</p>
+
+<div><script src='https://gist.github.com/1592754.js?file=presenter.rb'></script>
+<noscript><pre><code># Base presenter class
+# All presenters should inherit from this one.
+class Presenter
+  # Include all the modules you need or
+  # send the view context to access rails helpers.
+  include Rails.application.routes.url_helpers
+  # ...
+
+  include Presentable
+
+  attr_reader :record
+
+  def initialize(record)
+    @record = record
+    @klass = record.class
+  end
+
+  def method_missing(name, *arguments, &amp;block)
+    super unless record.respond_to?(name)
+    record.send(name, *arguments, &amp;block)
+  end
+
+  def translate_field_name(name)
+    @klass.human_attribute_name(name)
+  end
+
+  # UrlHelper was being an ass, easier to go commando.
+  def link_to(name, url, options={})
+    href = { :href =&gt; url }
+    content_tag(:a, name, options.merge(href))
+  end
+end
+</code></pre></noscript></div>
+
+
+<p>Then, we just need to inherit from the <code>Presenter</code> class and add our custom, clean methods. Using <code>delegate and method missing</code> will help us keep the class clean. I won&#8217;t show you a presenter here, they&#8217;ll look a lot like Ryan&#8217;s one in his Railscasts so check that out first.</p>
+
+<p>I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&#8217;s 1 of them:</p>
+
+<div><script src='https://gist.github.com/1592754.js?file=requests_controller.rb'></script>
+<noscript><pre><code>class RequestsController &lt; ApplicationController
+  expose(:filter) { params.fetch(:filter) { :all} }
+  expose(:filtered_requests) { Request.filter(filter) }
+  expose(:requests) { present(filtered_requests) }
+
+  before_filter :find_request, :only =&gt; [:show, :destroy]
+
+  def index
+  end
+
+  def show
+    extend(RequestRedirector) # Another concern
+    redirect_to_request
+  end
+
+  def destroy
+    @request.destroy
+    redirect_to requests_path(:filter =&gt; &quot;new_requests&quot;), :notice =&gt; &quot;Se ha eliminado la solicitud&quot;
+  end
+
+  private
+  def find_request
+    @request = Request.find(params[:id])
+  end
+end
+</code></pre></noscript></div>
+
+
+<p>Combining <code>presenters</code> and <code>form builders</code> will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.</p>
+
+<p>You&#8217;ll be amazed how different you&#8217;ll feel when reading some old code or some co-worker&#8217;s code.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -755,66 +900,6 @@ Commit Message [ t: 2h]
 
 
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/07/20/transfer-data-from-one-heroku-app-to-another/">Transfer Data From One Heroku App to Another</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-20T00:00:00-04:00" pubdate data-updated="true">Jul 20<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today I needed to transfer all the data from one application (production
-environment) to another (staging environment).</p>
-
-<p>I&#8217;m pretty aware that the <a href="https://rubygems.org/gems/taps">taps gem</a> exists
-(which is great btw, and I use to pull the data from the production
-environment to my development environment), but the problem with the taps gem
-is that a table with a lot of data and some indexes will take a while to
-migrate.</p>
-
-<p>I guess it was my lucky day because <a href="http://thoughtbot.com/">Thoughtbot</a>
-<a href="https://twitter.com/thoughtbot/status/92957355330904064">tweeted</a> with
-exactly what I needed. Turns out that using the <a href="http://addons.heroku.com/pgbackups">PG Backups
-addon</a> it&#8217;s really easy and fast!</p>
-
-<div><script src='https://gist.github.com/1089598.js?file='></script>
-<noscript><pre><code>heroku addons:add pgbackups --remote staging
-heroku addons:add pgbackups --remote production
-heroku pgbackups:capture --remote production
-heroku pgbackups:restore DATABASE `heroku pgbackups:url --remote production` --remote staging</code></pre></noscript></div>
-
-
-<p>That&#8217;s all you need! Those 4 lines (actually, the last 2) will backup your
-production database and then restore that backup in your staging database.</p>
-
-<p>Here is the <a href="https://gist.github.com/1089598">original gist</a>.</p>
 </div>
   
   
