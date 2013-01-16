@@ -4,7 +4,7 @@
   <title><![CDATA[Category: bundler | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/bundler/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:51:49-05:00</updated>
+  <updated>2013-01-15T22:54:24-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -27,8 +27,8 @@ of <a href="http://semver.org/" title="SemVer: Semantic Versioning">SemVer</a> a
 update applications without pain. And, with all this rails vulnerabilities,
 you need just that.</p>
 
-<p>But, since people don't always have the versions on their <code>Gemfile</code>, this can get
-a little messy. So, I've created a simple gem to help you with that.</p>
+<p>But, since people don't always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
+a little messy</a>. So, I've created a simple gem to help you with that.</p>
 
 <h3>Welcome version_gemfile</h3>
 
