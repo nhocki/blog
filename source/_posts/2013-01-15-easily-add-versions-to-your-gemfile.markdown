@@ -18,8 +18,8 @@ of [SemVer][5] and pessimistic locking (the `~>`). This will allow you to
 update applications without pain. And, with all this rails vulnerabilities,
 you need just that.
 
-But, since people don't always have the versions on their `Gemfile`, this can get
-a little messy. So, I've created a simple gem to help you with that.
+But, since people don't always have the versions on their `Gemfile`, [this can get
+a little messy][8]. So, I've created a simple gem to help you with that.
 
 ### Welcome version_gemfile
 
@@ -44,3 +44,4 @@ or ping me on [Twitter][7].
 [5]: http://semver.org/ "SemVer: Semantic Versioning"
 [6]: https://github.com/nhocki/version_gemfile "Version Gemfile source code"
 [7]: https://twitter.com/nhocki "My twitter profile"
+[8]: http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html "Rails 4 and your Gemfile"
