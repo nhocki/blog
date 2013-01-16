@@ -18,4 +18,6 @@ Here's my solution:
 
 {% gist 4392454 %}
 
-How would you do it? I'd love to hear it on [Twitter @nhocki](https://twitter.com/nhocki)
+How would you do it? There's a really simple solution using a queue, but if you
+find another one, I'd love to hear about it on
+[Twitter @nhocki](https://twitter.com/nhocki)
