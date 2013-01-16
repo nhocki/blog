@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Reverse a list in O(n) - Nicolás Hock Isaza</title>
+  <title>Category: bundler - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="For about a year, I&#8217;ve always had a question I ask someone I&#8217;m interviewing for
-a programming position. I&#8217;ve asked this around 3 &hellip;">
+  <meta name="description" content="Category: bundler">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ a programming position. I&#8217;ve asked this around 3 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n">
+  <link rel="canonical" href="http://blog.nhocki.comblog/categories/bundler">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -61,121 +60,45 @@ a programming position. I&#8217;ve asked this around 3 &hellip;">
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Reverse a List in O(n)</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-27T16:53:00-05:00" pubdate data-updated="true">Dec 27<span>th</span>, 2012</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Bundler</h1>
     
   </header>
-
-
-<div class="entry-content"><p>For about a year, I&#8217;ve always had a question I ask someone I&#8217;m interviewing for
-a programming position. I&#8217;ve asked this around 3 times and got some nice
-answers, but I had never implemented it. The question is really simple:</p>
-
-<p><strong>Given a linked list, how would you reverse it in <code>O(n)</code>?</strong></p>
-
-<p>Here&#8217;s my solution:</p>
-
-<div><script src='https://gist.github.com/4392454.js?file='></script>
-<noscript><pre><code>Node = Struct.new(:id, :next)
-
-# Build the list
-first = Node.new(1, nil)
-nodes = 10.times.map{|x| Node.new(x + 2, nil)}
-nodes.each_with_index{|node, index| node.next = nodes[index + 1] }
-first.next = nodes.first
-
-def reverse_list(node)
-  prox = node.next  # Get the next node on the list.
-  node.next = nil   # Make the new tail point to nil (end of the new list).
-
-  last = node       # Save that new tail on a tmp variable (to point to it later)
-  node = prox       # Change the `current` node to the `next` one. Move ahead.
-
-  while node          # If I'm not at the end of the list.
-    prox = node.next  # Save the next node on the original list.
-    node.next = last  # Reverse the list (point back from `current`)
-    last = node       # Save the current node to point later.
-    node = prox       # Move ahead once.
-  end
-  last
-end
-
-def print_list(node)
-  while node
-    puts node.id
-    node = node.next
-  end
-end
-
-print_list(first)
-puts &quot;\n&quot;
-print_list(reverse_list(first))
-</code></pre></noscript></div>
-
-
-<p>How would you do it? There&#8217;s a really simple solution using a queue, but if you
-find another one, I&#8217;d love to hear about it on
-<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
-</div>
-
-
-  <footer>
-    <div class="sharing">
-  <span class='st_twitter' displayText=''></span>
-  <span class='st_facebook' displayText=''></span>
-  <span class='st_instapaper' displayText=''></span>
-  <span class='st_googleplus' displayText=''></span>
-  <span class='st_email' displayText=''></span>
-</div>
-
-
-    
-
-<div class="categories">
-  Posted under:
   
-    <a class='category' href='/blog/categories/algorithms/'>algorithms</a>, <a class='category' href='/blog/categories/programming/'>programming</a>
+  <div id="blog-archives" class="category">
+
+
+
   
+  <h2>2013</h2>
+
+<article class="post">
+  
+<h1><a href="/2013/01/15/easily-add-versions-to-your-gemfile/">Easily add versions to your Gemfile</a></h1>
+<time datetime="2013-01-15T22:31:00-05:00" pubdate><span class='month'>Jan</span> <span class='day'>15</span> <span class='year'>2013</span></time>
+
+<div>
+  <span class="categories">posted in <a class='category' href='/blog/categories/bundler/'>bundler</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a></span>
 </div>
 
 
-
-    <div class='clear'></div>
-
-
-    <p class="meta posts">
-      
-        <a class="basic-alignment left" href="/2012/09/05/using-liquid-include-with-db-templates/" title="Previous Post: Using Liquid `include` with DB templates">&laquo; Using Liquid `include` with DB templates</a>
-      
-      
-        <a class="basic-alignment right" href="/2013/01/15/easily-add-versions-to-your-gemfile/" title="next Post: Easily add versions to your Gemfile">Easily add versions to your Gemfile &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
 </div>
+
+  
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
 
     </div>
   </div>

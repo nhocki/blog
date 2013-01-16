@@ -4,7 +4,7 @@
   <title><![CDATA[Category: algorithms | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/algorithms/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2012-12-27T17:05:21-05:00</updated>
+  <updated>2013-01-15T22:51:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -64,7 +64,9 @@ print_list(reverse_list(first))
 </code></pre></noscript></div>
 </p>
 
-<p>How would you do it? I'd love to hear it on <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
+<p>How would you do it? There's a really simple solution using a queue, but if you
+find another one, I'd love to hear about it on
+<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 ]]></content>
   </entry>
   

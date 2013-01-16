@@ -9,8 +9,9 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="For about a year, I&#8217;ve always had a question I ask someone I&#8217;m interviewing for
-a programming position. I&#8217;ve asked this around 3 &hellip;">
+  <meta name="description" content="Since bundler came out, managing dependencies
+on ruby applications has been amazing. Combined with some bootstrap script,
+it&#8217;s really easy to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -62,6 +63,79 @@ a programming position. I&#8217;ve asked this around 3 &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/01/15/easily-add-versions-to-your-gemfile/">Easily Add Versions to Your Gemfile</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-15T22:31:00-05:00" pubdate data-updated="true">Jan 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Since <a href="http://gembundler.com/" title="Bundler">bundler</a> came out, managing dependencies
+on ruby applications has been amazing. Combined with <a href="http://37signals.com/svn/posts/2998-setting-up-a-new-machine-for-ruby-development" title="37 Signals bootstrap script">some</a> <a href="http://zachholman.com/talk/unsucking-your-teams-development-environment/" title="Zach Holman's talk on development environment">bootstrap</a> <a href="http://ngauthier.com/2012/08/one-click-development.html" title="One click development">script</a>,
+it&#8217;s really easy to download some source code, install, and run an application.</p>
+
+<p>There is still some room for improvement though. I&#8217;ve always supported the use
+of <a href="http://semver.org/" title="SemVer: Semantic Versioning">SemVer</a> and pessimistic locking (the <code>~&gt;</code>). This will allow you to
+update applications without pain. And, with all this rails vulnerabilities,
+you need just that.</p>
+
+<p>But, since people don&#8217;t always have the versions on their <code>Gemfile</code>, this can get
+a little messy. So, I&#8217;ve created a simple gem to help you with that.</p>
+
+<h3>Welcome version_gemfile</h3>
+
+<ul>
+<li><ol>
+<li>Simply install it: <code>$ gem install version_gemfile</code></li>
+</ol>
+</li>
+<li><ol>
+<li>Go to your rails application: <code>$ cd ~/my/ruby/application</code></li>
+</ol>
+</li>
+<li><ol>
+<li>And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
+</ol>
+</li>
+</ul>
+
+
+<h2>How does it work?</h2>
+
+<p>This gem will go through each line in your <code>Gemfile</code> looking for dependencies
+that have no versions. Then, will look into your <code>Gemfile.lock</code> for the version
+you are currently using and add a pessimistic lock on that version.</p>
+
+<p>The code can be found on <a href="https://github.com/nhocki/version_gemfile" title="Version Gemfile source code">Github</a>. If you have any problems, open an issue there
+or ping me on <a href="https://twitter.com/nhocki" title="My twitter profile">Twitter</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -137,7 +211,9 @@ print_list(reverse_list(first))
 </code></pre></noscript></div>
 
 
-<p>How would you do it? I&#8217;d love to hear it on <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
+<p>How would you do it? There&#8217;s a really simple solution using a queue, but if you
+find another one, I&#8217;d love to hear about it on
+<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 </div>
   
   
@@ -757,129 +833,6 @@ end</code></pre></noscript></div>
 
 
 <p>I&#8217;ll probably post more about Octopress when I get to know it better. There are a bunch of plugins and stuff that may be useful, or maybe, it&#8217;ll suck and I&#8217;ll have to go and find something else!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/22/beautiful-urls-in-rails-the-easy-way/">Beautiful URLs in Rails. The Easy Way.</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-22T00:00:00-05:00" pubdate data-updated="true">Jan 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&#8217;ve always been in love with <a href="http://warpspire.com/posts/url-design/">beautiful URL design</a>. Specially for &#8216;public&#8217; parts of the site. In Rails, it&#8217;s pretty common to use the ID of the object in the URL. Well, that <strong>really</strong> sucks.</p>
-
-<p>My first approach to solve this problem was started by <a href="http://mheroin.com/">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It&#8217;s really easy to use and will (up to some point) solve the problem. I know <a href="http://rubygems.org/gems/friendly_id">FriendlyID</a> exists, but I <em>hate</em> having the permalink field in my database (I <em>always</em> forget it) so that&#8217;s why I like Make Permalink&#8217;s approach.</p>
-
-<div><script src='https://gist.github.com/1660555.js?file=make_permalink_example.rb'></script>
-<noscript><pre><code>class Post &lt; ActiveRecord::Base
-  make_permalink :title
-
-  # Override this method to have nice looking
-  # URLs. You still use `Post.find` in the controller
-  # and will get URL like this:
-  #
-  #    /posts/1-look-mom-i-rock
-  def to_param
-    permalink
-  end
-end
-</code></pre></noscript></div>
-
-
-<p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don&#8217;t have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
-
-<p>I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have <em><strong>just</strong></em> the username. I said, well, why don&#8217;t you just change the <code>to_param</code> method to return the username and use <code>User.find_by_username</code> everywhere?</p>
-
-<p>Even though this actually works, I would be very tired from writing <code>find_by_username</code> over and over again. So I told him to write a <code>fetch</code> method where he could get an user either by the <code>id</code> or the <code>username</code>. I think this is pretty convenient and nice, but I would <em><strong>hate</strong></em> to write that fetch method in every model. So, with some metaprogramming we can easily do this.</p>
-
-<p>First, I&#8217;ve created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won&#8217;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&#8217;s ok. Here&#8217;s the code. Place it in your initializers folder.</p>
-
-<div><script src='https://gist.github.com/1657758.js?file='></script>
-<noscript><pre><code># config/initializers/fetchable.rb
-
-# encoding: UTF-8
-
-module Extensions
-  module Fetchable
-    # Adding `fetchable_on` to a model will define the `fetch` method
-    # that will allow you to query that model with the `attribute` or `id`.
-    #
-    # Having the following:
-    #
-    #    class User &lt;&lt; ActiveRecord::Base
-    #      fetchable_on :username
-    #    end
-    #
-    # Will let you fetch users by username or id.
-    #
-    #    User.fetch('nhocki').id # =&gt; 1
-    #    User.fetch(1).username # =&gt; nhocki
-    def fetchable_on(attribute)
-      define_singleton_method(&quot;fetch&quot;) do |*args|
-        looked_value = args.shift
-        begin
-          find(looked_value.to_i, *args)
-        rescue ActiveRecord::RecordNotFound
-          send(&quot;find_by_#{attribute}!&quot;, looked_value.to_s, *args)
-        end
-      end
-    end
-  end
-end
-
-ActiveRecord::Base.extend(Extensions::Fetchable)</code></pre></noscript></div>
-
-
-<p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it&#8217;ll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here&#8217;s an example:</p>
-
-<div><script src='https://gist.github.com/1660555.js?file=fetchable_example.rb'></script>
-<noscript><pre><code>class User &lt; ActiveRecord::Base
-  fetchable_on :username
-
-  # URL Style: /users/nhocki
-  def to_param
-    username
-  end
-end
-
-# Gives you the `fetch` method.
-# It takes the username or the id.
-# Use fetch in your controller
-
-User.fetch('nhocki').id # =&gt; 1
-User.fetch(1).username  # =&gt; 'nhocki'
-</code></pre></noscript></div>
-
-
-<p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there&#8217;s no object in the DB.</strong></p>
-
-<p>How would you implement this? Any good solutions?</p>
 </div>
   
   

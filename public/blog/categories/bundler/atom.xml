@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: ruby | Nicolás Hock Isaza]]></title>
-  <link href="http://blog.nhocki.com/blog/categories/ruby/atom.xml" rel="self"/>
+  <title><![CDATA[Category: bundler | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/bundler/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
   <updated>2013-01-15T22:51:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
@@ -56,45 +56,6 @@ you are currently using and add a pessimistic lock on that version.</p>
 
 <p>The code can be found on <a href="https://github.com/nhocki/version_gemfile" title="Version Gemfile source code">Github</a>. If you have any problems, open an issue there
 or ping me on <a href="https://twitter.com/nhocki" title="My twitter profile">Twitter</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Colorize your rake output]]></title>
-    <link href="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/"/>
-    <updated>2011-11-30T00:00:00-05:00</updated>
-    <id>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output</id>
-    <content type="html"><![CDATA[<p>I've been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I'm writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here's my module right now…</p>
-
-<p><div><script src='https://gist.github.com/1410582.js?file='></script>
-<noscript><pre><code>module Colors
-  def colorize(text, color_code)
-    &quot;\033[#{color_code}m#{text}\033[0m&quot;
-  end
-
-  {
-    :black    =&gt; 30,
-    :red      =&gt; 31,
-    :green    =&gt; 32,
-    :yellow   =&gt; 33,
-    :blue     =&gt; 34,
-    :magenta  =&gt; 35,
-    :cyan     =&gt; 36,
-    :white    =&gt; 37
-  }.each do |key, color_code|
-    define_method key do |text|
-      colorize(text, color_code)
-    end
-  end
-end
-
-# green &quot;Hello&quot;
-#   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
-</p>
-
-<p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
-
-<p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don't like their syntax. I prefer Andres' approach much more, so maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
 ]]></content>
   </entry>
   
