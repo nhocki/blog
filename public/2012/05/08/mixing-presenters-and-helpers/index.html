@@ -91,7 +91,7 @@
 
 <p>All the presenters I&#39;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#39;t depend on params or session variables it&#39;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#39;re presenting various objects on the same view. Here&#39;s an example to present users in our application, let&#39;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#39;s make it in a really simple way!</p>
 
-<h3 id="toc_2693">The Helper &amp; View</h3>
+<h3 id="toc_68">The Helper &amp; View</h3>
 
 <p>Let&#39;s create the helper method first. It&#39;s really simple and will take a block that we can use to build a custom markup &quot;on the fly&quot;.</p>
 
@@ -121,7 +121,7 @@ end</code></pre></noscript></div>
   &lt;%= basic_information_for(user) %&gt;
 &lt;% end %&gt;</code></pre></noscript></div>
 
-<h3 id="toc_2694">The Presenter, A.K.A What&#39;s happening here?</h3>
+<h3 id="toc_69">The Presenter, A.K.A What&#39;s happening here?</h3>
 
 <p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#39;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#39;s the code for that:</p>
 
@@ -145,7 +145,7 @@ end</code></pre></noscript></div>
 
 <p>Even though I haven&#39;t used this approach a lot, I&#39;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
 
-<h3 id="toc_2695">Feedback</h3>
+<h3 id="toc_70">Feedback</h3>
 
 <p>I&#39;m also really interested in how people are using presenters. I&#39;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
 </div>

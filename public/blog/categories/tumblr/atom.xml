@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Tumblr | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/tumblr/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -22,11 +22,11 @@
 
 <p>I really love the fact that I can write in <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, it&#39;s really powerful yet simple that makes me focus on writing and not formatting. I know I can use Markdown in Tumblr but I don&#39;t have Textmate there, so this is a big +1 for Jekyll/Octopress.</p>
 
-<h2 id="toc_2743">Moving Posts From Tumblr</h2>
+<h2 id="toc_43">Moving Posts From Tumblr</h2>
 
 <p>There&#39;s a <a href="https://github.com/mojombo/jekyll/wiki/Blog-Migrations">great script</a> to move posts from Tumblr. They&#39;ll even be downloaded as markdown, but I still had to edit them to add the Gist snippets. Thankfully I don&#39;t have a lot of posts so it didn&#39;t took a lot.</p>
 
-<h2 id="toc_2744">Deploying</h2>
+<h2 id="toc_44">Deploying</h2>
 
 <p>I&#39;ve deployed my blog to <a href="http://heroku.com">Heroku</a> now. It was supposed to be really simple. It was, after I realized that the <code>public</code> folder is ignored by the git. I spent an hour of my life there :-( !</p>
 

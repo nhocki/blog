@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -41,15 +41,34 @@ of the partial (not a parsed template).</p>
 
 <p>So, here&#39;s a really simple one that will work:</p>
 
-<p>{% gist 3645632 %}</p>
+<p><div><script src='https://gist.github.com/3645632.js?file='></script>
+<noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
+class LiquidTemplateSystem
+  attr_reader :user
 
-<h2 id="toc_2721">Default FileSystem</h2>
+  def initialize(user)
+    @user = user
+  end
+
+  # Return a valid liquid template string
+  def read_template_file(template_path, context)
+    user.partials.find_by_name(template_path).liquid_source
+  end
+end
+
+
+# In the view:
+# This `template` has an {% include %} tag.
+&lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
+</p>
+
+<h2 id="toc_21">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2 id="toc_2722">Any other way?</h2>
+<h2 id="toc_22">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
@@ -65,27 +84,64 @@ of a better way to do this, please <a href="https://twitter.com/nhocki">let me k
 
 <p>All the presenters I&#39;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#39;t depend on params or session variables it&#39;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#39;re presenting various objects on the same view. Here&#39;s an example to present users in our application, let&#39;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#39;s make it in a really simple way!</p>
 
-<h3 id="toc_2723">The Helper &amp; View</h3>
+<h3 id="toc_23">The Helper &amp; View</h3>
 
 <p>Let&#39;s create the helper method first. It&#39;s really simple and will take a block that we can use to build a custom markup &quot;on the fly&quot;.</p>
 
-<p>{% gist 2640442 user_helpers.rb %}</p>
+<p><div><script src='https://gist.github.com/2640442.js?file=user_helpers.rb'></script>
+<noscript><pre><code># app/helpers/user_helpers.rb
+def basic_information_for(user = @user, options = {})
+  presenter = UserBasicPresenter.new(user, self, options)
+  if block_given?
+    yield(presenter)
+  else
+    presenter
+  end
+end</code></pre></noscript></div>
+</p>
 
 <p>Now, let&#39;s take a look at the views. In the <strong>show</strong> action, we&#39;re going to present only one user, and we can easily build the custom view for this. In the <strong>index</strong> action, we&#39;ll present all a &quot;basic info&quot; for the each user. We have that in a partial because this is used for all the collections of users in our application. Here&#39;s the view code:</p>
 
-<p>{% gist 2640442 user_views.html.erb %}</p>
+<p><div><script src='https://gist.github.com/2640442.js?file=user_views.html.erb'></script>
+<noscript><pre><code># app/views/show.html.erb
+&lt;% basic_information_for do |user|  %&gt;
+  &lt;p&gt;&lt;%= user.name %&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;%= user.status %&gt;&lt;/p&gt;
+  ...
+&lt;% end %&gt;
 
-<h3 id="toc_2724">The Presenter, A.K.A What&#39;s happening here?</h3>
+# app/views/index.html
+&lt;% @users.each do |user| %&gt;
+  &lt;%= basic_information_for(user) %&gt;
+&lt;% end %&gt;</code></pre></noscript></div>
+</p>
+
+<h3 id="toc_24">The Presenter, A.K.A What&#39;s happening here?</h3>
 
 <p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#39;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#39;s the code for that:</p>
 
-<p>{% gist 2640442 user_basic_presenter.rb %}</p>
+<p><div><script src='https://gist.github.com/2640442.js?file=user_basic_presenter.rb'></script>
+<noscript><pre><code># app/presenters/user_basic_presenter.rb
+class UserBasicPresenter
+  def initialize(user, template, options = {})
+    @user     = user
+    @options  = options
+    @template = template
+  end
+
+  # more methods ...
+
+  def to_s
+    @template.render partial: 'user/basic', object: self
+  end
+end</code></pre></noscript></div>
+</p>
 
 <p>Is <strong>that</strong> simple! We have a unique interface (the helper) that will work great in both places! We could obviously make the presenter more complex, otherwise, why use it?</p>
 
 <p>Even though I haven&#39;t used this approach a lot, I&#39;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
 
-<h3 id="toc_2725">Feedback</h3>
+<h3 id="toc_25">Feedback</h3>
 
 <p>I&#39;m also really interested in how people are using presenters. I&#39;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
 ]]></content>
@@ -104,7 +160,31 @@ of a better way to do this, please <a href="https://twitter.com/nhocki">let me k
 
 <p>But this is a <em>controller wide</em> solution, since all the actions from that controller will render the same partial. So, how do you achieve this on a single action? My solution is a 3 line helper:</p>
 
-<p>{% gist 2246251 application_helper.rb %}</p>
+<p><div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
+<noscript><pre><code># This method will allow a section to be rendered form a view or
+# to render a partial instead.
+# 
+# It's really useful to have 'flexible' sections in the layout. E.g
+# add this to your layout file:
+#
+# content_or_partial(:header)
+#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
+#
+# content_or_partial(:header, 'users/hello')
+#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
+#
+# application.html.erb
+#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
+#
+# users/show.html.erb
+#   &lt;%= content_for :header do %&gt;
+#     My action specific content
+#   &lt;% end %&gt;
+#
+def content_or_partial(content, partial = content)
+  content_for?(content) ? content_for(content) : render(partial.to_s)
+end</code></pre></noscript></div>
+</p>
 
 <p>Now all you have to do is fill your layouts with &quot;content boxes&quot; that can be changed on an controller or action-specific need, giving great flexibility.</p>
 
@@ -135,7 +215,7 @@ formatting functionality to another class.</p>
 
 <p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
 
-<h3 id="toc_2726">So, where do the logic in the template goes?</h3>
+<h3 id="toc_26">So, where do the logic in the template goes?</h3>
 
 <p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
 
@@ -143,13 +223,61 @@ formatting functionality to another class.</p>
 
 <p>Here&#39;s an example:</p>
 
-<p>{% gist 1714913 %}</p>
+<p><div><script src='https://gist.github.com/1714913.js?file='></script>
+<noscript><pre><code># app/models/user.rb
+#
+# User model has name &amp; username
+#
+# Only the username is required (signup with Github for example)
+class User &lt; ActiveRecord::Base
+  validates :username, presence: true
+end
 
-<h3 id="toc_2727">Maybe I have the names wrong</h3>
+
+
+# app/decorators/user_decorator.rb
+#
+# Let's use the Draper gem for the decorators
+class UserDecorator &lt; ApplicationDecorator
+  decorates :user
+
+  def display_name
+    user.name.presence || user.username
+  end
+
+  # Formatting the data is OK. I'm against adding the markup
+  def salary
+    h.number_to_currency(user.salary)
+  end
+end
+
+
+# app/views/users/index.html.erb
+
+# current_user is a presenter
+&lt;%= logged_in_area do %&gt;
+  You are logged in as &lt;%= current_user.display_name %&gt;
+&lt;% end %&gt;
+
+# viewing @some_users's profile (which is also a presenter)
+&lt;%= admin_area do %&gt;
+  &lt;span class=&quot;salary&quot;&gt;&lt;%= @some_user.salary %&gt;&lt;/span&gt;
+&lt;% end %&gt;
+
+
+# app/helpers/application_helpers.rb
+#
+# We all hate helpers, but this time, they're useful.
+def admin_area(&amp;block)
+  content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
+end</code></pre></noscript></div>
+</p>
+
+<h3 id="toc_27">Maybe I have the names wrong</h3>
 
 <p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
 
-<h3 id="toc_2728">Please provide feedback</h3>
+<h3 id="toc_28">Please provide feedback</h3>
 
 <p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 ]]></content>
@@ -164,7 +292,21 @@ formatting functionality to another class.</p>
 
 <p>My first approach to solve this problem was started by <a href="http://mheroin.com/">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It&#39;s really easy to use and will (up to some point) solve the problem. I know <a href="http://rubygems.org/gems/friendly_id">FriendlyID</a> exists, but I <em>hate</em> having the permalink field in my database (I <em>always</em> forget it) so that&#39;s why I like Make Permalink&#39;s approach.</p>
 
-<p>{% gist 1660555 make_permalink_example.rb %}</p>
+<p><div><script src='https://gist.github.com/1660555.js?file=make_permalink_example.rb'></script>
+<noscript><pre><code>class Post &lt; ActiveRecord::Base
+  make_permalink :title
+
+  # Override this method to have nice looking
+  # URLs. You still use `Post.find` in the controller
+  # and will get URL like this:
+  #
+  #    /posts/1-look-mom-i-rock
+  def to_param
+    permalink
+  end
+end
+</code></pre></noscript></div>
+</p>
 
 <p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don&#39;t have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
 
@@ -174,11 +316,62 @@ formatting functionality to another class.</p>
 
 <p>First, I&#39;ve created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won&#39;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&#39;s ok. Here&#39;s the code. Place it in your initializers folder.</p>
 
-<p>{% gist 1657758 %}</p>
+<p><div><script src='https://gist.github.com/1657758.js?file='></script>
+<noscript><pre><code># config/initializers/fetchable.rb
+
+# encoding: UTF-8
+
+module Extensions
+  module Fetchable
+    # Adding `fetchable_on` to a model will define the `fetch` method
+    # that will allow you to query that model with the `attribute` or `id`.
+    #
+    # Having the following:
+    #
+    #    class User &lt;&lt; ActiveRecord::Base
+    #      fetchable_on :username
+    #    end
+    #
+    # Will let you fetch users by username or id.
+    #
+    #    User.fetch('nhocki').id # =&gt; 1
+    #    User.fetch(1).username # =&gt; nhocki
+    def fetchable_on(attribute)
+      define_singleton_method(&quot;fetch&quot;) do |*args|
+        looked_value = args.shift
+        begin
+          find(looked_value.to_i, *args)
+        rescue ActiveRecord::RecordNotFound
+          send(&quot;find_by_#{attribute}!&quot;, looked_value.to_s, *args)
+        end
+      end
+    end
+  end
+end
+
+ActiveRecord::Base.extend(Extensions::Fetchable)</code></pre></noscript></div>
+</p>
 
 <p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it&#39;ll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here&#39;s an example:</p>
 
-<p>{% gist 1660555 fetchable_example.rb %}</p>
+<p><div><script src='https://gist.github.com/1660555.js?file=fetchable_example.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  fetchable_on :username
+
+  # URL Style: /users/nhocki
+  def to_param
+    username
+  end
+end
+
+# Gives you the `fetch` method.
+# It takes the username or the id.
+# Use fetch in your controller
+
+User.fetch('nhocki').id # =&gt; 1
+User.fetch(1).username  # =&gt; 'nhocki'
+</code></pre></noscript></div>
+</p>
 
 <p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there&#39;s no object in the DB.</strong></p>
 

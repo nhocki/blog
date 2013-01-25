@@ -4,7 +4,7 @@
   <title><![CDATA[Category: algorithms | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/algorithms/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -26,7 +26,43 @@ answers, but I had never implemented it. The question is really simple:</p>
 
 <p>Here&#39;s my solution:</p>
 
-<p>{% gist 4392454 %}</p>
+<p><div><script src='https://gist.github.com/4392454.js?file='></script>
+<noscript><pre><code>Node = Struct.new(:id, :next)
+
+# Build the list
+first = Node.new(1, nil)
+nodes = 10.times.map{|x| Node.new(x + 2, nil)}
+nodes.each_with_index{|node, index| node.next = nodes[index + 1] }
+first.next = nodes.first
+
+def reverse_list(node)
+  prox = node.next  # Get the next node on the list.
+  node.next = nil   # Make the new tail point to nil (end of the new list).
+
+  last = node       # Save that new tail on a tmp variable (to point to it later)
+  node = prox       # Change the `current` node to the `next` one. Move ahead.
+
+  while node          # If I'm not at the end of the list.
+    prox = node.next  # Save the next node on the original list.
+    node.next = last  # Reverse the list (point back from `current`)
+    last = node       # Save the current node to point later.
+    node = prox       # Move ahead once.
+  end
+  last
+end
+
+def print_list(node)
+  while node
+    puts node.id
+    node = node.next
+  end
+end
+
+print_list(first)
+puts &quot;\n&quot;
+print_list(reverse_list(first))
+</code></pre></noscript></div>
+</p>
 
 <p>How would you do it? There&#39;s a really simple solution using a queue, but if you
 find another one, I&#39;d love to hear about it on

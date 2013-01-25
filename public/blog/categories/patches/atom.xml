@@ -4,7 +4,7 @@
   <title><![CDATA[Category: patches | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/patches/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -24,7 +24,17 @@
 
 <p><strong>If you&#39;re can&#39;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
 
-<p>{% gist 1185431 %}</p>
+<p><div><script src='https://gist.github.com/1185431.js?file='></script>
+<noscript><pre><code># Capistrano task to compile assets
+# Make sure that you have `config.assets.compile = true` in production.rb when running this
+# This (the `compile=true`) won't be needed for Rails 3.1.1
+
+desc &quot;Precompile assets on production&quot;
+task :assets do
+  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
+  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
+end</code></pre></noscript></div>
+</p>
 
 <p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
 

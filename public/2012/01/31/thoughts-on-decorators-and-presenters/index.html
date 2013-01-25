@@ -105,7 +105,7 @@ formatting functionality to another class.</p>
 
 <p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
 
-<h3 id="toc_2690">So, where do the logic in the template goes?</h3>
+<h3 id="toc_65">So, where do the logic in the template goes?</h3>
 
 <p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
 
@@ -162,11 +162,11 @@ def admin_area(&amp;block)
   content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
 end</code></pre></noscript></div>
 
-<h3 id="toc_2691">Maybe I have the names wrong</h3>
+<h3 id="toc_66">Maybe I have the names wrong</h3>
 
 <p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
 
-<h3 id="toc_2692">Please provide feedback</h3>
+<h3 id="toc_67">Please provide feedback</h3>
 
 <p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 </div>

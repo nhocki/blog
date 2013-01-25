@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:40-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -68,7 +68,7 @@ you need just that.</p>
 <p>But, since people don&#39;t always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
 a little messy</a>. So, I&#39;ve created a simple gem to help you with that.</p>
 
-<h3 id="toc_2698">Welcome version_gemfile</h3>
+<h3 id="toc_73">Welcome version_gemfile</h3>
 
 <ul>
 <li>1. Simply install it: <code>$ gem install version_gemfile</code></li>
@@ -76,7 +76,7 @@ a little messy</a>. So, I&#39;ve created a simple gem to help you with that.</p>
 <li>3. And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
 </ul>
 
-<h2 id="toc_2699">How does it work?</h2>
+<h2 id="toc_74">How does it work?</h2>
 
 <p>This gem will go through each line in your <code>Gemfile</code> looking for dependencies
 that have no versions. Then, will look into your <code>Gemfile.lock</code> for the version
@@ -191,13 +191,13 @@ end
 # This `template` has an {% include %} tag.
 &lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
 
-<h2 id="toc_2696">Default FileSystem</h2>
+<h2 id="toc_71">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2 id="toc_2697">Any other way?</h2>
+<h2 id="toc_72">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
@@ -324,7 +324,7 @@ so please contact me if you are, either by leaving a comment or
 
 <p>All the presenters I&#39;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#39;t depend on params or session variables it&#39;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#39;re presenting various objects on the same view. Here&#39;s an example to present users in our application, let&#39;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#39;s make it in a really simple way!</p>
 
-<h3 id="toc_2693">The Helper &amp; View</h3>
+<h3 id="toc_68">The Helper &amp; View</h3>
 
 <p>Let&#39;s create the helper method first. It&#39;s really simple and will take a block that we can use to build a custom markup &quot;on the fly&quot;.</p>
 
@@ -354,7 +354,7 @@ end</code></pre></noscript></div>
   &lt;%= basic_information_for(user) %&gt;
 &lt;% end %&gt;</code></pre></noscript></div>
 
-<h3 id="toc_2694">The Presenter, A.K.A What&#39;s happening here?</h3>
+<h3 id="toc_69">The Presenter, A.K.A What&#39;s happening here?</h3>
 
 <p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#39;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#39;s the code for that:</p>
 
@@ -378,7 +378,7 @@ end</code></pre></noscript></div>
 
 <p>Even though I haven&#39;t used this approach a lot, I&#39;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
 
-<h3 id="toc_2695">Feedback</h3>
+<h3 id="toc_70">Feedback</h3>
 
 <p>I&#39;m also really interested in how people are using presenters. I&#39;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
 ]]></content>
@@ -451,7 +451,7 @@ formatting functionality to another class.</p>
 
 <p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
 
-<h3 id="toc_2690">So, where do the logic in the template goes?</h3>
+<h3 id="toc_65">So, where do the logic in the template goes?</h3>
 
 <p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
 
@@ -508,11 +508,11 @@ def admin_area(&amp;block)
   content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
 end</code></pre></noscript></div>
 
-<h3 id="toc_2691">Maybe I have the names wrong</h3>
+<h3 id="toc_66">Maybe I have the names wrong</h3>
 
 <p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
 
-<h3 id="toc_2692">Please provide feedback</h3>
+<h3 id="toc_67">Please provide feedback</h3>
 
 <p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 ]]></content>
@@ -527,11 +527,11 @@ end</code></pre></noscript></div>
 
 <p>I really love the fact that I can write in <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, it&#39;s really powerful yet simple that makes me focus on writing and not formatting. I know I can use Markdown in Tumblr but I don&#39;t have Textmate there, so this is a big +1 for Jekyll/Octopress.</p>
 
-<h2 id="toc_2688">Moving Posts From Tumblr</h2>
+<h2 id="toc_63">Moving Posts From Tumblr</h2>
 
 <p>There&#39;s a <a href="https://github.com/mojombo/jekyll/wiki/Blog-Migrations">great script</a> to move posts from Tumblr. They&#39;ll even be downloaded as markdown, but I still had to edit them to add the Gist snippets. Thankfully I don&#39;t have a lot of posts so it didn&#39;t took a lot.</p>
 
-<h2 id="toc_2689">Deploying</h2>
+<h2 id="toc_64">Deploying</h2>
 
 <p>I&#39;ve deployed my blog to <a href="http://heroku.com">Heroku</a> now. It was supposed to be really simple. It was, after I realized that the <code>public</code> folder is ignored by the git. I spent an hour of my life there :-( !</p>
 

@@ -131,13 +131,13 @@ end
 # This `template` has an {% include %} tag.
 &lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
 
-<h2 id="toc_2696">Default FileSystem</h2>
+<h2 id="toc_71">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2 id="toc_2697">Any other way?</h2>
+<h2 id="toc_72">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>

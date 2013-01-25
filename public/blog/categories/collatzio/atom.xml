@@ -4,7 +4,7 @@
   <title><![CDATA[Category: collatzio | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/collatzio/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -30,7 +30,15 @@ auto;</strong> to make the scrollbar appears on each div.</p>
 
 <p>The coffeescript code I used is really simple, here it is:</p>
 
-<p>{% gist 1233545 %}</p>
+<p><div><script src='https://gist.github.com/1233545.js?file='></script>
+<noscript><pre><code>jQuery ($) -&gt;
+  ($ &quot;.scroll-text&quot;).scroll (event) -&gt;
+    trigger = ($ @)
+    element = trigger.data(&quot;scrolls&quot;)
+    $(element).scrollTop(trigger.scrollTop())
+    event.preventDefault()
+    return false</code></pre></noscript></div>
+</p>
 
 <p>Hope it helps someone. I struggled a little bit with the &quot;common&quot; way of
 scrolling things. People usually use the <code>animate</code> method to scroll the body,

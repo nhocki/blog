@@ -4,7 +4,7 @@
   <title><![CDATA[Category: presenters | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/presenters/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -22,27 +22,64 @@
 
 <p>All the presenters I&#39;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#39;t depend on params or session variables it&#39;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#39;re presenting various objects on the same view. Here&#39;s an example to present users in our application, let&#39;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#39;s make it in a really simple way!</p>
 
-<h3 id="toc_2731">The Helper &amp; View</h3>
+<h3 id="toc_31">The Helper &amp; View</h3>
 
 <p>Let&#39;s create the helper method first. It&#39;s really simple and will take a block that we can use to build a custom markup &quot;on the fly&quot;.</p>
 
-<p>{% gist 2640442 user_helpers.rb %}</p>
+<p><div><script src='https://gist.github.com/2640442.js?file=user_helpers.rb'></script>
+<noscript><pre><code># app/helpers/user_helpers.rb
+def basic_information_for(user = @user, options = {})
+  presenter = UserBasicPresenter.new(user, self, options)
+  if block_given?
+    yield(presenter)
+  else
+    presenter
+  end
+end</code></pre></noscript></div>
+</p>
 
 <p>Now, let&#39;s take a look at the views. In the <strong>show</strong> action, we&#39;re going to present only one user, and we can easily build the custom view for this. In the <strong>index</strong> action, we&#39;ll present all a &quot;basic info&quot; for the each user. We have that in a partial because this is used for all the collections of users in our application. Here&#39;s the view code:</p>
 
-<p>{% gist 2640442 user_views.html.erb %}</p>
+<p><div><script src='https://gist.github.com/2640442.js?file=user_views.html.erb'></script>
+<noscript><pre><code># app/views/show.html.erb
+&lt;% basic_information_for do |user|  %&gt;
+  &lt;p&gt;&lt;%= user.name %&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;%= user.status %&gt;&lt;/p&gt;
+  ...
+&lt;% end %&gt;
 
-<h3 id="toc_2732">The Presenter, A.K.A What&#39;s happening here?</h3>
+# app/views/index.html
+&lt;% @users.each do |user| %&gt;
+  &lt;%= basic_information_for(user) %&gt;
+&lt;% end %&gt;</code></pre></noscript></div>
+</p>
+
+<h3 id="toc_32">The Presenter, A.K.A What&#39;s happening here?</h3>
 
 <p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#39;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#39;s the code for that:</p>
 
-<p>{% gist 2640442 user_basic_presenter.rb %}</p>
+<p><div><script src='https://gist.github.com/2640442.js?file=user_basic_presenter.rb'></script>
+<noscript><pre><code># app/presenters/user_basic_presenter.rb
+class UserBasicPresenter
+  def initialize(user, template, options = {})
+    @user     = user
+    @options  = options
+    @template = template
+  end
+
+  # more methods ...
+
+  def to_s
+    @template.render partial: 'user/basic', object: self
+  end
+end</code></pre></noscript></div>
+</p>
 
 <p>Is <strong>that</strong> simple! We have a unique interface (the helper) that will work great in both places! We could obviously make the presenter more complex, otherwise, why use it?</p>
 
 <p>Even though I haven&#39;t used this approach a lot, I&#39;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
 
-<h3 id="toc_2733">Feedback</h3>
+<h3 id="toc_33">Feedback</h3>
 
 <p>I&#39;m also really interested in how people are using presenters. I&#39;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
 ]]></content>
@@ -71,7 +108,7 @@ formatting functionality to another class.</p>
 
 <p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
 
-<h3 id="toc_2734">So, where do the logic in the template goes?</h3>
+<h3 id="toc_34">So, where do the logic in the template goes?</h3>
 
 <p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
 
@@ -79,13 +116,61 @@ formatting functionality to another class.</p>
 
 <p>Here&#39;s an example:</p>
 
-<p>{% gist 1714913 %}</p>
+<p><div><script src='https://gist.github.com/1714913.js?file='></script>
+<noscript><pre><code># app/models/user.rb
+#
+# User model has name &amp; username
+#
+# Only the username is required (signup with Github for example)
+class User &lt; ActiveRecord::Base
+  validates :username, presence: true
+end
 
-<h3 id="toc_2735">Maybe I have the names wrong</h3>
+
+
+# app/decorators/user_decorator.rb
+#
+# Let's use the Draper gem for the decorators
+class UserDecorator &lt; ApplicationDecorator
+  decorates :user
+
+  def display_name
+    user.name.presence || user.username
+  end
+
+  # Formatting the data is OK. I'm against adding the markup
+  def salary
+    h.number_to_currency(user.salary)
+  end
+end
+
+
+# app/views/users/index.html.erb
+
+# current_user is a presenter
+&lt;%= logged_in_area do %&gt;
+  You are logged in as &lt;%= current_user.display_name %&gt;
+&lt;% end %&gt;
+
+# viewing @some_users's profile (which is also a presenter)
+&lt;%= admin_area do %&gt;
+  &lt;span class=&quot;salary&quot;&gt;&lt;%= @some_user.salary %&gt;&lt;/span&gt;
+&lt;% end %&gt;
+
+
+# app/helpers/application_helpers.rb
+#
+# We all hate helpers, but this time, they're useful.
+def admin_area(&amp;block)
+  content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
+end</code></pre></noscript></div>
+</p>
+
+<h3 id="toc_35">Maybe I have the names wrong</h3>
 
 <p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
 
-<h3 id="toc_2736">Please provide feedback</h3>
+<h3 id="toc_36">Please provide feedback</h3>
 
 <p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 ]]></content>
@@ -100,17 +185,108 @@ formatting functionality to another class.</p>
 
 <p>What we wanted to have was a <code>present</code> method in the controller and build the view from its methods. So, we created an <a href="http://api.rubyonrails.org/classes/ActiveSupport/Concern.html">ActiveSupport::Concern</a> called <code>Presentable</code> and included it in our application controller. Here&#39;s our (once again, his) code for that module.</p>
 
-<p>{% gist 1592754 presentable.rb %}</p>
+<p><div><script src='https://gist.github.com/1592754.js?file=presentable.rb'></script>
+<noscript><pre><code># app/concerns/controllers/presentable.rb
+
+# Presentable Concern
+# Include this module in the controllers where
+# you need the `present` method.
+module Presentable
+  # This method returns a Presenter Object to work
+  # with in the view.
+  #
+  # Attributes:
+  #   object:   The object to present
+  #
+  # Supported Options
+  #    as:   The presenter class. If this is not suplied 
+  #          the method will try to guess the class
+  #          e.g: UserPresenter for a User object.
+  def present(object, options = { })
+    if object.respond_to?(:first)
+      return [] if object.empty?
+      presenter = &quot;#{object.first.class.to_s.pluralize}Presenter&quot;
+    else
+      presenter = &quot;#{object.class}Presenter&quot;
+    end
+
+    presenter = options.fetch(:as) { eval(presenter) }
+    presenter.new(object)
+  end
+end
+</code></pre></noscript></div>
+</p>
 
 <p>Now, we just need to create each presenter. But, since there&#39;s a lot of shared logic between presenters we (he) just created a parent <code>Presenter class</code> with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you <code>method missing</code>) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&#39;s our <code>Presenter base class</code>.</p>
 
-<p>{% gist 1592754 presenter.rb %}</p>
+<p><div><script src='https://gist.github.com/1592754.js?file=presenter.rb'></script>
+<noscript><pre><code># Base presenter class
+# All presenters should inherit from this one.
+class Presenter
+  # Include all the modules you need or
+  # send the view context to access rails helpers.
+  include Rails.application.routes.url_helpers
+  # ...
+
+  include Presentable
+
+  attr_reader :record
+
+  def initialize(record)
+    @record = record
+    @klass = record.class
+  end
+
+  def method_missing(name, *arguments, &amp;block)
+    super unless record.respond_to?(name)
+    record.send(name, *arguments, &amp;block)
+  end
+
+  def translate_field_name(name)
+    @klass.human_attribute_name(name)
+  end
+
+  # UrlHelper was being an ass, easier to go commando.
+  def link_to(name, url, options={})
+    href = { :href =&gt; url }
+    content_tag(:a, name, options.merge(href))
+  end
+end
+</code></pre></noscript></div>
+</p>
 
 <p>Then, we just need to inherit from the <code>Presenter</code> class and add our custom, clean methods. Using <code>delegate and method missing</code> will help us keep the class clean. I won&#39;t show you a presenter here, they&#39;ll look a lot like Ryan&#39;s one in his Railscasts so check that out first.</p>
 
 <p>I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&#39;s 1 of them:</p>
 
-<p>{% gist 1592754 requests_controller.rb %}</p>
+<p><div><script src='https://gist.github.com/1592754.js?file=requests_controller.rb'></script>
+<noscript><pre><code>class RequestsController &lt; ApplicationController
+  expose(:filter) { params.fetch(:filter) { :all} }
+  expose(:filtered_requests) { Request.filter(filter) }
+  expose(:requests) { present(filtered_requests) }
+
+  before_filter :find_request, :only =&gt; [:show, :destroy]
+
+  def index
+  end
+
+  def show
+    extend(RequestRedirector) # Another concern
+    redirect_to_request
+  end
+
+  def destroy
+    @request.destroy
+    redirect_to requests_path(:filter =&gt; &quot;new_requests&quot;), :notice =&gt; &quot;Se ha eliminado la solicitud&quot;
+  end
+
+  private
+  def find_request
+    @request = Request.find(params[:id])
+  end
+end
+</code></pre></noscript></div>
+</p>
 
 <p>Combining <code>presenters</code> and <code>form builders</code> will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.</p>
 

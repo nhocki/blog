@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails views | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails-views/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -41,15 +41,34 @@ of the partial (not a parsed template).</p>
 
 <p>So, here&#39;s a really simple one that will work:</p>
 
-<p>{% gist 3645632 %}</p>
+<p><div><script src='https://gist.github.com/3645632.js?file='></script>
+<noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
+class LiquidTemplateSystem
+  attr_reader :user
 
-<h2 id="toc_2750">Default FileSystem</h2>
+  def initialize(user)
+    @user = user
+  end
+
+  # Return a valid liquid template string
+  def read_template_file(template_path, context)
+    user.partials.find_by_name(template_path).liquid_source
+  end
+end
+
+
+# In the view:
+# This `template` has an {% include %} tag.
+&lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
+</p>
+
+<h2 id="toc_50">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2 id="toc_2751">Any other way?</h2>
+<h2 id="toc_51">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
@@ -69,7 +88,31 @@ of a better way to do this, please <a href="https://twitter.com/nhocki">let me k
 
 <p>But this is a <em>controller wide</em> solution, since all the actions from that controller will render the same partial. So, how do you achieve this on a single action? My solution is a 3 line helper:</p>
 
-<p>{% gist 2246251 application_helper.rb %}</p>
+<p><div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
+<noscript><pre><code># This method will allow a section to be rendered form a view or
+# to render a partial instead.
+# 
+# It's really useful to have 'flexible' sections in the layout. E.g
+# add this to your layout file:
+#
+# content_or_partial(:header)
+#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
+#
+# content_or_partial(:header, 'users/hello')
+#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
+#
+# application.html.erb
+#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
+#
+# users/show.html.erb
+#   &lt;%= content_for :header do %&gt;
+#     My action specific content
+#   &lt;% end %&gt;
+#
+def content_or_partial(content, partial = content)
+  content_for?(content) ? content_for(content) : render(partial.to_s)
+end</code></pre></noscript></div>
+</p>
 
 <p>Now all you have to do is fill your layouts with &quot;content boxes&quot; that can be changed on an controller or action-specific need, giving great flexibility.</p>
 

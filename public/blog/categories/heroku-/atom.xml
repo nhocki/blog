@@ -4,7 +4,7 @@
   <title><![CDATA[Category: heroku, | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/heroku-/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -32,7 +32,12 @@ migrate.</p>
 exactly what I needed. Turns out that using the <a href="http://addons.heroku.com/pgbackups">PG Backups
 addon</a> it&#39;s really easy and fast!</p>
 
-<p>{% gist 1089598 %}</p>
+<p><div><script src='https://gist.github.com/1089598.js?file='></script>
+<noscript><pre><code>heroku addons:add pgbackups --remote staging
+heroku addons:add pgbackups --remote production
+heroku pgbackups:capture --remote production
+heroku pgbackups:restore DATABASE `heroku pgbackups:url --remote production` --remote staging</code></pre></noscript></div>
+</p>
 
 <p>That&#39;s all you need! Those 4 lines (actually, the last 2) will backup your
 production database and then restore that backup in your staging database.</p>

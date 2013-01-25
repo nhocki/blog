@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rake | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rake/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -20,7 +20,31 @@
     <id>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output</id>
     <content type="html"><![CDATA[<p>I&#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#39;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here&#39;s my module right now…</p>
 
-<p>{% gist 1410582 %}</p>
+<p><div><script src='https://gist.github.com/1410582.js?file='></script>
+<noscript><pre><code>module Colors
+  def colorize(text, color_code)
+    &quot;\033[#{color_code}m#{text}\033[0m&quot;
+  end
+
+  {
+    :black    =&gt; 30,
+    :red      =&gt; 31,
+    :green    =&gt; 32,
+    :yellow   =&gt; 33,
+    :blue     =&gt; 34,
+    :magenta  =&gt; 35,
+    :cyan     =&gt; 36,
+    :white    =&gt; 37
+  }.each do |key, color_code|
+    define_method key do |text|
+      colorize(text, color_code)
+    end
+  end
+end
+
+# green &quot;Hello&quot;
+#   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
+</p>
 
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
@@ -52,7 +76,56 @@ the compilation of the assets</strong>.</p>
 <p>Now, you only have to run <strong>rake assets:compile</strong> and sleep well at night.
 Here&#39;s the code. Hope it helps.</p>
 
-<p>{% gist 1241135 %}</p>
+<p><div><script src='https://gist.github.com/1241135.js?file='></script>
+<noscript><pre><code>namespace :assets do
+  desc &quot;Compile all the assets named in config.assets.precompile and push them&quot;
+  task :compile do
+    AssetsCompiler.new.compile
+  end
+
+  class AssetsCompiler
+    def compile
+      ensure_clean_git
+      removed_previous_assets
+      compile_assets
+      commit_compiled_assets
+      push
+    end
+
+    def ensure_clean_git
+      raise &quot;Can't deploy without a clean git status.&quot; if git_dirty?
+    end
+
+    def removed_previous_assets
+      run &quot;bundle exec rake RAILS_ENV=production assets:clean&quot;
+    end
+
+    def compile_assets
+      run &quot;bundle exec rake RAILS_ENV=production assets:precompile&quot;
+    end
+
+    def commit_compiled_assets
+      run &quot;git add -u &amp;&amp; git add . &amp;&amp; git commit -am 'Compiled assets'&quot;
+    end
+
+    def push
+      run &quot;git push&quot;
+    end
+
+    private
+
+    def run(command)
+      puts &quot;+ Running: #{command}&quot;
+      puts &quot;-- #{system command}&quot;
+    end
+
+    def git_dirty?
+      `[[ $(git diff --shortstat 2&gt; /dev/null | tail -n1) != &quot;&quot; ]]`
+      dirty = $?.success?
+    end
+  end
+end</code></pre></noscript></div>
+</p>
 ]]></content>
   </entry>
   

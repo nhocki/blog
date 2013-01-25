@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T13:57:49-05:00</updated>
+  <updated>2013-01-25T14:08:58-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -12,6 +12,44 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Stop using config files for secret data]]></title>
+    <link href="http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data/"/>
+    <updated>2013-01-25T11:02:00-05:00</updated>
+    <id>http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data</id>
+    <content type="html"><![CDATA[<p>Seriously, it&#39;s <strong>your</strong> fault that Github exposed your keys. If you want to
+add everything to your repo (not that this is a good idea though), at least
+make it private.</p>
+
+<p>If you want to have <strong>per-environment variables, use the environment variables</strong>.
+<em>But my development env would be full of crap!</em> some of you may cry... well,
+there&#39;s a simple solution for that. Use <a href="https://github.com/bkeepers/dotenv">Dotenv</a>.</p>
+
+<p>With <em>Dotenv</em> you only need to add a <code>.env</code> file to your application root directory
+and you&#39;re done. Here&#39;s a quick example:</p>
+<div class="highlight"><pre><code class="sh"><span class="c"># .env</span>
+<span class="nv">S3_BUCKET</span><span class="o">=</span>some_development_bucket
+<span class="nv">S3_SECRET</span><span class="o">=</span>a_secret_key
+</code></pre>
+</div>
+
+<p>Then in your code, simply use <code>ENV[]</code> and be happy (and safe, but mostly happy)</p>
+<div class="highlight"><pre><code class="ruby"><span class="c1"># some config file</span>
+<span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;S3_BUCKET&#39;</span><span class="o">]</span>
+</code></pre>
+</div>
+
+<p>And just like that, you can setup your server&#39;s config environments and not
+worry about <em>supposed-to-be-private</em> public information.</p>
+
+<p>One really cool thing about this is that this variables will only be loaded
+in that specific application. It won&#39;t change <strong>your</strong> environment. So when
+you stop the servers, your environment won&#39;t have the <code>.env</code> variables.</p>
+
+<p>You can read more about <a href="http://opensoul.org/blog/archives/2012/07/24/dotenv/">Dotenv here</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Easily add versions to your Gemfile]]></title>
@@ -30,7 +68,7 @@ you need just that.</p>
 <p>But, since people don&#39;t always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
 a little messy</a>. So, I&#39;ve created a simple gem to help you with that.</p>
 
-<h3 id="toc_2729">Welcome version_gemfile</h3>
+<h3 id="toc_29">Welcome version_gemfile</h3>
 
 <ul>
 <li>1. Simply install it: <code>$ gem install version_gemfile</code></li>
@@ -38,7 +76,7 @@ a little messy</a>. So, I&#39;ve created a simple gem to help you with that.</p>
 <li>3. And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
 </ul>
 
-<h2 id="toc_2730">How does it work?</h2>
+<h2 id="toc_30">How does it work?</h2>
 
 <p>This gem will go through each line in your <code>Gemfile</code> looking for dependencies
 that have no versions. Then, will look into your <code>Gemfile.lock</code> for the version
@@ -56,7 +94,31 @@ or ping me on <a href="https://twitter.com/nhocki" title="My twitter profile">Tw
     <id>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output</id>
     <content type="html"><![CDATA[<p>I&#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#39;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here&#39;s my module right now…</p>
 
-<p>{% gist 1410582 %}</p>
+<p><div><script src='https://gist.github.com/1410582.js?file='></script>
+<noscript><pre><code>module Colors
+  def colorize(text, color_code)
+    &quot;\033[#{color_code}m#{text}\033[0m&quot;
+  end
+
+  {
+    :black    =&gt; 30,
+    :red      =&gt; 31,
+    :green    =&gt; 32,
+    :yellow   =&gt; 33,
+    :blue     =&gt; 34,
+    :magenta  =&gt; 35,
+    :cyan     =&gt; 36,
+    :white    =&gt; 37
+  }.each do |key, color_code|
+    define_method key do |text|
+      colorize(text, color_code)
+    end
+  end
+end
+
+# green &quot;Hello&quot;
+#   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
+</p>
 
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
