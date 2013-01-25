@@ -4,6 +4,8 @@ title: "Stop using config files for secret data"
 date: 2013-01-25 11:02
 comments: false
 categories: 
+  - ruby
+  - gems
 ---
 
 Seriously, it's **your** fault that Github exposed your keys. If you want to
