@@ -11,7 +11,7 @@
   
   <meta name="description" content="Since bundler came out, managing dependencies
 on ruby applications has been amazing. Combined with some bootstrap script,
-it&#8217;s really easy to &hellip;">
+it&#39;s really easy to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -90,36 +90,26 @@ it&#8217;s really easy to &hellip;">
 
 
 <div class="entry-content"><p>Since <a href="http://gembundler.com/" title="Bundler">bundler</a> came out, managing dependencies
-on ruby applications has been amazing. Combined with <a href="http://37signals.com/svn/posts/2998-setting-up-a-new-machine-for-ruby-development" title="37 Signals bootstrap script">some</a> <a href="http://zachholman.com/talk/unsucking-your-teams-development-environment/" title="Zach Holman's talk on development environment">bootstrap</a> <a href="http://ngauthier.com/2012/08/one-click-development.html" title="One click development">script</a>,
-it&#8217;s really easy to download some source code, install, and run an application.</p>
+on ruby applications has been amazing. Combined with <a href="http://37signals.com/svn/posts/2998-setting-up-a-new-machine-for-ruby-development" title="37 Signals bootstrap script">some</a> <a href="http://zachholman.com/talk/unsucking-your-teams-development-environment/" title="Zach Holman&#39;s talk on development environment">bootstrap</a> <a href="http://ngauthier.com/2012/08/one-click-development.html" title="One click development">script</a>,
+it&#39;s really easy to download some source code, install, and run an application.</p>
 
-<p>There is still some room for improvement though. I&#8217;ve always supported the use
+<p>There is still some room for improvement though. I&#39;ve always supported the use
 of <a href="http://semver.org/" title="SemVer: Semantic Versioning">SemVer</a> and pessimistic locking (the <code>~&gt;</code>). This will allow you to
 update applications without pain. And, with all this rails vulnerabilities,
 you need just that.</p>
 
-<p>But, since people don&#8217;t always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
-a little messy</a>. So, I&#8217;ve created a simple gem to help you with that.</p>
+<p>But, since people don&#39;t always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
+a little messy</a>. So, I&#39;ve created a simple gem to help you with that.</p>
 
-<h3>Welcome version_gemfile</h3>
+<h3 id="toc_2698">Welcome version_gemfile</h3>
 
 <ul>
-<li><ol>
-<li>Simply install it: <code>$ gem install version_gemfile</code></li>
-</ol>
-</li>
-<li><ol>
-<li>Go to your rails application: <code>$ cd ~/my/ruby/application</code></li>
-</ol>
-</li>
-<li><ol>
-<li>And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
-</ol>
-</li>
+<li>1. Simply install it: <code>$ gem install version_gemfile</code></li>
+<li>2. Go to your rails application: <code>$ cd ~/my/ruby/application</code></li>
+<li>3. And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
 </ul>
 
-
-<h2>How does it work?</h2>
+<h2 id="toc_2699">How does it work?</h2>
 
 <p>This gem will go through each line in your <code>Gemfile</code> looking for dependencies
 that have no versions. Then, will look into your <code>Gemfile.lock</code> for the version
@@ -158,6 +148,8 @@ or ping me on <a href="https://twitter.com/nhocki" title="My twitter profile">Tw
       
         <a class="basic-alignment left" href="/2012/12/27/reverse-a-list-in-o-n/" title="Previous Post: Reverse a list in O(n)">&laquo; Reverse a list in O(n)</a>
       
+      
+        <a class="basic-alignment right" href="/2013/01/25/stop-using-config-files-for-secret-data/" title="next Post: Stop using config files for secret data">Stop using config files for secret data &raquo;</a>
       
     </p>
   </footer>

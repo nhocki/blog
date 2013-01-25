@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="Today I needed to transfer all the data from one application (production
-environment) to another (staging environment). I&#8217;m pretty aware that &hellip;">
+environment) to another (staging environment). I&#39;m pretty aware that the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,7 +91,7 @@ environment) to another (staging environment). I&#8217;m pretty aware that &hell
 <div class="entry-content"><p>Today I needed to transfer all the data from one application (production
 environment) to another (staging environment).</p>
 
-<p>I&#8217;m pretty aware that the <a href="https://rubygems.org/gems/taps">taps gem</a> exists
+<p>I&#39;m pretty aware that the <a href="https://rubygems.org/gems/taps">taps gem</a> exists
 (which is great btw, and I use to pull the data from the production
 environment to my development environment), but the problem with the taps gem
 is that a table with a lot of data and some indexes will take a while to
@@ -100,7 +100,7 @@ migrate.</p>
 <p>I guess it was my lucky day because <a href="http://thoughtbot.com/">Thoughtbot</a>
 <a href="https://twitter.com/thoughtbot/status/92957355330904064">tweeted</a> with
 exactly what I needed. Turns out that using the <a href="http://addons.heroku.com/pgbackups">PG Backups
-addon</a> it&#8217;s really easy and fast!</p>
+addon</a> it&#39;s really easy and fast!</p>
 
 <div><script src='https://gist.github.com/1089598.js?file='></script>
 <noscript><pre><code>heroku addons:add pgbackups --remote staging
@@ -108,8 +108,7 @@ heroku addons:add pgbackups --remote production
 heroku pgbackups:capture --remote production
 heroku pgbackups:restore DATABASE `heroku pgbackups:url --remote production` --remote staging</code></pre></noscript></div>
 
-
-<p>That&#8217;s all you need! Those 4 lines (actually, the last 2) will backup your
+<p>That&#39;s all you need! Those 4 lines (actually, the last 2) will backup your
 production database and then restore that backup in your staging database.</p>
 
 <p>Here is the <a href="https://gist.github.com/1089598">original gist</a>.</p>

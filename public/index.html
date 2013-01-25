@@ -9,9 +9,8 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="Since bundler came out, managing dependencies
-on ruby applications has been amazing. Combined with some bootstrap script,
-it&#8217;s really easy to &hellip;">
+  <meta name="description" content="Seriously, it&#39;s your fault that Github exposed your keys. If you want to
+add everything to your repo (not that this is a good idea though), at &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +68,71 @@ it&#8217;s really easy to &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/2013/01/25/stop-using-config-files-for-secret-data/">Stop Using Config Files for Secret Data</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-25T11:02:00-05:00" pubdate data-updated="true">Jan 25<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Seriously, it&#39;s <strong>your</strong> fault that Github exposed your keys. If you want to
+add everything to your repo (not that this is a good idea though), at least
+make it private.</p>
+
+<p>If you want to have <strong>per-environment variables, use the environment variables</strong>.
+<em>But my development env would be full of crap!</em> some of you may cry&#8230; well,
+there&#39;s a simple solution for that. Use <a href="https://github.com/bkeepers/dotenv">Dotenv</a>.</p>
+
+<p>With <em>Dotenv</em> you only need to add a <code>.env</code> file to your application root directory
+and you&#39;re done. Here&#39;s a quick example:</p>
+<div class="highlight"><pre><code class="sh"><span class="c"># .env</span>
+<span class="nv">S3_BUCKET</span><span class="o">=</span>some_development_bucket
+<span class="nv">S3_SECRET</span><span class="o">=</span>a_secret_key
+</code></pre>
+</div>
+
+<p>Then in your code, simply use <code>ENV[]</code> and be happy (and safe, but mostly happy)</p>
+<div class="highlight"><pre><code class="ruby"><span class="c1"># some config file</span>
+<span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;S3_BUCKET&#39;</span><span class="o">]</span>
+</code></pre>
+</div>
+
+<p>And just like that, you can setup your server&#39;s config environments and not
+worry about <em>supposed-to-be-private</em> public information.</p>
+
+<p>One really cool thing about this is that this variables will only be loaded
+in that specific application. It won&#39;t change <strong>your</strong> environment. So when
+you stop the servers, your environment won&#39;t have the <code>.env</code> variables.</p>
+
+<p>You can read more about <a href="http://opensoul.org/blog/archives/2012/07/24/dotenv/">Dotenv here</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/2013/01/15/easily-add-versions-to-your-gemfile/">Easily Add Versions to Your Gemfile</a></h1>
     
     
@@ -93,36 +157,26 @@ it&#8217;s really easy to &hellip;">
 
 
   <div class="entry-content"><p>Since <a href="http://gembundler.com/" title="Bundler">bundler</a> came out, managing dependencies
-on ruby applications has been amazing. Combined with <a href="http://37signals.com/svn/posts/2998-setting-up-a-new-machine-for-ruby-development" title="37 Signals bootstrap script">some</a> <a href="http://zachholman.com/talk/unsucking-your-teams-development-environment/" title="Zach Holman's talk on development environment">bootstrap</a> <a href="http://ngauthier.com/2012/08/one-click-development.html" title="One click development">script</a>,
-it&#8217;s really easy to download some source code, install, and run an application.</p>
+on ruby applications has been amazing. Combined with <a href="http://37signals.com/svn/posts/2998-setting-up-a-new-machine-for-ruby-development" title="37 Signals bootstrap script">some</a> <a href="http://zachholman.com/talk/unsucking-your-teams-development-environment/" title="Zach Holman&#39;s talk on development environment">bootstrap</a> <a href="http://ngauthier.com/2012/08/one-click-development.html" title="One click development">script</a>,
+it&#39;s really easy to download some source code, install, and run an application.</p>
 
-<p>There is still some room for improvement though. I&#8217;ve always supported the use
+<p>There is still some room for improvement though. I&#39;ve always supported the use
 of <a href="http://semver.org/" title="SemVer: Semantic Versioning">SemVer</a> and pessimistic locking (the <code>~&gt;</code>). This will allow you to
 update applications without pain. And, with all this rails vulnerabilities,
 you need just that.</p>
 
-<p>But, since people don&#8217;t always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
-a little messy</a>. So, I&#8217;ve created a simple gem to help you with that.</p>
+<p>But, since people don&#39;t always have the versions on their <code>Gemfile</code>, <a href="http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html" title="Rails 4 and your Gemfile">this can get
+a little messy</a>. So, I&#39;ve created a simple gem to help you with that.</p>
 
-<h3>Welcome version_gemfile</h3>
+<h3 id="toc_2698">Welcome version_gemfile</h3>
 
 <ul>
-<li><ol>
-<li>Simply install it: <code>$ gem install version_gemfile</code></li>
-</ol>
-</li>
-<li><ol>
-<li>Go to your rails application: <code>$ cd ~/my/ruby/application</code></li>
-</ol>
-</li>
-<li><ol>
-<li>And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
-</ol>
-</li>
+<li>1. Simply install it: <code>$ gem install version_gemfile</code></li>
+<li>2. Go to your rails application: <code>$ cd ~/my/ruby/application</code></li>
+<li>3. And add the versions to your <em>Gemfile</em>: <code>$ version_gemfile</code></li>
 </ul>
 
-
-<h2>How does it work?</h2>
+<h2 id="toc_2699">How does it work?</h2>
 
 <p>This gem will go through each line in your <code>Gemfile</code> looking for dependencies
 that have no versions. Then, will look into your <code>Gemfile.lock</code> for the version
@@ -165,13 +219,13 @@ or ping me on <a href="https://twitter.com/nhocki" title="My twitter profile">Tw
   </header>
 
 
-  <div class="entry-content"><p>For about a year, I&#8217;ve always had a question I ask someone I&#8217;m interviewing for
-a programming position. I&#8217;ve asked this around 3 times and got some nice
+  <div class="entry-content"><p>For about a year, I&#39;ve always had a question I ask someone I&#39;m interviewing for
+a programming position. I&#39;ve asked this around 3 times and got some nice
 answers, but I had never implemented it. The question is really simple:</p>
 
 <p><strong>Given a linked list, how would you reverse it in <code>O(n)</code>?</strong></p>
 
-<p>Here&#8217;s my solution:</p>
+<p>Here&#39;s my solution:</p>
 
 <div><script src='https://gist.github.com/4392454.js?file='></script>
 <noscript><pre><code>Node = Struct.new(:id, :next)
@@ -210,9 +264,8 @@ puts &quot;\n&quot;
 print_list(reverse_list(first))
 </code></pre></noscript></div>
 
-
-<p>How would you do it? There&#8217;s a really simple solution using a queue, but if you
-find another one, I&#8217;d love to hear about it on
+<p>How would you do it? There&#39;s a really simple solution using a queue, but if you
+find another one, I&#39;d love to hear about it on
 <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 </div>
   
@@ -255,7 +308,7 @@ allow our clients to edit some templates.</p>
 <p>We will store these templates in the Database, load them, parse them and render
 them. So far, no magic.</p>
 
-<p>But, I needed to have some &#8220;partials&#8221; for these. I wanted some common elements
+<p>But, I needed to have some &quot;partials&quot; for these. I wanted some common elements
 (like image galleries) to be available for the client to use in that specific
 template.</p>
 
@@ -270,7 +323,7 @@ this.</p>
 1 or 2 arguments (please, go for 2). This method must return the Liquid <strong>source</strong>
 of the partial (not a parsed template).</p>
 
-<p>So, here&#8217;s a really simple one that will work:</p>
+<p>So, here&#39;s a really simple one that will work:</p>
 
 <div><script src='https://gist.github.com/3645632.js?file='></script>
 <noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
@@ -292,14 +345,13 @@ end
 # This `template` has an {% include %} tag.
 &lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
 
-
-<h2>Default FileSystem</h2>
+<h2 id="toc_2696">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2>Any other way?</h2>
+<h2 id="toc_2697">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
@@ -338,30 +390,30 @@ of a better way to do this, please <a href="https://twitter.com/nhocki">let me k
   </header>
 
 
-  <div class="entry-content"><p>I have finished my first &#8220;working season&#8221; at <a href="http://mit.edu">MIT</a>. I got here
-on October 4. It&#8217;s been an amazing and weird journey.</p>
+  <div class="entry-content"><p>I have finished my first &quot;working season&quot; at <a href="http://mit.edu">MIT</a>. I got here
+on October 4. It&#39;s been an amazing and weird journey.</p>
 
 <p>But I have to admit that at first I was a bad employee. I was <strong>really</strong> used
 to have somebody telling me what to do all the time. When I arrived at MIT that
-didn&#8217;t happen. <strong>At all</strong>. I was given some &#8220;long term&#8221; tasks and that was it.
+didn&#39;t happen. <strong>At all</strong>. I was given some &quot;long term&quot; tasks and that was it.
 I just had to do them.</p>
 
 <p>Since no one was all over me checking my progress or asking me how I was
-doing on everything, I was waisting a lot (<em>most</em>) of my time.
+doing on everything, I was waisting a lot (*most*) of my time.
 <a href="http://www.espndeportes.com">ESPNDeportes</a> got a lot of visits from me.
 I started using Facebook on regular basis. <a href="http://www.threadless.com">Threadless</a>
-didn&#8217;t have enough T-shirts for me. <a href="http://twitter.com/nhocki">Twitter</a> was
-not &#8220;real time enough&#8221;&#8230;</p>
+didn&#39;t have enough T-shirts for me. <a href="http://twitter.com/nhocki">Twitter</a> was
+not &quot;real time enough&quot;&#8230;</p>
 
-<p>But, with time, I started working and I can&#8217;t say how grateful I am for <a href="http://tomayko.com/writings/management-style">this
-way of managing</a>. I&#8217;ve learned
+<p>But, with time, I started working and I can&#39;t say how grateful I am for <a href="http://tomayko.com/writings/management-style">this
+way of managing</a>. I&#39;ve learned
 to be much more productive on my own. To manage my time. To be much more
 responsible. But, I guess the best thing about this was that I learned that
 you just need to <strong>shut up, close all the meaningless things you have open and
 get shit done</strong>.</p>
 
-<p>Sure, if you need help, ask. If what you&#8217;re doing is wrong, try again. But you
-won&#8217;t know something doesn&#8217;t work if it&#8217;s just an idea.</p>
+<p>Sure, if you need help, ask. If what you&#39;re doing is wrong, try again. But you
+won&#39;t know something doesn&#39;t work if it&#39;s just an idea.</p>
 
 <p>I became much more productive in everything. Not only MIT work stuff. Personal
 (disposable) things I wanted to try.
@@ -411,34 +463,34 @@ try it. <strong>Close this post and every other distracting thing and do somethi
   <div class="entry-content"><p>For a while, this idea has been wondering around in my head.</p>
 
 <p>I would love to have some web-development community in Medellín, but I would
-like it to be &#8220;something more&#8221;. I love the idea of learning from others,
+like it to be &quot;something more&quot;. I love the idea of learning from others,
 teaching and getting people involved. I know there are
 <a href="http://coffeegrid.org/">more people</a> that are looking forward for this.</p>
 
-<p>Sadly, we don&#8217;t have a community like the one in Boston. It&#8217;s amazing how
+<p>Sadly, we don&#39;t have a community like the one in Boston. It&#39;s amazing how
 many events there are here. <a href="http://bostonrb.org/">Boston.rb</a> meets up to
-3 times a month! It&#8217;s just crazy! You just need to go to
+3 times a month! It&#39;s just crazy! You just need to go to
 <a href="http://www.meetup.com/">Meetup</a> to find an event of your interest! All
 filled with people eager to share and help!</p>
 
-<p>But I would love to put all that lovin&#8217; to some &#8220;charity&#8221; work. Get real
-projects for people that need it. <strong>It doesn&#8217;t have to be 100% free</strong>,
+<p>But I would love to put all that lovin&#39; to some &quot;charity&quot; work. Get real
+projects for people that need it. <strong>It doesn&#39;t have to be 100% free</strong>,
 but not charging nearly as much as you would normally do it!</p>
 
 <p>For example, I know a <a href="http://www.bomberosenvigado.org/"><strong>Volunteer</strong> Fire Fighter Department</a>
 that needs to build a simple learning system to distribute knowledge because
-<strong>ignorance is taking a lot of lives</strong> (from firefighters and people they&#8217;re
+<strong>ignorance is taking a lot of lives</strong> (from firefighters and people they&#39;re
 trying to save). Hell, they also need a new website!</p>
 
 <p>I also know about a guy that needs a website for an organisation that helps
 small kids with cancer in Africa.</p>
 
-<p>All these projects could use the expertise of &#8220;old&#8221; developers and enthusiasm
-from the ones that are just learning. I&#8217;ve found that working on a real
+<p>All these projects could use the expertise of &quot;old&quot; developers and enthusiasm
+from the ones that are just learning. I&#39;ve found that working on a real
 project is way better than learning on your backyard. So why not take something
 that could use more man-power and pair program on these websites?</p>
 
-<p>I&#8217;m not saying we should not have presentations! Presentations should still
+<p>I&#39;m not saying we should not have presentations! Presentations should still
 be the center of this. Sharing new stuff is the most important part for the
 community. But maybe having some <em>hackathons</em> where we work on these projects.</p>
 
@@ -448,7 +500,7 @@ giving some beer and food! Developing companies could also sponsor this
 and get some mention on the created websites. I know
 <a href="http://www.zinergia.co">we</a> would do it!</p>
 
-<p>I can&#8217;t do it right now. I&#8217;m 2.5K miles away! And I don&#8217;t think it&#8217;s an
+<p>I can&#39;t do it right now. I&#39;m 2.5K miles away! And I don&#39;t think it&#39;s an
 easy thing to organize, but I would like to know if people is actually
 interested before I throw myself sending emails and talking to people,
 so please contact me if you are, either by leaving a comment or
@@ -490,11 +542,11 @@ so please contact me if you are, either by leaving a comment or
   </header>
 
 
-  <div class="entry-content"><p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here&#8217;s the easy solution for this:</p>
+  <div class="entry-content"><p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here&#39;s the easy solution for this:</p>
 
 <p><code>sudo /usr/bin/xcode-select -switch /Applications/Xcode.app/Contents/Developer/</code></p>
 
-<p>That&#8217;s it. Just let Xcode know where to look for the developer tools again.</p>
+<p>That&#39;s it. Just let Xcode know where to look for the developer tools again.</p>
 </div>
   
   
@@ -530,13 +582,13 @@ so please contact me if you are, either by leaving a comment or
   </header>
 
 
-  <div class="entry-content"><p>I just finished <a href="http://pragprog.com/book/warv/the-rails-view">The Rails View</a> and the best chapter for me was about presenters. I&#8217;ve been <a href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/">working with this</a> for a while and I have to admit I love the approach presented on the view.</p>
+  <div class="entry-content"><p>I just finished <a href="http://pragprog.com/book/warv/the-rails-view">The Rails View</a> and the best chapter for me was about presenters. I&#39;ve been <a href="http://blog.nhocki.com/2012/01/31/thoughts-on-decorators-and-presenters/">working with this</a> for a while and I have to admit I love the approach presented on the view.</p>
 
-<p>All the presenters I&#8217;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#8217;t depend on params or session variables it&#8217;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#8217;re presenting various objects on the same view. Here&#8217;s an example to present users in our application, let&#8217;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#8217;s make it in a really simple way!</p>
+<p>All the presenters I&#39;ve done were <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">instantiated in the controller</a>. In the book they suggest that <strong>if the presenter doesn&#39;t depend on params or session variables it&#39;s the view responsibility to create it</strong>. This is extremely flexible specially when we&#39;re presenting various objects on the same view. Here&#39;s an example to present users in our application, let&#39;s use the same presenter for the <em>index</em> and <em>show</em> actions, but let&#39;s make it in a really simple way!</p>
 
-<h3>The Helper &amp; View</h3>
+<h3 id="toc_2693">The Helper &amp; View</h3>
 
-<p>Let&#8217;s create the helper method first. It&#8217;s really simple and will take a block that we can use to build a custom markup &#8220;on the fly&#8221;.</p>
+<p>Let&#39;s create the helper method first. It&#39;s really simple and will take a block that we can use to build a custom markup &quot;on the fly&quot;.</p>
 
 <div><script src='https://gist.github.com/2640442.js?file=user_helpers.rb'></script>
 <noscript><pre><code># app/helpers/user_helpers.rb
@@ -549,8 +601,7 @@ def basic_information_for(user = @user, options = {})
   end
 end</code></pre></noscript></div>
 
-
-<p>Now, let&#8217;s take a look at the views. In the <strong>show</strong> action, we&#8217;re going to present only one user, and we can easily build the custom view for this. In the <strong>index</strong> action, we&#8217;ll present all a &#8220;basic info&#8221; for the each user. We have that in a partial because this is used for all the collections of users in our application. Here&#8217;s the view code:</p>
+<p>Now, let&#39;s take a look at the views. In the <strong>show</strong> action, we&#39;re going to present only one user, and we can easily build the custom view for this. In the <strong>index</strong> action, we&#39;ll present all a &quot;basic info&quot; for the each user. We have that in a partial because this is used for all the collections of users in our application. Here&#39;s the view code:</p>
 
 <div><script src='https://gist.github.com/2640442.js?file=user_views.html.erb'></script>
 <noscript><pre><code># app/views/show.html.erb
@@ -565,10 +616,9 @@ end</code></pre></noscript></div>
   &lt;%= basic_information_for(user) %&gt;
 &lt;% end %&gt;</code></pre></noscript></div>
 
+<h3 id="toc_2694">The Presenter, A.K.A What&#39;s happening here?</h3>
 
-<h3>The Presenter, A.K.A What&#8217;s happening here?</h3>
-
-<p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#8217;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#8217;s the code for that:</p>
+<p>What makes this <strong>really</strong> clean is that we can actually use <code>&lt;%=  %&gt;</code> directly on our helper method. This works because we&#39;ll define the <code>to_s</code> method in our presenter! In this method we <strong>render our partial in the context of the helper</strong>, which is amazing. Here&#39;s the code for that:</p>
 
 <div><script src='https://gist.github.com/2640442.js?file=user_basic_presenter.rb'></script>
 <noscript><pre><code># app/presenters/user_basic_presenter.rb
@@ -586,14 +636,13 @@ class UserBasicPresenter
   end
 end</code></pre></noscript></div>
 
-
 <p>Is <strong>that</strong> simple! We have a unique interface (the helper) that will work great in both places! We could obviously make the presenter more complex, otherwise, why use it?</p>
 
-<p>Even though I haven&#8217;t used this approach a lot, I&#8217;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
+<p>Even though I haven&#39;t used this approach a lot, I&#39;m really happy with it. I felt the difference instantly and it made a lot of sense to me. Being able to mix this with a <a href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/">flexible layout</a> is really powerful!</p>
 
-<h3>Feedback</h3>
+<h3 id="toc_2695">Feedback</h3>
 
-<p>I&#8217;m also really interested in how people are using presenters. I&#8217;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
+<p>I&#39;m also really interested in how people are using presenters. I&#39;d love to gain more feedbacks and points of view about this. Feel free to post a comment (here on in the gist) or ping me on Twitter, <a href="https://twitter.com/nhocki">@nhocki</a>.</p>
 </div>
   
   
@@ -629,11 +678,11 @@ end</code></pre></noscript></div>
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I had to edit a bunch of stuff in the views.</p>
+  <div class="entry-content"><p>I&#39;ve been working on a &quot;new&quot; project (I&#39;m new to the project, the project itself is &#39;old&#39;) and at the beginning I had to edit a bunch of stuff in the views.</p>
 
 <p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
 
-<p>It&#8217;s pretty common to have a <code>header</code> partial rendered on the view. If you&#8217;re a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#8217;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+<p>It&#39;s pretty common to have a <code>header</code> partial rendered on the view. If you&#39;re a lovely developer you would have <code>render &quot;header&quot;</code> and not something like <code>render &quot;layouts/header&quot;</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#39;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
 
 <p>But this is a <em>controller wide</em> solution, since all the actions from that controller will render the same partial. So, how do you achieve this on a single action? My solution is a 3 line helper:</p>
 
@@ -662,8 +711,7 @@ def content_or_partial(content, partial = content)
   content_for?(content) ? content_for(content) : render(partial.to_s)
 end</code></pre></noscript></div>
 
-
-<p>Now all you have to do is fill your layouts with &#8220;content boxes&#8221; that can be changed on an controller or action-specific need, giving great flexibility.</p>
+<p>Now all you have to do is fill your layouts with &quot;content boxes&quot; that can be changed on an controller or action-specific need, giving great flexibility.</p>
 
 <p>How would you get around this?</p>
 </div>
@@ -701,29 +749,31 @@ end</code></pre></noscript></div>
   </header>
 
 
-  <div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#8217;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I&#8217;ll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
+  <div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#39;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I&#39;ll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
 
-<p><strong>I want to warn you that I am not by any means an expert on the subject. So I&#8217;m more than open to any feedback you can give me.</strong></p>
+<p><strong>I want to warn you that I am not by any means an expert on the subject. So I&#39;m more than open to any feedback you can give me.</strong></p>
 
-<blockquote><p>All presenters are decorators, but not all decorators are presenters.</p>
+<blockquote>
+<p>All presenters are decorators, but not all decorators are presenters.</p>
 
 <p>A decorator is a class that adds some sort of functionality to another
 class. A presenter is a class that adds some sort of presentation
 formatting functionality to another class.</p>
 
-<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p></blockquote>
+<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p>
+</blockquote>
 
-<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#8217;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
+<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#39;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
 
-<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> &#39;markup&#39;. So, they can be treated as templates.</p>
+<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
 
-<h3>So, where do the logic in the template goes?</h3>
+<h3 id="toc_2690">So, where do the logic in the template goes?</h3>
 
-<p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous &#39;<strong><em>You are logged in as nhocki</em></strong>&#39; if there&#8217;s a user logged in.</p>
+<p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
 
-<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.</p>
+<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.  </p>
 
-<p>Here&#8217;s an example:</p>
+<p>Here&#39;s an example:</p>
 
 <div><script src='https://gist.github.com/1714913.js?file='></script>
 <noscript><pre><code># app/models/user.rb
@@ -774,65 +824,13 @@ def admin_area(&amp;block)
   content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
 end</code></pre></noscript></div>
 
+<h3 id="toc_2691">Maybe I have the names wrong</h3>
 
-<h3>Maybe I have the names wrong</h3>
+<p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
 
-<p>As I mentioned before, I&#8217;m no expert on design patterns. And I&#8217;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#8217;t really care how this is called, I feel it&#8217;s a more natural approach and it keeps the template and the processed data in different parts.</p>
+<h3 id="toc_2692">Please provide feedback</h3>
 
-<h3>Please provide feedback</h3>
-
-<p>It is also possible that I have it all wrong, that&#8217;s why I&#8217;m really interested in your opinion. I&#8217;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/23/from-tumblr-to-octopress/">From Tumblr to Octopress</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I wrote an article yesterday about URL design and I spent about an hour fighting with <a href="http://tumblr.com/">Tumblr</a> to format my <code>code inside a pre (or code) tag</code>. I knew I was done with them. Today, I&#8217;m giving <a href="http://octopress.org/">Octopress</a> a try. I honestly wanted to try <a href="http://jekyllrb.com/">Jekyll</a> but I was really lazy to code my HTML. So, for now, I&#8217;m welcoming Octopress.</p>
-
-<p>I really love the fact that I can write in <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, it&#8217;s really powerful yet simple that makes me focus on writing and not formatting. I know I can use Markdown in Tumblr but I don&#8217;t have Textmate there, so this is a big +1 for Jekyll/Octopress.</p>
-
-<h2>Moving Posts From Tumblr</h2>
-
-<p>There&#8217;s a <a href="https://github.com/mojombo/jekyll/wiki/Blog-Migrations">great script</a> to move posts from Tumblr. They&#8217;ll even be downloaded as markdown, but I still had to edit them to add the Gist snippets. Thankfully I don&#8217;t have a lot of posts so it didn&#8217;t took a lot.</p>
-
-<h2>Deploying</h2>
-
-<p>I&#8217;ve deployed my blog to <a href="http://heroku.com">Heroku</a> now. It was supposed to be really simple. It was, after I realized that the <code>public</code> folder is ignored by the git. I spent an hour of my life there :-( !</p>
-
-<pre>Remove the public folder from your .gitignore</pre>
-
-
-<p>I&#8217;ll probably post more about Octopress when I get to know it better. There are a bunch of plugins and stuff that may be useful, or maybe, it&#8217;ll suck and I&#8217;ll have to go and find something else!</p>
+<p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 </div>
   
   

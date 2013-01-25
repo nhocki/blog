@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I &hellip;">
+  <meta name="description" content="I&#39;ve been working on a &quot;new&quot; project (I&#39;m new to the project, the project itself is &#39;old&#39;) and at the beginning I had to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,11 +87,11 @@
   </header>
 
 
-<div class="entry-content"><p>I&#8217;ve been working on a &#8220;new&#8221; project (I&#8217;m new to the project, the project itself is &#8216;old&#8217;) and at the beginning I had to edit a bunch of stuff in the views.</p>
+<div class="entry-content"><p>I&#39;ve been working on a &quot;new&quot; project (I&#39;m new to the project, the project itself is &#39;old&#39;) and at the beginning I had to edit a bunch of stuff in the views.</p>
 
 <p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
 
-<p>It&#8217;s pretty common to have a <code>header</code> partial rendered on the view. If you&#8217;re a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#8217;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+<p>It&#39;s pretty common to have a <code>header</code> partial rendered on the view. If you&#39;re a lovely developer you would have <code>render &quot;header&quot;</code> and not something like <code>render &quot;layouts/header&quot;</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#39;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
 
 <p>But this is a <em>controller wide</em> solution, since all the actions from that controller will render the same partial. So, how do you achieve this on a single action? My solution is a 3 line helper:</p>
 
@@ -120,8 +120,7 @@ def content_or_partial(content, partial = content)
   content_for?(content) ? content_for(content) : render(partial.to_s)
 end</code></pre></noscript></div>
 
-
-<p>Now all you have to do is fill your layouts with &#8220;content boxes&#8221; that can be changed on an controller or action-specific need, giving great flexibility.</p>
+<p>Now all you have to do is fill your layouts with &quot;content boxes&quot; that can be changed on an controller or action-specific need, giving great flexibility.</p>
 
 <p>How would you get around this?</p>
 </div>

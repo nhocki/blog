@@ -9,8 +9,8 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I&#8217;m working on a really cool project on my University. It&#8217;s a web application
-to compare book editions and help professors build what is &hellip;">
+  <meta name="description" content="I&#39;m working on a really cool project on my University. It&#39;s a web application
+to compare book editions and help professors build what is know &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,9 +88,9 @@ to compare book editions and help professors build what is &hellip;">
   </header>
 
 
-<div class="entry-content"><p>I&#8217;m working on a really cool project on my University. It&#8217;s a web application
+<div class="entry-content"><p>I&#39;m working on a really cool project on my University. It&#39;s a web application
 to compare book editions and help professors build what is know as the
-Collatzio. The Collatzio is simply the &#8220;original&#8221; version of the book. That
+Collatzio. The Collatzio is simply the &quot;original&quot; version of the book. That
 means, to have the book the author wanted to write and not the one that the
 editors wanted to publish.</p>
 
@@ -109,18 +109,13 @@ auto;</strong> to make the scrollbar appears on each div.</p>
     event.preventDefault()
     return false</code></pre></noscript></div>
 
-
-<p>Hope it helps someone. I struggled a little bit with the &#8220;common&#8221; way of
+<p>Hope it helps someone. I struggled a little bit with the &quot;common&quot; way of
 scrolling things. People usually use the <code>animate</code> method to scroll the body,
-but I couldn&#8217;t use it because it kept triggering the scroll event on the
+but I couldn&#39;t use it because it kept triggering the scroll event on the
 elements, so it was an infinite loop.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html, body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">scrollTop</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span><span class="err"> </span><span class="s2">&quot;slow&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html, body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">scrollTop</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span><span class="err"> </span><span class="s2">&quot;slow&quot;</span><span class="p">);</span>
+</code></pre>
+</div>
 </div>
 
 

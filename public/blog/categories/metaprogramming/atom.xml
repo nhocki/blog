@@ -4,7 +4,7 @@
   <title><![CDATA[Category: metaprogramming | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/metaprogramming/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,92 +18,27 @@
     <link href="http://blog.nhocki.com/2012/01/22/beautiful-urls-in-rails-the-easy-way/"/>
     <updated>2012-01-22T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/01/22/beautiful-urls-in-rails-the-easy-way</id>
-    <content type="html"><![CDATA[<p>I've always been in love with <a href="http://warpspire.com/posts/url-design/">beautiful URL design</a>. Specially for 'public' parts of the site. In Rails, it's pretty common to use the ID of the object in the URL. Well, that <strong>really</strong> sucks.</p>
+    <content type="html"><![CDATA[<p>I&#39;ve always been in love with <a href="http://warpspire.com/posts/url-design/">beautiful URL design</a>. Specially for &#39;public&#39; parts of the site. In Rails, it&#39;s pretty common to use the ID of the object in the URL. Well, that <strong>really</strong> sucks.</p>
 
-<p>My first approach to solve this problem was started by <a href="http://mheroin.com/">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It's really easy to use and will (up to some point) solve the problem. I know <a href="http://rubygems.org/gems/friendly_id">FriendlyID</a> exists, but I <em>hate</em> having the permalink field in my database (I <em>always</em> forget it) so that's why I like Make Permalink's approach.</p>
+<p>My first approach to solve this problem was started by <a href="http://mheroin.com/">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It&#39;s really easy to use and will (up to some point) solve the problem. I know <a href="http://rubygems.org/gems/friendly_id">FriendlyID</a> exists, but I <em>hate</em> having the permalink field in my database (I <em>always</em> forget it) so that&#39;s why I like Make Permalink&#39;s approach.</p>
 
-<p><div><script src='https://gist.github.com/1660555.js?file=make_permalink_example.rb'></script>
-<noscript><pre><code>class Post &lt; ActiveRecord::Base
-  make_permalink :title
+<p>{% gist 1660555 make_permalink_example.rb %}</p>
 
-  # Override this method to have nice looking
-  # URLs. You still use `Post.find` in the controller
-  # and will get URL like this:
-  #
-  #    /posts/1-look-mom-i-rock
-  def to_param
-    permalink
-  end
-end
-</code></pre></noscript></div>
-</p>
+<p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don&#39;t have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
 
-<p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don't have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
-
-<p>I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have <em><strong>just</strong></em> the username. I said, well, why don't you just change the <code>to_param</code> method to return the username and use <code>User.find_by_username</code> everywhere?</p>
+<p>I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have <em><strong>just</strong></em> the username. I said, well, why don&#39;t you just change the <code>to_param</code> method to return the username and use <code>User.find_by_username</code> everywhere?</p>
 
 <p>Even though this actually works, I would be very tired from writing <code>find_by_username</code> over and over again. So I told him to write a <code>fetch</code> method where he could get an user either by the <code>id</code> or the <code>username</code>. I think this is pretty convenient and nice, but I would <em><strong>hate</strong></em> to write that fetch method in every model. So, with some metaprogramming we can easily do this.</p>
 
-<p>First, I've created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won't work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it's ok. Here's the code. Place it in your initializers folder.</p>
+<p>First, I&#39;ve created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won&#39;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&#39;s ok. Here&#39;s the code. Place it in your initializers folder.</p>
 
-<p><div><script src='https://gist.github.com/1657758.js?file='></script>
-<noscript><pre><code># config/initializers/fetchable.rb
+<p>{% gist 1657758 %}</p>
 
-# encoding: UTF-8
+<p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it&#39;ll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here&#39;s an example:</p>
 
-module Extensions
-  module Fetchable
-    # Adding `fetchable_on` to a model will define the `fetch` method
-    # that will allow you to query that model with the `attribute` or `id`.
-    #
-    # Having the following:
-    #
-    #    class User &lt;&lt; ActiveRecord::Base
-    #      fetchable_on :username
-    #    end
-    #
-    # Will let you fetch users by username or id.
-    #
-    #    User.fetch('nhocki').id # =&gt; 1
-    #    User.fetch(1).username # =&gt; nhocki
-    def fetchable_on(attribute)
-      define_singleton_method(&quot;fetch&quot;) do |*args|
-        looked_value = args.shift
-        begin
-          find(looked_value.to_i, *args)
-        rescue ActiveRecord::RecordNotFound
-          send(&quot;find_by_#{attribute}!&quot;, looked_value.to_s, *args)
-        end
-      end
-    end
-  end
-end
+<p>{% gist 1660555 fetchable_example.rb %}</p>
 
-ActiveRecord::Base.extend(Extensions::Fetchable)</code></pre></noscript></div>
-</p>
-
-<p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it'll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here's an example:</p>
-
-<p><div><script src='https://gist.github.com/1660555.js?file=fetchable_example.rb'></script>
-<noscript><pre><code>class User &lt; ActiveRecord::Base
-  fetchable_on :username
-
-  # URL Style: /users/nhocki
-  def to_param
-    username
-  end
-end
-
-# Gives you the `fetch` method.
-# It takes the username or the id.
-# Use fetch in your controller
-
-User.fetch('nhocki').id # =&gt; 1
-User.fetch(1).username  # =&gt; 'nhocki'
-</code></pre></noscript></div>
-</p>
-
-<p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there's no object in the DB.</strong></p>
+<p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there&#39;s no object in the DB.</strong></p>
 
 <p>How would you implement this? Any good solutions?</p>
 ]]></content>

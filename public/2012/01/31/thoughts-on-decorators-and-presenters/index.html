@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I have been developing a new app using a lot of decorators and presenters. I&#8217;ve been highly influenced by Avdi (both his blog and his Objects &hellip;">
+  <meta name="description" content="I have been developing a new app using a lot of decorators and presenters. I&#39;ve been highly influenced by Avdi (both his blog and his Objects in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,29 +87,31 @@
   </header>
 
 
-<div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#8217;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I&#8217;ll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
+<div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#39;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I&#39;ll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
 
-<p><strong>I want to warn you that I am not by any means an expert on the subject. So I&#8217;m more than open to any feedback you can give me.</strong></p>
+<p><strong>I want to warn you that I am not by any means an expert on the subject. So I&#39;m more than open to any feedback you can give me.</strong></p>
 
-<blockquote><p>All presenters are decorators, but not all decorators are presenters.</p>
+<blockquote>
+<p>All presenters are decorators, but not all decorators are presenters.</p>
 
 <p>A decorator is a class that adds some sort of functionality to another
 class. A presenter is a class that adds some sort of presentation
 formatting functionality to another class.</p>
 
-<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p></blockquote>
+<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p>
+</blockquote>
 
-<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#8217;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
+<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#39;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
 
-<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> &#39;markup&#39;. So, they can be treated as templates.</p>
+<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
 
-<h3>So, where do the logic in the template goes?</h3>
+<h3 id="toc_2690">So, where do the logic in the template goes?</h3>
 
-<p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous &#39;<strong><em>You are logged in as nhocki</em></strong>&#39; if there&#8217;s a user logged in.</p>
+<p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
 
-<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.</p>
+<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.  </p>
 
-<p>Here&#8217;s an example:</p>
+<p>Here&#39;s an example:</p>
 
 <div><script src='https://gist.github.com/1714913.js?file='></script>
 <noscript><pre><code># app/models/user.rb
@@ -160,14 +162,13 @@ def admin_area(&amp;block)
   content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
 end</code></pre></noscript></div>
 
+<h3 id="toc_2691">Maybe I have the names wrong</h3>
 
-<h3>Maybe I have the names wrong</h3>
+<p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
 
-<p>As I mentioned before, I&#8217;m no expert on design patterns. And I&#8217;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#8217;t really care how this is called, I feel it&#8217;s a more natural approach and it keeps the template and the processed data in different parts.</p>
+<h3 id="toc_2692">Please provide feedback</h3>
 
-<h3>Please provide feedback</h3>
-
-<p>It is also possible that I have it all wrong, that&#8217;s why I&#8217;m really interested in your opinion. I&#8217;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
+<p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 </div>
 
 

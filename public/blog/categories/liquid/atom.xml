@@ -4,7 +4,7 @@
   <title><![CDATA[Category: liquid | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/liquid/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -24,7 +24,7 @@ allow our clients to edit some templates.</p>
 <p>We will store these templates in the Database, load them, parse them and render
 them. So far, no magic.</p>
 
-<p>But, I needed to have some "partials" for these. I wanted some common elements
+<p>But, I needed to have some &quot;partials&quot; for these. I wanted some common elements
 (like image galleries) to be available for the client to use in that specific
 template.</p>
 
@@ -39,36 +39,17 @@ this.</p>
 1 or 2 arguments (please, go for 2). This method must return the Liquid <strong>source</strong>
 of the partial (not a parsed template).</p>
 
-<p>So, here's a really simple one that will work:</p>
+<p>So, here&#39;s a really simple one that will work:</p>
 
-<p><div><script src='https://gist.github.com/3645632.js?file='></script>
-<noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
-class LiquidTemplateSystem
-  attr_reader :user
+<p>{% gist 3645632 %}</p>
 
-  def initialize(user)
-    @user = user
-  end
-
-  # Return a valid liquid template string
-  def read_template_file(template_path, context)
-    user.partials.find_by_name(template_path).liquid_source
-  end
-end
-
-
-# In the view:
-# This `template` has an {% include %} tag.
-&lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
-</p>
-
-<h2>Default FileSystem</h2>
+<h2 id="toc_2752">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2>Any other way?</h2>
+<h2 id="toc_2753">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: xcode | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/xcode/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,11 +18,11 @@
     <link href="http://blog.nhocki.com/2012/05/09/fix-xcode-path/"/>
     <updated>2012-05-09T19:38:00-04:00</updated>
     <id>http://blog.nhocki.com/2012/05/09/fix-xcode-path</id>
-    <content type="html"><![CDATA[<p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here's the easy solution for this:</p>
+    <content type="html"><![CDATA[<p>I updated my Xcode version this week and to my surprise they moved it from <code>/Developer</code> to <code>/Applications/Xcode</code>, the problem is that now all the developer tools went missing. Here&#39;s the easy solution for this:</p>
 
 <p><code>sudo /usr/bin/xcode-select -switch /Applications/Xcode.app/Contents/Developer/</code></p>
 
-<p>That's it. Just let Xcode know where to look for the developer tools again.</p>
+<p>That&#39;s it. Just let Xcode know where to look for the developer tools again.</p>
 ]]></content>
   </entry>
   

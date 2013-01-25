@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rake | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rake/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,37 +18,13 @@
     <link href="http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/"/>
     <updated>2011-11-30T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output</id>
-    <content type="html"><![CDATA[<p>I've been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I'm writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here's my module right now…</p>
+    <content type="html"><![CDATA[<p>I&#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#39;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here&#39;s my module right now…</p>
 
-<p><div><script src='https://gist.github.com/1410582.js?file='></script>
-<noscript><pre><code>module Colors
-  def colorize(text, color_code)
-    &quot;\033[#{color_code}m#{text}\033[0m&quot;
-  end
-
-  {
-    :black    =&gt; 30,
-    :red      =&gt; 31,
-    :green    =&gt; 32,
-    :yellow   =&gt; 33,
-    :blue     =&gt; 34,
-    :magenta  =&gt; 35,
-    :cyan     =&gt; 36,
-    :white    =&gt; 37
-  }.each do |key, color_code|
-    define_method key do |text|
-      colorize(text, color_code)
-    end
-  end
-end
-
-# green &quot;Hello&quot;
-#   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
-</p>
+<p>{% gist 1410582 %}</p>
 
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
-<p>I know there's a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don't like their syntax. I prefer Andres' approach much more, so maybe I'll turn this into a really simple gem. Do you think it's worth it?</p>
+<p>I know there&#39;s a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don&#39;t like their syntax. I prefer Andres&#39; approach much more, so maybe I&#39;ll turn this into a really simple gem. Do you think it&#39;s worth it?</p>
 ]]></content>
   </entry>
   
@@ -57,75 +33,26 @@ end
     <link href="http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/"/>
     <updated>2011-09-28T00:00:00-04:00</updated>
     <id>http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved</id>
-    <content type="html"><![CDATA[<p>This week, I've been working on a side project with <a href="http://andr.esmejia.com/">Andrés
+    <content type="html"><![CDATA[<p>This week, I&#39;ve been working on a side project with <a href="http://andr.esmejia.com/">Andrés
 Mejía</a> (<a href="http://twitter.com/andmej">@andmej</a>) and
 for some really really sad reason <a href="http://heroku.com">Heroku</a> is not working
-as expected (a simple git push should do the trick, but we're having a really
+as expected (a simple git push should do the trick, but we&#39;re having a really
 <a href="https://github.com/ddollar/rails_log_stdout/issues/4">weird issue</a>).</p>
 
 <p>At first, I thought it had something to do with the assets. Even-though
 <a href="http://heroku.com">Heroku</a> has <a href="h%0Attp://devcenter.heroku.com/articles/rails31_heroku_cedar#the_asset_pipeline">asset compiling tasks on their Cedar stack</a>,
-it didn't really worked for us at first. So I just decided to create a small
+it didn&#39;t really worked for us at first. So I just decided to create a small
 rake task to compile the assets and push them to Github.</p>
 
 <p>The good thing about this rake task is that it will only push the assets. This
-means, that <strong>you'll need a clean git tree to run this task or it will die</strong>.
-This ensures that the automatic push <strong>won't commit any non-related change to
+means, that <strong>you&#39;ll need a clean git tree to run this task or it will die</strong>.
+This ensures that the automatic push <strong>won&#39;t commit any non-related change to
 the compilation of the assets</strong>.</p>
 
 <p>Now, you only have to run <strong>rake assets:compile</strong> and sleep well at night.
-Here's the code. Hope it helps.</p>
+Here&#39;s the code. Hope it helps.</p>
 
-<p><div><script src='https://gist.github.com/1241135.js?file='></script>
-<noscript><pre><code>namespace :assets do
-  desc &quot;Compile all the assets named in config.assets.precompile and push them&quot;
-  task :compile do
-    AssetsCompiler.new.compile
-  end
-
-  class AssetsCompiler
-    def compile
-      ensure_clean_git
-      removed_previous_assets
-      compile_assets
-      commit_compiled_assets
-      push
-    end
-
-    def ensure_clean_git
-      raise &quot;Can't deploy without a clean git status.&quot; if git_dirty?
-    end
-
-    def removed_previous_assets
-      run &quot;bundle exec rake RAILS_ENV=production assets:clean&quot;
-    end
-
-    def compile_assets
-      run &quot;bundle exec rake RAILS_ENV=production assets:precompile&quot;
-    end
-
-    def commit_compiled_assets
-      run &quot;git add -u &amp;&amp; git add . &amp;&amp; git commit -am 'Compiled assets'&quot;
-    end
-
-    def push
-      run &quot;git push&quot;
-    end
-
-    private
-
-    def run(command)
-      puts &quot;+ Running: #{command}&quot;
-      puts &quot;-- #{system command}&quot;
-    end
-
-    def git_dirty?
-      `[[ $(git diff --shortstat 2&gt; /dev/null | tail -n1) != &quot;&quot; ]]`
-      dirty = $?.success?
-    end
-  end
-end</code></pre></noscript></div>
-</p>
+<p>{% gist 1241135 %}</p>
 ]]></content>
   </entry>
   

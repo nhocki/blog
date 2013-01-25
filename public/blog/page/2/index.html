@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I&#8217;ve always been in love with beautiful URL design. Specially for &#8216;public&#8217; parts of the site. In Rails, it&#8217;s pretty common to &hellip;">
+  <meta name="description" content="I wrote an article yesterday about URL design and I spent about an hour fighting with Tumblr to format my code inside a pre (or code) tag. I knew I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,56 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/2012/01/23/from-tumblr-to-octopress/">From Tumblr to Octopress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-23T00:00:00-05:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I wrote an article yesterday about URL design and I spent about an hour fighting with <a href="http://tumblr.com/">Tumblr</a> to format my <code>code inside a pre (or code) tag</code>. I knew I was done with them. Today, I&#39;m giving <a href="http://octopress.org/">Octopress</a> a try. I honestly wanted to try <a href="http://jekyllrb.com/">Jekyll</a> but I was really lazy to code my HTML. So, for now, I&#39;m welcoming Octopress.</p>
+
+<p>I really love the fact that I can write in <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, it&#39;s really powerful yet simple that makes me focus on writing and not formatting. I know I can use Markdown in Tumblr but I don&#39;t have Textmate there, so this is a big +1 for Jekyll/Octopress.</p>
+
+<h2 id="toc_2688">Moving Posts From Tumblr</h2>
+
+<p>There&#39;s a <a href="https://github.com/mojombo/jekyll/wiki/Blog-Migrations">great script</a> to move posts from Tumblr. They&#39;ll even be downloaded as markdown, but I still had to edit them to add the Gist snippets. Thankfully I don&#39;t have a lot of posts so it didn&#39;t took a lot.</p>
+
+<h2 id="toc_2689">Deploying</h2>
+
+<p>I&#39;ve deployed my blog to <a href="http://heroku.com">Heroku</a> now. It was supposed to be really simple. It was, after I realized that the <code>public</code> folder is ignored by the git. I spent an hour of my life there :-( !</p>
+
+<pre>Remove the public folder from your .gitignore</pre>
+
+<p>I&#39;ll probably post more about Octopress when I get to know it better. There are a bunch of plugins and stuff that may be useful, or maybe, it&#39;ll suck and I&#39;ll have to go and find something else!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/2012/01/22/beautiful-urls-in-rails-the-easy-way/">Beautiful URLs in Rails. The Easy Way.</a></h1>
     
     
@@ -90,9 +140,9 @@
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;ve always been in love with <a href="http://warpspire.com/posts/url-design/">beautiful URL design</a>. Specially for &#8216;public&#8217; parts of the site. In Rails, it&#8217;s pretty common to use the ID of the object in the URL. Well, that <strong>really</strong> sucks.</p>
+  <div class="entry-content"><p>I&#39;ve always been in love with <a href="http://warpspire.com/posts/url-design/">beautiful URL design</a>. Specially for &#39;public&#39; parts of the site. In Rails, it&#39;s pretty common to use the ID of the object in the URL. Well, that <strong>really</strong> sucks.</p>
 
-<p>My first approach to solve this problem was started by <a href="http://mheroin.com/">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It&#8217;s really easy to use and will (up to some point) solve the problem. I know <a href="http://rubygems.org/gems/friendly_id">FriendlyID</a> exists, but I <em>hate</em> having the permalink field in my database (I <em>always</em> forget it) so that&#8217;s why I like Make Permalink&#8217;s approach.</p>
+<p>My first approach to solve this problem was started by <a href="http://mheroin.com/">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It&#39;s really easy to use and will (up to some point) solve the problem. I know <a href="http://rubygems.org/gems/friendly_id">FriendlyID</a> exists, but I <em>hate</em> having the permalink field in my database (I <em>always</em> forget it) so that&#39;s why I like Make Permalink&#39;s approach.</p>
 
 <div><script src='https://gist.github.com/1660555.js?file=make_permalink_example.rb'></script>
 <noscript><pre><code>class Post &lt; ActiveRecord::Base
@@ -109,14 +159,13 @@
 end
 </code></pre></noscript></div>
 
+<p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don&#39;t have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
 
-<p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don&#8217;t have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
-
-<p>I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have <em><strong>just</strong></em> the username. I said, well, why don&#8217;t you just change the <code>to_param</code> method to return the username and use <code>User.find_by_username</code> everywhere?</p>
+<p>I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have <em><strong>just</strong></em> the username. I said, well, why don&#39;t you just change the <code>to_param</code> method to return the username and use <code>User.find_by_username</code> everywhere?</p>
 
 <p>Even though this actually works, I would be very tired from writing <code>find_by_username</code> over and over again. So I told him to write a <code>fetch</code> method where he could get an user either by the <code>id</code> or the <code>username</code>. I think this is pretty convenient and nice, but I would <em><strong>hate</strong></em> to write that fetch method in every model. So, with some metaprogramming we can easily do this.</p>
 
-<p>First, I&#8217;ve created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won&#8217;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&#8217;s ok. Here&#8217;s the code. Place it in your initializers folder.</p>
+<p>First, I&#39;ve created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won&#39;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&#39;s ok. Here&#39;s the code. Place it in your initializers folder.</p>
 
 <div><script src='https://gist.github.com/1657758.js?file='></script>
 <noscript><pre><code># config/initializers/fetchable.rb
@@ -153,8 +202,7 @@ end
 
 ActiveRecord::Base.extend(Extensions::Fetchable)</code></pre></noscript></div>
 
-
-<p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it&#8217;ll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here&#8217;s an example:</p>
+<p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it&#39;ll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here&#39;s an example:</p>
 
 <div><script src='https://gist.github.com/1660555.js?file=fetchable_example.rb'></script>
 <noscript><pre><code>class User &lt; ActiveRecord::Base
@@ -174,8 +222,7 @@ User.fetch('nhocki').id # =&gt; 1
 User.fetch(1).username  # =&gt; 'nhocki'
 </code></pre></noscript></div>
 
-
-<p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there&#8217;s no object in the DB.</strong></p>
+<p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there&#39;s no object in the DB.</strong></p>
 
 <p>How would you implement this? Any good solutions?</p>
 </div>
@@ -213,9 +260,9 @@ User.fetch(1).username  # =&gt; 'nhocki'
   </header>
 
 
-  <div class="entry-content"><p>There&#8217;s been a <a href="http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design">lot</a> of <a href="http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters">talk</a> <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">about</a><a href="http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in">decorators</a> and <a href="http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators">presenters</a> (<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">which are almost the same</a>) in Rails and how they help you with a &#8220;real&#8221; OO code. There are great gems and there&#8217;s even a <a href="http://railscasts.com/episodes/287-presenters-from-scratch">Railscast</a> (pro) on how to build a presenter from scratch. But, in the new project I&#8217;m working on, we (&lt;- <a href="https://github.com/febuiles">he</a>) has this <strong>really</strong> simple setup which I feel kind of cleaner.</p>
+  <div class="entry-content"><p>There&#39;s been a <a href="http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design">lot</a> of <a href="http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters">talk</a> <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">about</a><a href="http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in">decorators</a> and <a href="http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators">presenters</a> (<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">which are almost the same</a>) in Rails and how they help you with a &quot;real&quot; OO code. There are great gems and there&#39;s even a <a href="http://railscasts.com/episodes/287-presenters-from-scratch">Railscast</a> (pro) on how to build a presenter from scratch. But, in the new project I&#39;m working on, we (&lt;- <a href="https://github.com/febuiles">he</a>) has this <strong>really</strong> simple setup which I feel kind of cleaner.</p>
 
-<p>What we wanted to have was a <code>present</code> method in the controller and build the view from its methods. So, we created an <a href="http://api.rubyonrails.org/classes/ActiveSupport/Concern.html">ActiveSupport::Concern</a> called <code>Presentable</code> and included it in our application controller. Here&#8217;s our (once again, his) code for that module.</p>
+<p>What we wanted to have was a <code>present</code> method in the controller and build the view from its methods. So, we created an <a href="http://api.rubyonrails.org/classes/ActiveSupport/Concern.html">ActiveSupport::Concern</a> called <code>Presentable</code> and included it in our application controller. Here&#39;s our (once again, his) code for that module.</p>
 
 <div><script src='https://gist.github.com/1592754.js?file=presentable.rb'></script>
 <noscript><pre><code># app/concerns/controllers/presentable.rb
@@ -248,8 +295,7 @@ module Presentable
 end
 </code></pre></noscript></div>
 
-
-<p>Now, we just need to create each presenter. But, since there&#8217;s a lot of shared logic between presenters we (he) just created a parent <code>Presenter class</code> with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you <code>method missing</code>) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&#8217;s our <code>Presenter base class</code>.</p>
+<p>Now, we just need to create each presenter. But, since there&#39;s a lot of shared logic between presenters we (he) just created a parent <code>Presenter class</code> with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you <code>method missing</code>) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&#39;s our <code>Presenter base class</code>.</p>
 
 <div><script src='https://gist.github.com/1592754.js?file=presenter.rb'></script>
 <noscript><pre><code># Base presenter class
@@ -286,10 +332,9 @@ class Presenter
 end
 </code></pre></noscript></div>
 
+<p>Then, we just need to inherit from the <code>Presenter</code> class and add our custom, clean methods. Using <code>delegate and method missing</code> will help us keep the class clean. I won&#39;t show you a presenter here, they&#39;ll look a lot like Ryan&#39;s one in his Railscasts so check that out first.</p>
 
-<p>Then, we just need to inherit from the <code>Presenter</code> class and add our custom, clean methods. Using <code>delegate and method missing</code> will help us keep the class clean. I won&#8217;t show you a presenter here, they&#8217;ll look a lot like Ryan&#8217;s one in his Railscasts so check that out first.</p>
-
-<p>I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&#8217;s 1 of them:</p>
+<p>I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&#39;s 1 of them:</p>
 
 <div><script src='https://gist.github.com/1592754.js?file=requests_controller.rb'></script>
 <noscript><pre><code>class RequestsController &lt; ApplicationController
@@ -319,10 +364,9 @@ end
 end
 </code></pre></noscript></div>
 
-
 <p>Combining <code>presenters</code> and <code>form builders</code> will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.</p>
 
-<p>You&#8217;ll be amazed how different you&#8217;ll feel when reading some old code or some co-worker&#8217;s code.</p>
+<p>You&#39;ll be amazed how different you&#39;ll feel when reading some old code or some co-worker&#39;s code.</p>
 </div>
   
   
@@ -358,9 +402,11 @@ end
   </header>
 
 
-  <div class="entry-content"><blockquote><p>But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in. If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode.</p></blockquote>
+  <div class="entry-content"><blockquote>
+<p>But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in. If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode. </p>
+</blockquote>
 
-<p>Don&#8217;t be a Free User - <a href="http://blog.pinboard.in/2011/12/don_t_be_a_free_user/">Pinboard Blog</a></p>
+<p>Don&#39;t be a Free User - <a href="http://blog.pinboard.in/2011/12/don_t_be_a_free_user/">Pinboard Blog</a></p>
 </div>
   
   
@@ -396,7 +442,7 @@ end
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#8217;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here&#8217;s my module right now…</p>
+  <div class="entry-content"><p>I&#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#39;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/master/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte/">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>, btw) wrote for college- and made some modifications for it. Here&#39;s my module right now…</p>
 
 <div><script src='https://gist.github.com/1410582.js?file='></script>
 <noscript><pre><code>module Colors
@@ -423,10 +469,9 @@ end
 # green &quot;Hello&quot;
 #   =&gt; &quot;\e[32mHello\e[0m&quot;</code></pre></noscript></div>
 
-
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
-<p>I know there&#8217;s a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don&#8217;t like their syntax. I prefer Andres&#8217; approach much more, so maybe I&#8217;ll turn this into a really simple gem. Do you think it&#8217;s worth it?</p>
+<p>I know there&#39;s a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don&#39;t like their syntax. I prefer Andres&#39; approach much more, so maybe I&#39;ll turn this into a really simple gem. Do you think it&#39;s worth it?</p>
 </div>
   
   
@@ -462,11 +507,13 @@ end
   </header>
 
 
-  <div class="entry-content"><blockquote><p>Algorithms are on the cutting edge of entrepreneurship. If you&#8217;re talking
+  <div class="entry-content"><blockquote>
+<p>Algorithms are on the cutting edge of entrepreneurship. If you&#39;re talking
 about just re-implementing stuff that people did ten years ago, performance
-isn&#8217;t that important at some level. But, if you&#8217;re talking about doing stuff
-that nobody has done before, one of the reasons often that they haven&#8217;t done
-it is because it&#8217;s too time-consuming.</p></blockquote>
+isn&#39;t that important at some level. But, if you&#39;re talking about doing stuff
+that nobody has done before, one of the reasons often that they haven&#39;t done
+it is because it&#39;s too time-consuming.</p>
+</blockquote>
 
 <p>By Charles Leiserson</p>
 </div>
@@ -504,24 +551,24 @@ it is because it&#8217;s too time-consuming.</p></blockquote>
   </header>
 
 
-  <div class="entry-content"><p>This week, I&#8217;ve been working on a side project with <a href="http://andr.esmejia.com/">Andrés
+  <div class="entry-content"><p>This week, I&#39;ve been working on a side project with <a href="http://andr.esmejia.com/">Andrés
 Mejía</a> (<a href="http://twitter.com/andmej">@andmej</a>) and
 for some really really sad reason <a href="http://heroku.com">Heroku</a> is not working
-as expected (a simple git push should do the trick, but we&#8217;re having a really
+as expected (a simple git push should do the trick, but we&#39;re having a really
 <a href="https://github.com/ddollar/rails_log_stdout/issues/4">weird issue</a>).</p>
 
 <p>At first, I thought it had something to do with the assets. Even-though
 <a href="http://heroku.com">Heroku</a> has <a href="h%0Attp://devcenter.heroku.com/articles/rails31_heroku_cedar#the_asset_pipeline">asset compiling tasks on their Cedar stack</a>,
-it didn&#8217;t really worked for us at first. So I just decided to create a small
+it didn&#39;t really worked for us at first. So I just decided to create a small
 rake task to compile the assets and push them to Github.</p>
 
 <p>The good thing about this rake task is that it will only push the assets. This
-means, that <strong>you&#8217;ll need a clean git tree to run this task or it will die</strong>.
-This ensures that the automatic push <strong>won&#8217;t commit any non-related change to
+means, that <strong>you&#39;ll need a clean git tree to run this task or it will die</strong>.
+This ensures that the automatic push <strong>won&#39;t commit any non-related change to
 the compilation of the assets</strong>.</p>
 
 <p>Now, you only have to run <strong>rake assets:compile</strong> and sleep well at night.
-Here&#8217;s the code. Hope it helps.</p>
+Here&#39;s the code. Hope it helps.</p>
 
 <div><script src='https://gist.github.com/1241135.js?file='></script>
 <noscript><pre><code>namespace :assets do
@@ -572,9 +619,6 @@ Here&#8217;s the code. Hope it helps.</p>
     end
   end
 end</code></pre></noscript></div>
-
-
-
 </div>
   
   
@@ -610,9 +654,9 @@ end</code></pre></noscript></div>
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;m working on a really cool project on my University. It&#8217;s a web application
+  <div class="entry-content"><p>I&#39;m working on a really cool project on my University. It&#39;s a web application
 to compare book editions and help professors build what is know as the
-Collatzio. The Collatzio is simply the &#8220;original&#8221; version of the book. That
+Collatzio. The Collatzio is simply the &quot;original&quot; version of the book. That
 means, to have the book the author wanted to write and not the one that the
 editors wanted to publish.</p>
 
@@ -631,18 +675,13 @@ auto;</strong> to make the scrollbar appears on each div.</p>
     event.preventDefault()
     return false</code></pre></noscript></div>
 
-
-<p>Hope it helps someone. I struggled a little bit with the &#8220;common&#8221; way of
+<p>Hope it helps someone. I struggled a little bit with the &quot;common&quot; way of
 scrolling things. People usually use the <code>animate</code> method to scroll the body,
-but I couldn&#8217;t use it because it kept triggering the scroll event on the
+but I couldn&#39;t use it because it kept triggering the scroll event on the
 elements, so it was an infinite loop.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html, body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">scrollTop</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span><span class="err"> </span><span class="s2">&quot;slow&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html, body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">scrollTop</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span><span class="err"> </span><span class="s2">&quot;slow&quot;</span><span class="p">);</span>
+</code></pre>
+</div>
 </div>
   
   
@@ -678,18 +717,18 @@ elements, so it was an infinite loop.</p>
   </header>
 
 
-  <div class="entry-content"><p>I just wanted to &#8220;personally&#8221; say thanks to everyone who voted for my entry on
+  <div class="entry-content"><p>I just wanted to &quot;personally&quot; say thanks to everyone who voted for my entry on
 the <a href="http://rallyonrails.com">Rally on Rails</a> (Latinamerican Rails Rumble).</p>
 
-<p><a href="http://timehub.net">Timehub</a> won! And this couldn&#8217;t be possible without the
+<p><a href="http://timehub.net">Timehub</a> won! And this couldn&#39;t be possible without the
 people who voted.</p>
 
 <p>I would like to thank the Rally on Rails team &amp; judges. They made an excellent
 job and even though there are somethings to improve (like the voting rules),
 <strong>I think that the contest was great!</strong></p>
 
-<p>We had already posted a &#8221;<a href="http://blog.timehub.net/post/9404894926/from-medellin-with-love">thank you
-note</a>&#8221;, in
+<p>We had already posted a &quot;<a href="http://blog.timehub.net/post/9404894926/from-medellin-with-love">thank you
+note</a>&quot;, in
 the <a href="http://timehub.net">Timehub</a> blog, but I really wanted to write one
 myself.</p>
 
@@ -735,7 +774,7 @@ myself.</p>
 
 <p><strong>Short Version; TL;DR</strong></p>
 
-<p><strong>If you&#8217;re can&#8217;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
+<p><strong>If you&#39;re can&#39;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
 
 <div><script src='https://gist.github.com/1185431.js?file='></script>
 <noscript><pre><code># Capistrano task to compile assets
@@ -748,16 +787,15 @@ task :assets do
   run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
 end</code></pre></noscript></div>
 
-
 <p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
 
-<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#8217;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
+<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#39;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
 
 <p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
 
 <p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
 
-<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#8217;t care about it!</p>
+<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#39;t care about it!</p>
 
 <p>This means that the server was looking for <code>/assets/rails.png</code> instead of
 <code>/assets/rails-3289328982JAKSDJK.png</code></p>
@@ -766,172 +804,11 @@ end</code></pre></noscript></div>
 
 <p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
 
-<p>The problem is that it wasn&#8217;t really documented and that the release candidates didn&#8217;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
+<p>The problem is that it wasn&#39;t really documented and that the release candidates didn&#39;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
 
-<p>After that, we could easily update and now we&#8217;re 100% on Rails 3.1!</p>
+<p>After that, we could easily update and now we&#39;re 100% on Rails 3.1!</p>
 
 <p>Hope this helps you too!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/08/24/timehub-48-hours-after/">TimeHub 48 Hours After</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-24T00:00:00-04:00" pubdate data-updated="true">Aug 24<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As you may know, we created <strong><a href="http://timehub.net">Timehub</a></strong> in under 48
-hours for the Rally on Rails contest. I wanted to write this post because it&#8217;s
-been 48 hours since the <strong>public votes were opened</strong>.</p>
-
-<p><strong>First of all, I would like to thank EVERYONE that has talked about Timehub. It&#8217;s been really nice to see all the comments and feedback. It&#8217;s been even better to see so many votes so fast! We honestly didn&#8217;t expected this support and having over 3950 points in under 48 hours! THANK YOU!</strong></p>
-
-<p>it&#8217;s important to note that votes are still open (until August 26th), and if
-you haven&#8217;t vote for us, you should! <a href="http://ranking.timehub.net/how-to-%0Avote">Click here to get the instructions and a
-free heavenly holly ice-cream at the end</a> (spanish version <a href="http://ranking.timehub.net/como-votar">here</a>).</p>
-
-<h2>The Judges</h2>
-
-<p>It&#8217;s an honor to say that we won the judges votes. We got 88 points and got
-the first place. Really really, scary-close was team 53 (moove it) with 86
-points and in third place, it was team 43 (ochoigualiguald) with 82 points!</p>
-
-<p>We were the only ones with 5/5 in innovation which really made us happy!</p>
-
-<p><strong>I would like to thank the judges, sponsors and the Rally on Rails team to make this contest possible.</strong></p>
-
-<p>Now, let&#8217;s look at the public votes.</p>
-
-<h2>How we started</h2>
-
-<p>We started tweeting A LOT when we found out the votes were opened. <strong>Sorry for
-all the spam my dear followers. It won&#8217;t last long. I promise. </strong>We really
-needed the first impulse to make people notice us.</p>
-
-<p><img src="https://img.skitch.com/20110824-rkkxubg89pdq5a9ctj1xm1i611.jpg" alt="My spam" /></p>
-
-<p>We tweeted friends, coworkers, students, professors, some ruby-heroes, some
-&#8220;public&#8221; tweets. Everything. We have a Skype conversation with what we tweeted
-and prepared other tweets too. <strong>We&#8217;ve been thinking them for a while (is not
-coincidence that our about page is actually a &#8220;showing our love&#8221; page (<a href="http://timehub.net/love">[http:
-//timehub.net/love](http://timehub.net/love)</a>)</strong>.</p>
-
-<h2>What we got</h2>
-
-<p>We really did not expect what came next. A lot of people started talking about
-<strong>Timehub</strong>. <strong>I had never felt like a rockstar before, but today was my day!
-</strong>We got a lot of nice feedback. Ryan Bates from
-<a href="http://railscasts.com">Railscasts</a>
-<a href="https://twitter.com/rbates/status/106034170756739072">responded</a> (it was
-AWESOME having him reply our tweet!). <a href="https://github.com/defunkt">Chris
-Wanstrath</a> (defunkt - Githubs CEO) <a href="https://twitter.com/#!/defunkt/status/106061419325308928">retweeted
-this</a>. Heck, we even
-got a <a href="https://twitter.com/jcleblanc/status/105910807119933440">O&#8217;Reilly writer to tweet about
-it</a>! The coolest
-thing about that is that we really didn&#8217;t ask them to do that (we asked Ryan,
-but the writer was just on his own will!) That was beautiful! Matthias Wiemann
-tweeted and got 33 RTs!</p>
-
-<p><img src="http://f.cl.ly/items/0M1Z0f1a1b0X1M3m1d2q/Screen%20Shot%202011-08-2%0A4%20at%201.49.28%20AM.png" alt="33 RTS!" /></p>
-
-<p>We were on <a href="http://news.ycombinator.com/">Hacker News</a> main page for a while.
-In fact, that&#8217;s were we got the most feedback and visits from (more on that
-later, with some graphs).</p>
-
-<p>Of course, not everything was rainbows and butterflies. We also got some &#8220;bad&#8221;
-<a href="https://twitter.com/#!/ifesdjeen/status/105970902675636224">comments</a> and
-feedback (<strong>which we honestly really appreciate</strong>), but that was expected. We
-admit, and have always admitted that the commit DLS needs to be MUCH better.
-We&#8217;ll considering git notes and creating a gem to make it easier and keeping
-commits as clean as possible. But we had 48  hours so for now, that&#8217;s the best
-we could do.</p>
-
-<h2>Cheating</h2>
-
-<p>We were doing great (we still are btw) until some guys started cheating! I
-thought, <strong>&#8220;OMG we&#8217;re doing SO GREAT that they have to cheat!&#8221;</strong> We created a
-<a href="http://ranking.timehub.net/cheating">report</a> about it, and send it to the
-judges. We decided to remove <a href="http://ranking.timehub.net/">our global ranking
-page</a> while this was fixed. Judges fixed it right
-away and we were back in the game!</p>
-
-<p>This really made us sad. We worked really hard on the app and were working
-(spamming) a lot to keep people talking about it.</p>
-
-<h2>Conclusion and Data</h2>
-
-<p>So, according to Google Analytics, we&#8217;ve got <strong>7,420 visits </strong>and<strong> 10,658
-pageviews. </strong>This is amazing for 2 days. Honestly, didn&#8217;t expect it!</p>
-
-<h2>Country/Territory of visits</h2>
-
-<p>Probably what shocked me the most is that we&#8217;re now getting more visits from
-the U.S than from Colombia. This is shocking because I expected my friends to
-visit the site, but I don&#8217;t have more friends in the U.S than here! Here&#8217;s the
-Top Five (out of <strong>104</strong> countries):</p>
-
-<p><img src="http://f.cl.ly/items/1c3A0V1i1y1T0B3I1v22/Screen%20Shot%202011-08%0A-24%20at%202.18.13%20AM.png" alt="Top Five!" /></p>
-
-<p>Honestly, 2000+ visits agains 800+? That&#8217;s a HUGE difference! Here&#8217;s the whole
-map</p>
-
-<p><img src="http://f.cl.ly/items/3a392z3f0r1I2W3j2i2K/Screen%20Shot%202011-08-24%20at%%0A202.20.59%20AM.png" alt="" /></p>
-
-<h2>Traffic Sources</h2>
-
-<p>The traffic sources also amazed me. We&#8217;ve had more referred visits than direct
-traffic, but that was not really shocking (who&#8217;s gonna write timehub.net
-anyway?)</p>
-
-<p>What really shocked me is that even though we tweeted A LOT, got a lot of RTs
-and a lot of people tweeted, it was half of the visits we got from Hacker
-News!</p>
-
-<p>With <strong>2,799 visits </strong>(more than direct traffic visits! - 2,424) Hacker News
-was the #1 referrer and traffic source for us. Twitter (t.co + twitter.com)
-was the second referrer but with <strong>851 visits (713 from t.co and 130 from
-twitter.com)</strong>! That means that we got <strong>over 1900 visits from HN compared to
-twitter</strong>! We were only a few minutes in the main page! I can&#8217;t imagine the
-traffic a site will get for being there a whole morning! Here&#8217;s the top 10
-(plus one) traffic sources:</p>
-
-<p><img src="http://f.cl.ly/items/3l1r101q022e330f370z/Screen%20Shot%202%0A011-08-24%20at%202.29.10%20AM.png" alt="Traffic Sources" /></p>
-
-<p>I added the #11 to show that the traffic <strong>2,799 visits are only from the .com
-domain. We&#8217;re getting traffic for .org/.net, ihackernews.com and others like
-that!</strong></p>
-
-<p><strong>I will be posting more and more details and info about how it goes. If you havent, please vote for us!</strong></p>
-
-<p><strong>THANKS A LOT,</strong></p>
-
-<p><strong>Nicolás Hock Isaza</strong></p>
 </div>
   
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails views | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/rails-views/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -24,7 +24,7 @@ allow our clients to edit some templates.</p>
 <p>We will store these templates in the Database, load them, parse them and render
 them. So far, no magic.</p>
 
-<p>But, I needed to have some "partials" for these. I wanted some common elements
+<p>But, I needed to have some &quot;partials&quot; for these. I wanted some common elements
 (like image galleries) to be available for the client to use in that specific
 template.</p>
 
@@ -39,36 +39,17 @@ this.</p>
 1 or 2 arguments (please, go for 2). This method must return the Liquid <strong>source</strong>
 of the partial (not a parsed template).</p>
 
-<p>So, here's a really simple one that will work:</p>
+<p>So, here&#39;s a really simple one that will work:</p>
 
-<p><div><script src='https://gist.github.com/3645632.js?file='></script>
-<noscript><pre><code># Class to be used as a Liquid File System for the `include` tag
-class LiquidTemplateSystem
-  attr_reader :user
+<p>{% gist 3645632 %}</p>
 
-  def initialize(user)
-    @user = user
-  end
-
-  # Return a valid liquid template string
-  def read_template_file(template_path, context)
-    user.partials.find_by_name(template_path).liquid_source
-  end
-end
-
-
-# In the view:
-# This `template` has an {% include %} tag.
-&lt;%= template.render(obj, registers: LiquidTemplateSystem.new(user)) %&gt;</code></pre></noscript></div>
-</p>
-
-<h2>Default FileSystem</h2>
+<h2 id="toc_2750">Default FileSystem</h2>
 
 <p>You could also set the default <code>FileSystem</code> with
 <code>Liquid::Template.file_system = MyNewFileSystem.new</code>. This may be useful if you
 want the partials to be shared on the database but not different for every user.</p>
 
-<h2>Any other way?</h2>
+<h2 id="toc_2751">Any other way?</h2>
 
 <p>Even though I find this to be <em>really</em> easy, another way may exist. If you know
 of a better way to do this, please <a href="https://twitter.com/nhocki">let me know</a>.</p>
@@ -80,41 +61,17 @@ of a better way to do this, please <a href="https://twitter.com/nhocki">let me k
     <link href="http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails/"/>
     <updated>2012-03-29T23:16:00-04:00</updated>
     <id>http://blog.nhocki.com/2012/03/29/flexible-and-friendly-layouts-on-rails</id>
-    <content type="html"><![CDATA[<p>I've been working on a "new" project (I'm new to the project, the project itself is 'old') and at the beginning I had to edit a bunch of stuff in the views.</p>
+    <content type="html"><![CDATA[<p>I&#39;ve been working on a &quot;new&quot; project (I&#39;m new to the project, the project itself is &#39;old&#39;) and at the beginning I had to edit a bunch of stuff in the views.</p>
 
 <p>A friend needed to change the header of the page on <strong>one</strong> action of the <code>UsersController</code>. He is new to rails and was struggling with this, so he asked me for help.</p>
 
-<p>It's pretty common to have a <code>header</code> partial rendered on the view. If you're a lovely developer you would have <code>render "header"</code> and not something like <code>render "layouts/header"</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you're working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
+<p>It&#39;s pretty common to have a <code>header</code> partial rendered on the view. If you&#39;re a lovely developer you would have <code>render &quot;header&quot;</code> and not something like <code>render &quot;layouts/header&quot;</code>. The reason behind this is simple. <a href="http://railscasts.com/episodes/269-template-inheritance" title="Railscasts Template Inheritance">Template Inheritance</a>. This means that if you&#39;re working on the <code>UsersController</code>, when rails looks for the <code>header</code> partial, it will first look for <code>users/header</code> moving up the parents chain, ending in <code>application/header</code>. So, next time, put all your <em>layout</em> stuff in <code>application/_partial</code> so you can easily override it!</p>
 
 <p>But this is a <em>controller wide</em> solution, since all the actions from that controller will render the same partial. So, how do you achieve this on a single action? My solution is a 3 line helper:</p>
 
-<p><div><script src='https://gist.github.com/2246251.js?file=application_helper.rb'></script>
-<noscript><pre><code># This method will allow a section to be rendered form a view or
-# to render a partial instead.
-# 
-# It's really useful to have 'flexible' sections in the layout. E.g
-# add this to your layout file:
-#
-# content_or_partial(:header)
-#   =&gt; renders the content_for(:header) or the &quot;header&quot; partial
-#
-# content_or_partial(:header, 'users/hello')
-#   =&gt; renders the content_for(:header) or the &quot;users/hello&quot; partial
-#
-# application.html.erb
-#   &lt;header class=&quot;main-header wrapper&quot;&gt;&lt;%= content_or_partial(:header) %&gt;&lt;/header&gt;
-#
-# users/show.html.erb
-#   &lt;%= content_for :header do %&gt;
-#     My action specific content
-#   &lt;% end %&gt;
-#
-def content_or_partial(content, partial = content)
-  content_for?(content) ? content_for(content) : render(partial.to_s)
-end</code></pre></noscript></div>
-</p>
+<p>{% gist 2246251 application_helper.rb %}</p>
 
-<p>Now all you have to do is fill your layouts with "content boxes" that can be changed on an controller or action-specific need, giving great flexibility.</p>
+<p>Now all you have to do is fill your layouts with &quot;content boxes&quot; that can be changed on an controller or action-specific need, giving great flexibility.</p>
 
 <p>How would you get around this?</p>
 ]]></content>

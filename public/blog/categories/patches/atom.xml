@@ -4,7 +4,7 @@
   <title><![CDATA[Category: patches | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/patches/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -22,29 +22,19 @@
 
 <p><strong>Short Version; TL;DR</strong></p>
 
-<p><strong>If you're can't see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
+<p><strong>If you&#39;re can&#39;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
 
-<p><div><script src='https://gist.github.com/1185431.js?file='></script>
-<noscript><pre><code># Capistrano task to compile assets
-# Make sure that you have `config.assets.compile = true` in production.rb when running this
-# This (the `compile=true`) won't be needed for Rails 3.1.1
-
-desc &quot;Precompile assets on production&quot;
-task :assets do
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
-end</code></pre></noscript></div>
-</p>
+<p>{% gist 1185431 %}</p>
 
 <p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
 
-<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We've been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
+<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#39;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
 
 <p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
 
 <p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
 
-<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn't care about it!</p>
+<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#39;t care about it!</p>
 
 <p>This means that the server was looking for <code>/assets/rails.png</code> instead of
 <code>/assets/rails-3289328982JAKSDJK.png</code></p>
@@ -53,9 +43,9 @@ end</code></pre></noscript></div>
 
 <p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
 
-<p>The problem is that it wasn't really documented and that the release candidates didn't have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
+<p>The problem is that it wasn&#39;t really documented and that the release candidates didn&#39;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
 
-<p>After that, we could easily update and now we're 100% on Rails 3.1!</p>
+<p>After that, we could easily update and now we&#39;re 100% on Rails 3.1!</p>
 
 <p>Hope this helps you too!</p>
 ]]></content>

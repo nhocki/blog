@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Tumblr | Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/blog/categories/tumblr/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-15T22:54:24-05:00</updated>
+  <updated>2013-01-25T13:57:49-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -18,22 +18,21 @@
     <link href="http://blog.nhocki.com/2012/01/23/from-tumblr-to-octopress/"/>
     <updated>2012-01-23T00:00:00-05:00</updated>
     <id>http://blog.nhocki.com/2012/01/23/from-tumblr-to-octopress</id>
-    <content type="html"><![CDATA[<p>I wrote an article yesterday about URL design and I spent about an hour fighting with <a href="http://tumblr.com/">Tumblr</a> to format my <code>code inside a pre (or code) tag</code>. I knew I was done with them. Today, I'm giving <a href="http://octopress.org/">Octopress</a> a try. I honestly wanted to try <a href="http://jekyllrb.com/">Jekyll</a> but I was really lazy to code my HTML. So, for now, I'm welcoming Octopress.</p>
+    <content type="html"><![CDATA[<p>I wrote an article yesterday about URL design and I spent about an hour fighting with <a href="http://tumblr.com/">Tumblr</a> to format my <code>code inside a pre (or code) tag</code>. I knew I was done with them. Today, I&#39;m giving <a href="http://octopress.org/">Octopress</a> a try. I honestly wanted to try <a href="http://jekyllrb.com/">Jekyll</a> but I was really lazy to code my HTML. So, for now, I&#39;m welcoming Octopress.</p>
 
-<p>I really love the fact that I can write in <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, it's really powerful yet simple that makes me focus on writing and not formatting. I know I can use Markdown in Tumblr but I don't have Textmate there, so this is a big +1 for Jekyll/Octopress.</p>
+<p>I really love the fact that I can write in <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, it&#39;s really powerful yet simple that makes me focus on writing and not formatting. I know I can use Markdown in Tumblr but I don&#39;t have Textmate there, so this is a big +1 for Jekyll/Octopress.</p>
 
-<h2>Moving Posts From Tumblr</h2>
+<h2 id="toc_2743">Moving Posts From Tumblr</h2>
 
-<p>There's a <a href="https://github.com/mojombo/jekyll/wiki/Blog-Migrations">great script</a> to move posts from Tumblr. They'll even be downloaded as markdown, but I still had to edit them to add the Gist snippets. Thankfully I don't have a lot of posts so it didn't took a lot.</p>
+<p>There&#39;s a <a href="https://github.com/mojombo/jekyll/wiki/Blog-Migrations">great script</a> to move posts from Tumblr. They&#39;ll even be downloaded as markdown, but I still had to edit them to add the Gist snippets. Thankfully I don&#39;t have a lot of posts so it didn&#39;t took a lot.</p>
 
-<h2>Deploying</h2>
+<h2 id="toc_2744">Deploying</h2>
 
-<p>I've deployed my blog to <a href="http://heroku.com">Heroku</a> now. It was supposed to be really simple. It was, after I realized that the <code>public</code> folder is ignored by the git. I spent an hour of my life there :-( !</p>
+<p>I&#39;ve deployed my blog to <a href="http://heroku.com">Heroku</a> now. It was supposed to be really simple. It was, after I realized that the <code>public</code> folder is ignored by the git. I spent an hour of my life there :-( !</p>
 
 <pre>Remove the public folder from your .gitignore</pre>
 
-
-<p>I'll probably post more about Octopress when I get to know it better. There are a bunch of plugins and stuff that may be useful, or maybe, it'll suck and I'll have to go and find something else!</p>
+<p>I&#39;ll probably post more about Octopress when I get to know it better. There are a bunch of plugins and stuff that may be useful, or maybe, it&#39;ll suck and I&#39;ll have to go and find something else!</p>
 ]]></content>
   </entry>
   
