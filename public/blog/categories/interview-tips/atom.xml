@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: programming | Nicolás Hock Isaza]]></title>
-  <link href="http://blog.nhocki.com/blog/categories/programming/atom.xml" rel="self"/>
+  <title><![CDATA[Category: interview tips | Nicolás Hock Isaza]]></title>
+  <link href="http://blog.nhocki.com/blog/categories/interview-tips/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
   <updated>2013-02-05T14:58:34-05:00</updated>
   <id>http://blog.nhocki.com/</id>
@@ -109,64 +109,6 @@ stacker(h)
 
 <p>There&#39;s another iterative solution but I haven&#39;t implemented it. So, if you did
 or have some other way to solve this, I&#39;d love to know on
-<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Reverse a list in O(n)]]></title>
-    <link href="http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/"/>
-    <updated>2012-12-27T16:53:00-05:00</updated>
-    <id>http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n</id>
-    <content type="html"><![CDATA[<p>For about a year, I&#39;ve always had a question I ask someone I&#39;m interviewing for
-a programming position. I&#39;ve asked this around 3 times and got some nice
-answers, but I had never implemented it. The question is really simple:</p>
-
-<p><strong>Given a linked list, how would you reverse it in <code>O(n)</code>?</strong></p>
-
-<p>Here&#39;s my solution:</p>
-
-<p><div><script src='https://gist.github.com/4392454.js?file='></script>
-<noscript><pre><code>Node = Struct.new(:id, :next)
-
-# Build the list
-first = Node.new(1, nil)
-nodes = 10.times.map{|x| Node.new(x + 2, nil)}
-nodes.each_with_index{|node, index| node.next = nodes[index + 1] }
-first.next = nodes.first
-
-def reverse_list(node)
-  prox = node.next  # Get the next node on the list.
-  node.next = nil   # Make the new tail point to nil (end of the new list).
-
-  last = node       # Save that new tail on a tmp variable (to point to it later)
-  node = prox       # Change the `current` node to the `next` one. Move ahead.
-
-  while node          # If I'm not at the end of the list.
-    prox = node.next  # Save the next node on the original list.
-    node.next = last  # Reverse the list (point back from `current`)
-    last = node       # Save the current node to point later.
-    node = prox       # Move ahead once.
-  end
-  last
-end
-
-def print_list(node)
-  while node
-    puts node.id
-    node = node.next
-  end
-end
-
-print_list(first)
-puts &quot;\n&quot;
-print_list(reverse_list(first))
-</code></pre></noscript></div>
-</p>
-
-<p>How would you do it? There&#39;s a really simple solution using a
-<a href="https://gist.github.com/nhocki/4392454#comment-676651">stack</a>, but if you
-find another one, I&#39;d love to hear about it on
 <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 ]]></content>
   </entry>

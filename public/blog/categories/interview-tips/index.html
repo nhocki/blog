@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Stop using config files for secret data - Nicolás Hock Isaza</title>
+  <title>Category: interview tips - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="Seriously, it&#39;s your fault that Github exposed your keys. If you want to
-add everything to your repo (not that this is a good idea though), at &hellip;">
+  <meta name="description" content="Category: interview tips">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ add everything to your repo (not that this is a good idea though), at &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data">
+  <link rel="canonical" href="http://blog.nhocki.comblog/categories/interview-tips">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -61,102 +60,45 @@ add everything to your repo (not that this is a good idea though), at &hellip;">
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Stop Using Config Files for Secret Data</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-25T11:02:00-05:00" pubdate data-updated="true">Jan 25<span>th</span>, 2013</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Interview Tips</h1>
     
   </header>
-
-
-<div class="entry-content"><p>Seriously, it&#39;s <strong>your</strong> fault that Github exposed your keys. If you want to
-add everything to your repo (not that this is a good idea though), at least
-make it private.</p>
-
-<p>If you want to have <strong>per-environment variables, use the environment variables</strong>.
-<em>But my development env would be full of crap!</em> some of you may cry&#8230; well,
-there&#39;s a simple solution for that. Use <a href="https://github.com/bkeepers/dotenv">Dotenv</a>.</p>
-
-<p>With <em>Dotenv</em> you only need to add a <code>.env</code> file to your application root directory
-and you&#39;re done. Here&#39;s a quick example:</p>
-<div class="highlight"><pre><code class="sh"><span class="c"># .env</span>
-<span class="nv">S3_BUCKET</span><span class="o">=</span>some_development_bucket
-<span class="nv">S3_SECRET</span><span class="o">=</span>a_secret_key
-</code></pre>
-</div>
-
-<p>Then in your code, simply use <code>ENV[]</code> and be happy (and safe, but mostly happy)</p>
-<div class="highlight"><pre><code class="ruby"><span class="c1"># some config file</span>
-<span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;S3_BUCKET&#39;</span><span class="o">]</span>
-</code></pre>
-</div>
-
-<p>And just like that, you can setup your server&#39;s config environments and not
-worry about <em>supposed-to-be-private</em> public information.</p>
-
-<p>One really cool thing about this is that this variables will only be loaded
-in that specific application. It won&#39;t change <strong>your</strong> environment. So when
-you stop the servers, your environment won&#39;t have the <code>.env</code> variables.</p>
-
-<p>You can read more about <a href="http://opensoul.org/blog/archives/2012/07/24/dotenv/">Dotenv here</a>.</p>
-</div>
-
-
-  <footer>
-    <div class="sharing">
-  <span class='st_twitter' displayText=''></span>
-  <span class='st_facebook' displayText=''></span>
-  <span class='st_instapaper' displayText=''></span>
-  <span class='st_googleplus' displayText=''></span>
-  <span class='st_email' displayText=''></span>
-</div>
-
-
-    
-
-<div class="categories">
-  Posted under:
   
-    <a class='category' href='/blog/categories/gems/'>gems</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  <div id="blog-archives" class="category">
+
+
+
   
+  <h2>2013</h2>
+
+<article class="post">
+  
+<h1><a href="/2013/02/05/tower-of-hanoi-with-a-stack/">Tower of Hanoi with a stack</a></h1>
+<time datetime="2013-02-05T14:37:00-05:00" pubdate><span class='month'>Feb</span> <span class='day'>05</span> <span class='year'>2013</span></time>
+
+<div>
+  <span class="categories">posted in <a class='category' href='/blog/categories/algorithms/'>algorithms</a>, <a class='category' href='/blog/categories/interview-tips/'>interview tips</a>, <a class='category' href='/blog/categories/programming/'>programming</a></span>
 </div>
 
 
-
-    <div class='clear'></div>
-
-
-    <p class="meta posts">
-      
-        <a class="basic-alignment left" href="/2013/01/15/easily-add-versions-to-your-gemfile/" title="Previous Post: Easily add versions to your Gemfile">&laquo; Easily add versions to your Gemfile</a>
-      
-      
-        <a class="basic-alignment right" href="/2013/02/05/tower-of-hanoi-with-a-stack/" title="next Post: Tower of Hanoi with a stack">Tower of Hanoi with a stack &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
 </div>
+
+  
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
 
     </div>
   </div>

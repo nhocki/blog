@@ -9,7 +9,7 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="I wrote an article yesterday about URL design and I spent about an hour fighting with Tumblr to format my code inside a pre (or code) tag. I knew I &hellip;">
+  <meta name="description" content="I have been developing a new app using a lot of decorators and presenters. I&#39;ve been highly influenced by Avdi (both his blog and his Objects in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -61,6 +61,123 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/01/31/thoughts-on-decorators-and-presenters/">Thoughts on Decorators & Presenters</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-31T18:12:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#39;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I&#39;ll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
+
+<p><strong>I want to warn you that I am not by any means an expert on the subject. So I&#39;m more than open to any feedback you can give me.</strong></p>
+
+<blockquote>
+<p>All presenters are decorators, but not all decorators are presenters.</p>
+
+<p>A decorator is a class that adds some sort of functionality to another
+class. A presenter is a class that adds some sort of presentation
+formatting functionality to another class.</p>
+
+<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p>
+</blockquote>
+
+<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#39;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
+
+<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
+
+<h3 id="toc_65">So, where do the logic in the template goes?</h3>
+
+<p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
+
+<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.  </p>
+
+<p>Here&#39;s an example:</p>
+
+<div><script src='https://gist.github.com/1714913.js?file='></script>
+<noscript><pre><code># app/models/user.rb
+#
+# User model has name &amp; username
+#
+# Only the username is required (signup with Github for example)
+class User &lt; ActiveRecord::Base
+  validates :username, presence: true
+end
+
+
+
+# app/decorators/user_decorator.rb
+#
+# Let's use the Draper gem for the decorators
+class UserDecorator &lt; ApplicationDecorator
+  decorates :user
+
+  def display_name
+    user.name.presence || user.username
+  end
+
+  # Formatting the data is OK. I'm against adding the markup
+  def salary
+    h.number_to_currency(user.salary)
+  end
+end
+
+
+# app/views/users/index.html.erb
+
+# current_user is a presenter
+&lt;%= logged_in_area do %&gt;
+  You are logged in as &lt;%= current_user.display_name %&gt;
+&lt;% end %&gt;
+
+# viewing @some_users's profile (which is also a presenter)
+&lt;%= admin_area do %&gt;
+  &lt;span class=&quot;salary&quot;&gt;&lt;%= @some_user.salary %&gt;&lt;/span&gt;
+&lt;% end %&gt;
+
+
+# app/helpers/application_helpers.rb
+#
+# We all hate helpers, but this time, they're useful.
+def admin_area(&amp;block)
+  content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
+end</code></pre></noscript></div>
+
+<h3 id="toc_66">Maybe I have the names wrong</h3>
+
+<p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
+
+<h3 id="toc_67">Please provide feedback</h3>
+
+<p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -735,80 +852,6 @@ myself.</p>
 <p>I was pretty spammer during these last 3 days! That will stop now!</p>
 
 <p><strong>Thanks again!</strong> Hope to see you in <a href="http://timehub.net">Timehub</a> v2!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/08/24/upgrade-to-rails-31-quickfix/">Upgrade to Rails 3.1 Quickfix</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-24T00:00:00-04:00" pubdate data-updated="true">Aug 24<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
-
-<p><strong>Short Version; TL;DR</strong></p>
-
-<p><strong>If you&#39;re can&#39;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
-
-<div><script src='https://gist.github.com/1185431.js?file='></script>
-<noscript><pre><code># Capistrano task to compile assets
-# Make sure that you have `config.assets.compile = true` in production.rb when running this
-# This (the `compile=true`) won't be needed for Rails 3.1.1
-
-desc &quot;Precompile assets on production&quot;
-task :assets do
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
-end</code></pre></noscript></div>
-
-<p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
-
-<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#39;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
-
-<p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
-
-<p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
-
-<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#39;t care about it!</p>
-
-<p>This means that the server was looking for <code>/assets/rails.png</code> instead of
-<code>/assets/rails-3289328982JAKSDJK.png</code></p>
-
-<p>I looked to the awesome <a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline Guide</a>, I asked around with Twitter, I restarted the server several times. I did everything and nothing worked until <a href="https://twitter.com/#!/guilleiguaran">@guilleiguaran </a>gave me the answer on twitter!</p>
-
-<p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
-
-<p>The problem is that it wasn&#39;t really documented and that the release candidates didn&#39;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
-
-<p>After that, we could easily update and now we&#39;re 100% on Rails 3.1!</p>
-
-<p>Hope this helps you too!</p>
 </div>
   
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Nicolás Hock Isaza]]></title>
   <link href="http://blog.nhocki.com/atom.xml" rel="self"/>
   <link href="http://blog.nhocki.com/"/>
-  <updated>2013-01-25T14:08:58-05:00</updated>
+  <updated>2013-02-05T14:58:34-05:00</updated>
   <id>http://blog.nhocki.com/</id>
   <author>
     <name><![CDATA[Nicolás Hock Isaza]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tower of Hanoi with a stack]]></title>
+    <link href="http://blog.nhocki.com/2013/02/05/tower-of-hanoi-with-a-stack/"/>
+    <updated>2013-02-05T14:37:00-05:00</updated>
+    <id>http://blog.nhocki.com/2013/02/05/tower-of-hanoi-with-a-stack</id>
+    <content type="html"><![CDATA[<p>I&#39;ve recently subscribed to <a href="http://codingforinterviews.com/">Coding for Interviews</a>
+and received my first email today. The content is great and you should join. 
+Even if you&#39;re not looking for a job, it&#39;s a short read with nice topics to 
+refresh your memory.</p>
+
+<p><a href="http://us2.campaign-archive2.com/?u=cadc6c448cd083a0aeed7f864&amp;id=c550bc59d5&amp;e=5694567579">Today&#39;s assignment</a> was with stacks. I&#39;ve used stacks to
+<a href="http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/">reverse a list in O(n)</a>
+but today&#39;s challenge was to solve the <a href="http://en.wikipedia.org/wiki/Tower_of_Hanoi">Tower of Hanoi</a> problem without
+recursion.</p>
+
+<p>Here&#39;s my solution:</p>
+
+<div><script src='https://gist.github.com/4716874.js?file='></script>
+<noscript><pre><code>Hanoi = Struct.new(:disk, :source, :dest, :spare)
+
+def move(hanoi)
+  &quot;Move #{hanoi.disk.abs} from #{hanoi.source} to #{hanoi.dest}&quot;
+end
+
+class Stack
+  def initialize
+    @data = []
+  end
+
+  def push(hanoi)
+    @data.unshift(hanoi)
+  end
+
+  def pop
+    @data.shift
+  end
+
+  def peek
+    @data.first
+  end
+
+  def empty?
+    @data.empty?
+  end
+end
+
+
+# Resolve the Tower of Hanoi problem with a Stack. You can't use recursion
+# in it's traditional way, but adding everything to a stack works the same.
+#
+# Notice you have to invert the order of the calls to the recursive function
+# since the stack is **Last In - First Out**.
+def stacker hanoi
+  stack = Stack.new
+  stack.push(hanoi)
+
+  until stack.empty? do
+    hanoi = stack.pop
+
+    if hanoi.disk &lt;= 1
+      puts move(hanoi)
+    else
+      left  = Hanoi.new(hanoi.disk - 1, hanoi.source, hanoi.spare, hanoi.dest)
+      right = Hanoi.new(hanoi.disk - 1, hanoi.spare, hanoi.dest, hanoi.source)
+      hanoi.disk = -hanoi.disk # force printing it next time it appears
+      stack.push right
+      stack.push hanoi
+      stack.push left
+    end
+  end
+end
+
+
+# Resolve the Tower of Hanoi problem with recursion.
+def recursive hanoi
+  if hanoi.disk == 1
+    puts move(hanoi)
+  else
+    left  = Hanoi.new(hanoi.disk - 1, hanoi.source, hanoi.spare, hanoi.dest)
+    right = Hanoi.new(hanoi.disk - 1, hanoi.spare, hanoi.dest, hanoi.source)
+    recursive(left)
+    puts move(hanoi)
+    recursive(right)
+  end
+end
+
+h = Hanoi.new(3, 'A', 'B', 'C')
+
+recursive(h)
+puts &quot;\n\n&quot;
+stacker(h)
+</code></pre></noscript></div>
+
+<p>There&#39;s another iterative solution but I haven&#39;t implemented it. So, if you did
+or have some other way to solve this, I&#39;d love to know on
+<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Stop using config files for secret data]]></title>
@@ -137,7 +236,8 @@ puts &quot;\n&quot;
 print_list(reverse_list(first))
 </code></pre></noscript></div>
 
-<p>How would you do it? There&#39;s a really simple solution using a queue, but if you
+<p>How would you do it? There&#39;s a really simple solution using a
+<a href="https://gist.github.com/nhocki/4392454#comment-676651">stack</a>, but if you
 find another one, I&#39;d love to hear about it on
 <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 ]]></content>
@@ -952,53 +1052,6 @@ myself.</p>
 <p>I was pretty spammer during these last 3 days! That will stop now!</p>
 
 <p><strong>Thanks again!</strong> Hope to see you in <a href="http://timehub.net">Timehub</a> v2!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Upgrade to Rails 3.1 Quickfix]]></title>
-    <link href="http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix/"/>
-    <updated>2011-08-24T00:00:00-04:00</updated>
-    <id>http://blog.nhocki.com/2011/08/24/upgrade-to-rails-31-quickfix</id>
-    <content type="html"><![CDATA[<p>In case you missed it, <a href="http://guides.rubyonrails.org/3_1_release_notes.html">Rails 3.1 is out</a>! So please, stop using the release candidates and update now!</p>
-
-<p><strong>Short Version; TL;DR</strong></p>
-
-<p><strong>If you&#39;re can&#39;t see your images in your production environment, add this to your <code>production.rb</code> file</strong></p>
-
-<div><script src='https://gist.github.com/1185431.js?file='></script>
-<noscript><pre><code># Capistrano task to compile assets
-# Make sure that you have `config.assets.compile = true` in production.rb when running this
-# This (the `compile=true`) won't be needed for Rails 3.1.1
-
-desc &quot;Precompile assets on production&quot;
-task :assets do
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:clean&quot;
-  run &quot;cd #{release_path}; RAILS_ENV=production bundle exec rake assets:precompile&quot;
-end</code></pre></noscript></div>
-
-<p>Yesterday, I was updating <a href="http://timehub.net">Timehub</a> to Rails 3.1, we had a rails3.1 branch and we were just waiting for the official version to change it.</p>
-
-<p>As soon as I got home from the <a href="http://coffeegrid.org/">Coffee Grid</a> meetup (where we talked about Timehub), I decided to update it. What could possibly go wrong? We&#39;ve been using a release candidate with <strong>no more than 3 days old</strong> and it was working just fine.</p>
-
-<p>We changed our <code>Gemfile</code> and started to use Rails 3.1. We tested the app on development and everything was working as expected, so I just relaxed while deploying.</p>
-
-<p>I <strong>always</strong> look at the server after a deploy, and to my surprise, <strong>no images where shown in the production environment</strong>. WTF? We were compiling our assets (with a small Capistrano task).</p>
-
-<p>We watched the source of the page and instantly found the problem. The server was not looking for the images with the MD5 digest at the end. This was REALLY weird because we were using <code>image_tag</code> everywhere so we shouldn&#39;t care about it!</p>
-
-<p>This means that the server was looking for <code>/assets/rails.png</code> instead of
-<code>/assets/rails-3289328982JAKSDJK.png</code></p>
-
-<p>I looked to the awesome <a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline Guide</a>, I asked around with Twitter, I restarted the server several times. I did everything and nothing worked until <a href="https://twitter.com/#!/guilleiguaran">@guilleiguaran </a>gave me the answer on twitter!</p>
-
-<p>You simply need to add those 2 lines to fix your assets (look up if you missed it!)</p>
-
-<p>The problem is that it wasn&#39;t really documented and that the release candidates didn&#39;t have that! So it was <strong>REALLY</strong> hard to guess. Actually, I think @guilleiguaran knew because he made those changes!</p>
-
-<p>After that, we could easily update and now we&#39;re 100% on Rails 3.1!</p>
-
-<p>Hope this helps you too!</p>
 ]]></content>
   </entry>
   

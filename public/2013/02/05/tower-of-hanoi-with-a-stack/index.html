@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Stop using config files for secret data - Nicolás Hock Isaza</title>
+  <title>Tower of Hanoi with a stack - Nicolás Hock Isaza</title>
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="Seriously, it&#39;s your fault that Github exposed your keys. If you want to
-add everything to your repo (not that this is a good idea though), at &hellip;">
+  <meta name="description" content="I&#39;ve recently subscribed to Coding for Interviews
+and received my first email today. The content is great and you should join. Even if you&#39;re &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ add everything to your repo (not that this is a good idea though), at &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data">
+  <link rel="canonical" href="http://blog.nhocki.com/2013/02/05/tower-of-hanoi-with-a-stack">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -65,7 +65,7 @@ add everything to your repo (not that this is a good idea though), at &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Stop Using Config Files for Secret Data</h1>
+      <h1 class="entry-title">Tower of Hanoi With a Stack</h1>
     
     
       <p class="meta">
@@ -81,43 +81,104 @@ add everything to your repo (not that this is a good idea though), at &hellip;">
   
 
 
-<time datetime="2013-01-25T11:02:00-05:00" pubdate data-updated="true">Jan 25<span>th</span>, 2013</time>
+<time datetime="2013-02-05T14:37:00-05:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Seriously, it&#39;s <strong>your</strong> fault that Github exposed your keys. If you want to
-add everything to your repo (not that this is a good idea though), at least
-make it private.</p>
+<div class="entry-content"><p>I&#39;ve recently subscribed to <a href="http://codingforinterviews.com/">Coding for Interviews</a>
+and received my first email today. The content is great and you should join. 
+Even if you&#39;re not looking for a job, it&#39;s a short read with nice topics to 
+refresh your memory.</p>
 
-<p>If you want to have <strong>per-environment variables, use the environment variables</strong>.
-<em>But my development env would be full of crap!</em> some of you may cry&#8230; well,
-there&#39;s a simple solution for that. Use <a href="https://github.com/bkeepers/dotenv">Dotenv</a>.</p>
+<p><a href="http://us2.campaign-archive2.com/?u=cadc6c448cd083a0aeed7f864&amp;id=c550bc59d5&amp;e=5694567579">Today&#39;s assignment</a> was with stacks. I&#39;ve used stacks to
+<a href="http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/">reverse a list in O(n)</a>
+but today&#39;s challenge was to solve the <a href="http://en.wikipedia.org/wiki/Tower_of_Hanoi">Tower of Hanoi</a> problem without
+recursion.</p>
 
-<p>With <em>Dotenv</em> you only need to add a <code>.env</code> file to your application root directory
-and you&#39;re done. Here&#39;s a quick example:</p>
-<div class="highlight"><pre><code class="sh"><span class="c"># .env</span>
-<span class="nv">S3_BUCKET</span><span class="o">=</span>some_development_bucket
-<span class="nv">S3_SECRET</span><span class="o">=</span>a_secret_key
-</code></pre>
-</div>
+<p>Here&#39;s my solution:</p>
 
-<p>Then in your code, simply use <code>ENV[]</code> and be happy (and safe, but mostly happy)</p>
-<div class="highlight"><pre><code class="ruby"><span class="c1"># some config file</span>
-<span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;S3_BUCKET&#39;</span><span class="o">]</span>
-</code></pre>
-</div>
+<div><script src='https://gist.github.com/4716874.js?file='></script>
+<noscript><pre><code>Hanoi = Struct.new(:disk, :source, :dest, :spare)
 
-<p>And just like that, you can setup your server&#39;s config environments and not
-worry about <em>supposed-to-be-private</em> public information.</p>
+def move(hanoi)
+  &quot;Move #{hanoi.disk.abs} from #{hanoi.source} to #{hanoi.dest}&quot;
+end
 
-<p>One really cool thing about this is that this variables will only be loaded
-in that specific application. It won&#39;t change <strong>your</strong> environment. So when
-you stop the servers, your environment won&#39;t have the <code>.env</code> variables.</p>
+class Stack
+  def initialize
+    @data = []
+  end
 
-<p>You can read more about <a href="http://opensoul.org/blog/archives/2012/07/24/dotenv/">Dotenv here</a>.</p>
+  def push(hanoi)
+    @data.unshift(hanoi)
+  end
+
+  def pop
+    @data.shift
+  end
+
+  def peek
+    @data.first
+  end
+
+  def empty?
+    @data.empty?
+  end
+end
+
+
+# Resolve the Tower of Hanoi problem with a Stack. You can't use recursion
+# in it's traditional way, but adding everything to a stack works the same.
+#
+# Notice you have to invert the order of the calls to the recursive function
+# since the stack is **Last In - First Out**.
+def stacker hanoi
+  stack = Stack.new
+  stack.push(hanoi)
+
+  until stack.empty? do
+    hanoi = stack.pop
+
+    if hanoi.disk &lt;= 1
+      puts move(hanoi)
+    else
+      left  = Hanoi.new(hanoi.disk - 1, hanoi.source, hanoi.spare, hanoi.dest)
+      right = Hanoi.new(hanoi.disk - 1, hanoi.spare, hanoi.dest, hanoi.source)
+      hanoi.disk = -hanoi.disk # force printing it next time it appears
+      stack.push right
+      stack.push hanoi
+      stack.push left
+    end
+  end
+end
+
+
+# Resolve the Tower of Hanoi problem with recursion.
+def recursive hanoi
+  if hanoi.disk == 1
+    puts move(hanoi)
+  else
+    left  = Hanoi.new(hanoi.disk - 1, hanoi.source, hanoi.spare, hanoi.dest)
+    right = Hanoi.new(hanoi.disk - 1, hanoi.spare, hanoi.dest, hanoi.source)
+    recursive(left)
+    puts move(hanoi)
+    recursive(right)
+  end
+end
+
+h = Hanoi.new(3, 'A', 'B', 'C')
+
+recursive(h)
+puts &quot;\n\n&quot;
+stacker(h)
+</code></pre></noscript></div>
+
+<p>There&#39;s another iterative solution but I haven&#39;t implemented it. So, if you did
+or have some other way to solve this, I&#39;d love to know on
+<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 </div>
 
 
@@ -136,7 +197,7 @@ you stop the servers, your environment won&#39;t have the <code>.env</code> vari
 <div class="categories">
   Posted under:
   
-    <a class='category' href='/blog/categories/gems/'>gems</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+    <a class='category' href='/blog/categories/algorithms/'>algorithms</a>, <a class='category' href='/blog/categories/interview-tips/'>interview tips</a>, <a class='category' href='/blog/categories/programming/'>programming</a>
   
 </div>
 
@@ -147,10 +208,8 @@ you stop the servers, your environment won&#39;t have the <code>.env</code> vari
 
     <p class="meta posts">
       
-        <a class="basic-alignment left" href="/2013/01/15/easily-add-versions-to-your-gemfile/" title="Previous Post: Easily add versions to your Gemfile">&laquo; Easily add versions to your Gemfile</a>
+        <a class="basic-alignment left" href="/2013/01/25/stop-using-config-files-for-secret-data/" title="Previous Post: Stop using config files for secret data">&laquo; Stop using config files for secret data</a>
       
-      
-        <a class="basic-alignment right" href="/2013/02/05/tower-of-hanoi-with-a-stack/" title="next Post: Tower of Hanoi with a stack">Tower of Hanoi with a stack &raquo;</a>
       
     </p>
   </footer>

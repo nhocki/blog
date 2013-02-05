@@ -9,8 +9,8 @@
   <meta name="author" content="Nicolás Hock Isaza">
 
   
-  <meta name="description" content="Seriously, it&#39;s your fault that Github exposed your keys. If you want to
-add everything to your repo (not that this is a good idea though), at &hellip;">
+  <meta name="description" content="I&#39;ve recently subscribed to Coding for Interviews
+and received my first email today. The content is great and you should join. Even if you&#39;re &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -62,6 +62,132 @@ add everything to your repo (not that this is a good idea though), at &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/02/05/tower-of-hanoi-with-a-stack/">Tower of Hanoi With a Stack</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-05T14:37:00-05:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#39;ve recently subscribed to <a href="http://codingforinterviews.com/">Coding for Interviews</a>
+and received my first email today. The content is great and you should join. 
+Even if you&#39;re not looking for a job, it&#39;s a short read with nice topics to 
+refresh your memory.</p>
+
+<p><a href="http://us2.campaign-archive2.com/?u=cadc6c448cd083a0aeed7f864&amp;id=c550bc59d5&amp;e=5694567579">Today&#39;s assignment</a> was with stacks. I&#39;ve used stacks to
+<a href="http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/">reverse a list in O(n)</a>
+but today&#39;s challenge was to solve the <a href="http://en.wikipedia.org/wiki/Tower_of_Hanoi">Tower of Hanoi</a> problem without
+recursion.</p>
+
+<p>Here&#39;s my solution:</p>
+
+<div><script src='https://gist.github.com/4716874.js?file='></script>
+<noscript><pre><code>Hanoi = Struct.new(:disk, :source, :dest, :spare)
+
+def move(hanoi)
+  &quot;Move #{hanoi.disk.abs} from #{hanoi.source} to #{hanoi.dest}&quot;
+end
+
+class Stack
+  def initialize
+    @data = []
+  end
+
+  def push(hanoi)
+    @data.unshift(hanoi)
+  end
+
+  def pop
+    @data.shift
+  end
+
+  def peek
+    @data.first
+  end
+
+  def empty?
+    @data.empty?
+  end
+end
+
+
+# Resolve the Tower of Hanoi problem with a Stack. You can't use recursion
+# in it's traditional way, but adding everything to a stack works the same.
+#
+# Notice you have to invert the order of the calls to the recursive function
+# since the stack is **Last In - First Out**.
+def stacker hanoi
+  stack = Stack.new
+  stack.push(hanoi)
+
+  until stack.empty? do
+    hanoi = stack.pop
+
+    if hanoi.disk &lt;= 1
+      puts move(hanoi)
+    else
+      left  = Hanoi.new(hanoi.disk - 1, hanoi.source, hanoi.spare, hanoi.dest)
+      right = Hanoi.new(hanoi.disk - 1, hanoi.spare, hanoi.dest, hanoi.source)
+      hanoi.disk = -hanoi.disk # force printing it next time it appears
+      stack.push right
+      stack.push hanoi
+      stack.push left
+    end
+  end
+end
+
+
+# Resolve the Tower of Hanoi problem with recursion.
+def recursive hanoi
+  if hanoi.disk == 1
+    puts move(hanoi)
+  else
+    left  = Hanoi.new(hanoi.disk - 1, hanoi.source, hanoi.spare, hanoi.dest)
+    right = Hanoi.new(hanoi.disk - 1, hanoi.spare, hanoi.dest, hanoi.source)
+    recursive(left)
+    puts move(hanoi)
+    recursive(right)
+  end
+end
+
+h = Hanoi.new(3, 'A', 'B', 'C')
+
+recursive(h)
+puts &quot;\n\n&quot;
+stacker(h)
+</code></pre></noscript></div>
+
+<p>There&#39;s another iterative solution but I haven&#39;t implemented it. So, if you did
+or have some other way to solve this, I&#39;d love to know on
+<a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -264,7 +390,8 @@ puts &quot;\n&quot;
 print_list(reverse_list(first))
 </code></pre></noscript></div>
 
-<p>How would you do it? There&#39;s a really simple solution using a queue, but if you
+<p>How would you do it? There&#39;s a really simple solution using a
+<a href="https://gist.github.com/nhocki/4392454#comment-676651">stack</a>, but if you
 find another one, I&#39;d love to hear about it on
 <a href="https://twitter.com/nhocki">Twitter @nhocki</a></p>
 </div>
@@ -714,123 +841,6 @@ end</code></pre></noscript></div>
 <p>Now all you have to do is fill your layouts with &quot;content boxes&quot; that can be changed on an controller or action-specific need, giving great flexibility.</p>
 
 <p>How would you get around this?</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/31/thoughts-on-decorators-and-presenters/">Thoughts on Decorators & Presenters</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-31T18:12:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I have been developing a new app using a lot of <a href="http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/">decorators and presenters</a>. I&#39;ve been highly influenced by <a href="http://about.avdi.org/">Avdi</a> (both his <a href="http://avdi.org/devblog/">blog</a> and his <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">Objects in Rails book</a>) and <a href="http://steveklabnik.com">Steve Klabnik</a>, but now I have a problem. My decorators are starting to get big. I&#39;ll have to use <code>concerns</code> for that. Expect another post about it (maybe).</p>
-
-<p><strong>I want to warn you that I am not by any means an expert on the subject. So I&#39;m more than open to any feedback you can give me.</strong></p>
-
-<blockquote>
-<p>All presenters are decorators, but not all decorators are presenters.</p>
-
-<p>A decorator is a class that adds some sort of functionality to another
-class. A presenter is a class that adds some sort of presentation
-formatting functionality to another class.</p>
-
-<p><a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">Steve Klabnik</a></p>
-</blockquote>
-
-<p>I think that what a decorator <em>should</em> do is give a standard API for the processed data stored somewhere (probably a database). I don&#39;t think a decorator should be in charge of the markup of the presented data. For me, it makes no sense that the decorator (that is processed data for me), knows <em>how</em> it is being shown to the user.</p>
-
-<p>That said, I think the <strong>same</strong> decorator should be used to build the JSON response and the HTML response. The HTML markup and JSON structure are <em>just</em> \&#39;markup\&#39;. So, they can be treated as templates.</p>
-
-<h3 id="toc_65">So, where do the logic in the template goes?</h3>
-
-<p>I had this discussion with a <a href="http://mheroin.com/">friend</a>, and he asked me that, with this approach, how would he add elements to a view depending on a condition, for example, the famous \&#39;***You are logged in as nhocki***\&#39; if there&#39;s a user logged in.</p>
-
-<p>I think this should be created inside helper methods that takes a block. Inside that block you can use the <strong>decorator</strong> methods to show the needed data. You can use those methods in your JSON builder too (try out the new <a href="https://github.com/rails/jbuilder">Jbuilder</a>). You could bundle up these methods and re-use them in your projects too.  </p>
-
-<p>Here&#39;s an example:</p>
-
-<div><script src='https://gist.github.com/1714913.js?file='></script>
-<noscript><pre><code># app/models/user.rb
-#
-# User model has name &amp; username
-#
-# Only the username is required (signup with Github for example)
-class User &lt; ActiveRecord::Base
-  validates :username, presence: true
-end
-
-
-
-# app/decorators/user_decorator.rb
-#
-# Let's use the Draper gem for the decorators
-class UserDecorator &lt; ApplicationDecorator
-  decorates :user
-
-  def display_name
-    user.name.presence || user.username
-  end
-
-  # Formatting the data is OK. I'm against adding the markup
-  def salary
-    h.number_to_currency(user.salary)
-  end
-end
-
-
-# app/views/users/index.html.erb
-
-# current_user is a presenter
-&lt;%= logged_in_area do %&gt;
-  You are logged in as &lt;%= current_user.display_name %&gt;
-&lt;% end %&gt;
-
-# viewing @some_users's profile (which is also a presenter)
-&lt;%= admin_area do %&gt;
-  &lt;span class=&quot;salary&quot;&gt;&lt;%= @some_user.salary %&gt;&lt;/span&gt;
-&lt;% end %&gt;
-
-
-# app/helpers/application_helpers.rb
-#
-# We all hate helpers, but this time, they're useful.
-def admin_area(&amp;block)
-  content_tag(:div, capture(&amp;block), class: 'admin') if current_user.admin?
-end</code></pre></noscript></div>
-
-<h3 id="toc_66">Maybe I have the names wrong</h3>
-
-<p>As I mentioned before, I&#39;m no expert on design patterns. And I&#39;m pretty <em>new</em> to presenters and decorators. So, maybe my approach has a different name. I don&#39;t really care how this is called, I feel it&#39;s a more natural approach and it keeps the template and the processed data in different parts.</p>
-
-<h3 id="toc_67">Please provide feedback</h3>
-
-<p>It is also possible that I have it all wrong, that&#39;s why I&#39;m really interested in your opinion. I&#39;m eager to learn about everything from anyone, so I would love to have some feedback about this. You can post a comment below or send me a message on <a href="http://twitter.com/nhocki">twitter</a>.</p>
 </div>
   
   
