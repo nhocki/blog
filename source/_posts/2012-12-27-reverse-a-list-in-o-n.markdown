@@ -18,6 +18,7 @@ Here's my solution:
 
 {% gist 4392454 %}
 
-How would you do it? There's a really simple solution using a queue, but if you
+How would you do it? There's a really simple solution using a
+[stack](https://gist.github.com/nhocki/4392454#comment-676651), but if you
 find another one, I'd love to hear about it on
 [Twitter @nhocki](https://twitter.com/nhocki)
