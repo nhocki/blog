@@ -58,12 +58,11 @@
 
 </header>
   <div id="main">
-    <div id="content">
-      <div class="blog-index">
+    <div class="blog-index">
   
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -180,7 +179,7 @@ end</code></pre></noscript></div>
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -230,7 +229,7 @@ end</code></pre></noscript></div>
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -350,7 +349,7 @@ User.fetch(1).username  # =&gt; 'nhocki'
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -492,7 +491,7 @@ end
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -532,7 +531,7 @@ end
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -597,7 +596,7 @@ end
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -641,7 +640,7 @@ it is because it&#39;s too time-consuming.</p>
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -744,7 +743,7 @@ end</code></pre></noscript></div>
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -807,7 +806,7 @@ elements, so it was an infinite loop.</p>
     </article>
   
   
-    <article>
+    <article class='post'>
       
   <header>
     
@@ -861,23 +860,21 @@ myself.</p>
   
   <div class="pagination">
     
-      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+      <a class="prev float-left" href="/blog/page/3/">&larr; Older</a>
     
-    <a href="/blog/archives">Blog Archives</a>
+
     
-    <a class="next" href="/">Newer &rarr;</a>
+    <a class="next float-right" href="/">Newer &rarr;</a>
     
+    <div class='clear'></div>
   </div>
 </div>
-<aside class="sidebar">
-  
-    
-  
-</aside>
-
-    </div>
   </div>
-  <footer role="contentinfo"><p class="site-end-note">
+  <footer role="contentinfo"><div id='archive' class='centered'>
+  <h1><a href="/blog/archives">Blog Archives</a></h1>
+</div>
+
+<p class="site-end-note">
   You can follow me on Twitter <a href="https://twitter.com/nhocki">@nhocki</a>,
   find me on Github as <a href="https://github.com/nhocki">nhocki</a> or
   write me an email at <a href="mailto:nhocki@gmail.com">nhocki@gmail.com</a>
