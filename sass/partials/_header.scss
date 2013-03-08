@@ -4,16 +4,19 @@ body > header {
     font-size: 3.0em;
     display: block;
     margin: 0;
-    @include text-shadow(-1px -1px 0px #FFF);
-    a, a:visited, a:hover {
+    a, a:visited{
       color: #000;
       text-decoration: none;
+      @include text-shadow(0px 1px 1px #FFF);
+      &:hover, &:focus{
+        color: #666;
+      }
     }
   }
 
   h2 {
     text-align: center;
-    @include text-shadow(-1px 0px 1px #FFF);
+    @include text-shadow(0px 0px 1px #FFF);
     margin: .5em 0 0;
     font-size: 1.2em;
     color: #333;

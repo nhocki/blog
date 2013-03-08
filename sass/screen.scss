@@ -2,35 +2,66 @@
 @include global-reset;
 @include reset-html5;
 
+$link-color: #000;
+$link-color-hover: #F64;
+$img-border: transparent;
+
+$main-bg: #efede7;
+$text-color: #6a6359;
+$datecolor: #b7b7b7;
+
 body {
-  color: #000;
-  width: 70%;
-  margin: 0 auto;
-  font-size: 18px;
-  line-height: 28px;
+  background: $main-bg;
+  color: $text-color;
   vertical-align: middle;
-  background: #FDFDFD;
-  font-family: "PT Serif", Georgia, Times, "Times New Roman", serif;
+  font: 16px/28px 'Open Sans', 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, "Lucida Grande", sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:none;
+}
+
+img{
+  max-width: 100%;
+  height: auto;
+}
+
+img.float_left {
+    margin: 10px 40px 30px 0;
+}
+
+img.float_right {
+    margin: 10px 0 30px 40px;
+}
+
+a{
+  color: $link-color;
+  font-weight: bold;
+  text-decoration: none;
+  &:hover, &:focus{
+    color: $link-color-hover;
+  }
+}
+
+hr {
+    width: 50%;
+    height: 6px;
+    display: block;
+    background: #eee;
+    margin: 0 auto;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    border: 0;
 }
 
 p, li{
   margin-bottom: 20px;
   code, pre {
+    font-size: 16px;
     font-family: Georgia, serif;
-    color: #444;
+    color: #333;
     background: #EEE;
     background: rgba(200, 200, 200, 0.3);
-    padding: 0 5px;
+    padding: 2px 10px;
     font-weight: lighter;
-  }
-}
-
-a{
-  color: #22A;
-  font-size: 1.1em;
-  text-decoration: none;
-  &:hover, &:active, &:focus{
-    text-decoration: underline;
   }
 }
 
@@ -41,10 +72,18 @@ i, em { text-style: italic; }
 .centered {text-align: center;}
 .smaller { font-size: 0.8em;}
 
-.basic-alignment{
-  &.left{ float: left; }
-  &.right{ float: right; }
+.clear{
+  clear: both;
 }
+
+.float-left { float: left; }
+.float-right{ float: right;}
+
+.basic-alignment{
+  &.left { @extend .float-left; }
+  &.right{ @extend .float-right; }
+}
+
 
 footer{
   .site-end-note{
@@ -54,9 +93,86 @@ footer{
   }
 }
 
+blockquote {
+    width: 100%;
+    padding: 0 0 0 30px;
+    margin: 10px 0 30px 0;
+    border-left: 10px solid #ff6644;
+    font-size: 18px;
+    color: #838689;
+    -webkit-box-sizing: border-box;     /* Safari/Chrome, other WebKit */
+       -moz-box-sizing: border-box;     /* Firefox, other Gecko */
+            box-sizing: border-box;     /* Opera/IE 8+ */
+}
 
-@import "partials/navigation";
-@import "partials/blog";
+#main{
+  max-width: 960px;
+  width: 80%;
+  margin: 0 auto;
+
+  article.post{
+    background: #FFF;
+    padding: 80px 50px;
+    margin: 0 auto;
+    margin-bottom: 90px;
+    position: relative;
+    @include box-shadow(0 1px 2px rgba(0,0,0,.2), inset 0 -1px 3px #f6f4ee);
+
+    .entry-title{
+      font-size: 32px;
+      line-height: 36px;
+      vertical-align: middle;
+      margin-bottom: 35px;
+      font-weight: bold;
+      max-width: 80%;
+      color: #000;
+    }
+
+    // Post dates
+    p.meta{
+      position: absolute;
+      top: 80px;
+      right: 80px;
+      color: $datecolor;
+      font: 16/18 inherit;
+    }
+
+    // Sections on posts
+    h2, h3{
+      font-size: 20px;
+      margin: 25px 0px;
+      font-weight: bold;
+      color: #000;
+      border-bottom: 1px solid #DDD;
+    }
+  } // end of article.post
+
+  .single-post{
+    .nav-pag{
+      margin-top: 20px;
+    }
+  }
+  .pagination{
+    font-size: 20px;
+    margin-top: -80px;
+    margin-bottom: 55px;
+    padding: 0 20px;
+    a{
+      display: inline-block;
+    }
+  }
+} // End of #main
+
+body > footer{
+  margin-top: -35px;
+  #archive{
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+}
+
+//@import "partials/navigation";
+//@import "partials/blog";
 @import "partials/header";
 @import "partials/archive";
 
@@ -77,7 +193,7 @@ footer{
 
 /*---------------------- Syntax Highlighting -----------------------------*/
 .highlight {
-  background-color: #ECECEC;
+  border: 1px solid #DDD;
   padding: 10px;
   font-size: 14px;
   line-height: 1.8em;

@@ -1,4 +1,3 @@
-$link-color-hover: #22A;
 #archive {
   #content > div { &, > article { padding-top: 0; } }
 }
@@ -7,45 +6,51 @@ $link-color-hover: #22A;
     padding: 1em 0 1em;
     position: relative;
     background: $img-border bottom left repeat-x;
-    &:last-child {
-      background: none;
-    }
+    color: $text-color;
     footer { padding: 0; margin: 0;}
-    border: 0 !important;
   }
-  h1 { color: $text-color; margin-bottom: .3em; }
-  h2 { display: none; }
+
+  a{
+    font-weight: normal;
+    color: $link-color;
+    &:hover, &:focus{
+      color: $link-color-hover;
+    }
+  }
+
   h1 {
+    margin-bottom: .3em;
     font-size: 1.5em;
     a {
-      @include hover-link;
-      color: inherit;
-      font-weight: normal;
+      font-weight: bold;
       display: inline-block;
     }
   }
-  a.category, time {
-    @extend .sans;
-    color: #22A;
-  }
-  color: $text-color-light;
+
+  h2 { display: none; }
+  .categories { display: none; }
+
   .entry-content { display: none; }
+
   time {
     font-size: .9em;
     line-height: 1.2em;
     .month, .day { display: inline-block; }
     .month { text-transform: uppercase; }
   }
+
   p { margin-bottom: 1em; }
-  &, .entry-content { a { @include link-colors(inherit, $link-color-hover); }}
-  a:hover { color: $link-color-hover; }
+
   @media only screen and (min-width: 550px) {
     article { margin-left: 5em; }
+    .categories {
+      display: block;
+    }
+
     h2 {
       font-weight: normal;
       display: block;
-      border-top: 1px dotted #DDD;
-      &:first-child { padding-top: .75em; border-top: 0 !important;}
+      &:first-child { padding-top: .75em;}
     }
     time {
       position: absolute;
