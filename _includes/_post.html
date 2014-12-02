@@ -1,0 +1,23 @@
+<article>
+{% capture categories_count %}{{ post.categories | size }}{% endcapture %}
+{% capture date_format %}
+<span class='month'>%b</span> <span class='day'>%d</span>
+{% endcapture %}
+
+<h1>
+  <a class="post-link" title="{{ post.title }}" href="{{ post.url | prepend: site.baseurl }}">
+    {{ post.title }}
+  </a>
+</h1>
+
+<time datetime="{{ post.date | datetime | date_to_xmlschema }}" pubdate>
+  {{ post.date | date: date_format}}
+</time>
+
+{% if post.excerpt %}
+<section class='excerpt'>
+  {{ post.excerpt }}
+  <a href="{{ post.url | prepend: site.baseurl }}">Read more</a>
+</section>
+{% endif %}
+</article>

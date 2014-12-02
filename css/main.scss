@@ -3,9 +3,9 @@
 ---
 @charset "utf-8";
 
-
-
 // Our variables
+$sans: "PT Sans", "Helvetica Neue", Arial, sans-serif !default;
+
 $base-font-family: Helvetica, Arial, sans-serif;
 $base-font-size:   16px;
 $small-font-size:  $base-font-size * 0.875;
@@ -48,5 +48,6 @@ $on-laptop:        800px;
 @import
         "base",
         "layout",
-        "syntax-highlighting"
+        "syntax-highlighting",
+        "posts"
 ;
