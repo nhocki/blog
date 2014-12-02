@@ -16,8 +16,8 @@
 
 {% if post.excerpt %}
 <section class='excerpt'>
-  {{ post.excerpt }}
-  <a href="{{ post.url | prepend: site.baseurl }}">Read more</a>
+  {{ post.excerpt | remove: '<p>' | remove: '</p>' }}
 </section>
+<a href="{{ post.url | prepend: site.baseurl }}" class='read-more'>Read more</a>
 {% endif %}
 </article>

@@ -2,9 +2,12 @@
   article {
     padding: 1em 0 1em;
     position: relative;
-    border-bottom: 1px solid #DDD;
     &:last-child { border-bottom: 0; }
     footer { padding: 0; margin: 0; }
+  }
+  .read-more{
+    display: block;
+    padding-top: 0.8em * $base-line-height;
   }
   h1 { color: $text-color; margin-bottom: .3em; }
   h2 { display: none; }
