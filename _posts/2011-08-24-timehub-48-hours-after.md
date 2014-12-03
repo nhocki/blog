@@ -8,6 +8,7 @@ categories:
 - analytics
 - stats
 ---
+
 As you may know, we created **[TimeHub](http://timehub.net)** in under 48
 hours for the Rally on Rails contest. I wanted to write this post because it's
 been 48 hours since the **public votes were opened**.
@@ -18,8 +19,6 @@ it's important to note that votes are still open (until August 26th), and if
 you haven't vote for us, you should! [Click here to get the instructions and a
 free heavenly holly ice-cream at the end](http://ranking.timehub.net/how-to-
 vote) (spanish version [here](http://ranking.timehub.net/como-votar)).
-
-
 
 
 ## The Judges
@@ -35,8 +34,6 @@ We were the only ones with 5/5 in innovation which really made us happy!
 Now, let's look at the public votes.
 
 
-
-
 ## How we started
 
 We started tweeting A LOT when we found out the votes were opened. **Sorry for
@@ -50,8 +47,6 @@ We tweeted friends, coworkers, students, professors, some ruby-heroes, some
 and prepared other tweets too. **We've been thinking them for a while (is not
 coincidence that our about page is actually a "showing our love" page ([[http:
 //timehub.net/love](http://timehub.net/love)](http://timehub.net/love))**.
-
-
 
 
 ## What we got

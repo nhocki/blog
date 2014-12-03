@@ -21,7 +21,12 @@ I guess it was my lucky day because [Thoughtbot](http://thoughtbot.com/)
 exactly what I needed. Turns out that using the [PG Backups
 addon](http://addons.heroku.com/pgbackups) it's really easy and fast!
 
-{% gist 1089598 %}
+```shell
+heroku addons:add pgbackups --remote staging
+heroku addons:add pgbackups --remote production
+heroku pgbackups:capture --remote production
+heroku pgbackups:restore DATABASE `heroku pgbackups:url --remote production` --remote staging
+```
 
 That's all you need! Those 4 lines (actually, the last 2) will backup your
 production database and then restore that backup in your staging database.
