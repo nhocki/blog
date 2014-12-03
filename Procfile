@@ -1,1 +1,1 @@
-web: bundle exec jekyll --port $port -V
+web: bundle exec thin start -p $PORT -V

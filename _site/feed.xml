@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Nicolás Hock-Isaza</title>
+    <author>Nicolás Hock-Isaza</authod>
+    <description>Thoughts about programming, development &amp; other stuff.</description>
+    <link>http://blog.nhocki.com/</link>
+    <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Wed, 03 Dec 2014 02:37:47 -0500</pubDate>
+    <lastBuildDate>Wed, 03 Dec 2014 02:37:47 -0500</lastBuildDate>
+    <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Trending Content with Ruby and Redis</title>
+        <description>&lt;p&gt;I&amp;#39;ve released a new gem called &lt;a href=&quot;https://github.com/nhocki/popular_streams&quot;&gt;Popular Streams&lt;/a&gt;, with this gem you can easily
+get &amp;quot;trending&amp;quot; content based on events. It is based on a really nice &lt;a href=&quot;http://stdout.heyzap.com/2013/04/08/surfacing-interesting-content/&quot;&gt;blog post&lt;/a&gt;
+by Micah Fivecoate on Heyzap. There are several implementations in that post, you
+should check it out.&lt;/p&gt;
+
+&lt;p&gt;The gem is really easy to use and has a nice README on how to do it, so I won&amp;#39;t get
+into a lot of details on &lt;strong&gt;how&lt;/strong&gt; to use it here. This post is mostly about &lt;strong&gt;why&lt;/strong&gt;
+the gem works (and a little bit of the math behind it). The source is on
+&lt;a href=&quot;https://github.com/nhocki/popular_streams&quot;&gt;GitHub&lt;/a&gt; if you want to look at it.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-it-works?-and-why?&quot;&gt;How it works? And why?&lt;/h2&gt;
+
+&lt;p&gt;So, what&amp;#39;s popular &lt;em&gt;right now&lt;/em&gt;?. For example, at &lt;a href=&quot;http://weheartit.com&quot;&gt;We Heart It&lt;/a&gt; people &lt;em&gt;heart&lt;/em&gt;
+images that inspire them, and they do that &lt;em&gt;a lot&lt;/em&gt;. We get around 13 million hearts
+per day. The trick about popularity is that it will &lt;a href=&quot;http://en.wikipedia.org/wiki/Exponential_decay&quot;&gt;decay over time&lt;/a&gt;. This means
+that an image that was &lt;em&gt;hearted&lt;/em&gt; 10 times week ago is less popular than an image
+that was hearted 6 times today. Imagine each heart being a vote on an image.&lt;/p&gt;
+
+&lt;p&gt;The way the algorithm works is that, every day, we&amp;#39;ll divide the weight for each
+vote by half. Going through all the hearts is obviously impossible for us, but
+luckily there&amp;#39;s a formula to know the score of a specific vote on a specific time.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://blog.nhocki.com/assets/half_life.png&quot; alt=&quot;Half Life&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;Now the tricky part is knowing what time &lt;code&gt;t&lt;/code&gt; we&amp;#39;re at. But if we fixate the starting
+time (&lt;code&gt;epoc&lt;/code&gt;) and we compare everything against that, we can just get the value of
+the vote at &lt;code&gt;epoc&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://blog.nhocki.com/assets/half_life_epoc.png&quot; alt=&quot;Half Life at Epoc&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;That value is what this specific vote will be worth at &lt;code&gt;epoc&lt;/code&gt;. So now our problem
+becomes really easy! Every time an image gets a vote, we add that value to the
+score of that image (at &lt;code&gt;epoc&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;At first we will add &lt;strong&gt;really&lt;/strong&gt; small values, but it doesn&amp;#39;t matter because all
+values will be small. And they will get bigger and bigger over time, but they will
+all getbigger in the same proportion. This is pretty awesome and that&amp;#39;s what made
+me chose Micha&amp;#39;s solution.&lt;/p&gt;
+
+&lt;p&gt;One problem with the gem is when &lt;code&gt;epoc&lt;/code&gt; is much smaller than &lt;code&gt;t&lt;/code&gt;, so the value we
+will add is really big and we might get an overflow, but we can control that a
+little bit by selecting a nice &lt;code&gt;epoc&lt;/code&gt; and a nice &lt;code&gt;half_life&lt;/code&gt;. With the ones that
+the gem has by default, it should be OK for about 5 years, so I&amp;#39;m not really worried
+about that right now.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-i-use-it?&quot;&gt;How to I use it?&lt;/h2&gt;
+
+&lt;p&gt;Here&amp;#39;s a simple example on how to use the gem to get the popular tags of a site.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PopularStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;popular_tags&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;field&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;rubygems&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# You can also add an optional `weight` param.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;field&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;ruby&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# And you can even specify when the event happened.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Notice that time is a number, meaning seconds since Epoc.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;yesterday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_time&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;field&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;rubygems&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# =&amp;gt; [&amp;#39;rubygems&amp;#39;, &amp;#39;ruby&amp;#39;]&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# You can pass `limit` and `offset`&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;limit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;offset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# =&amp;gt; [&amp;#39;ruby&amp;#39;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;offset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# =&amp;gt; []&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# You can ask to get the scores as well&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;with_scores&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# =&amp;gt; [[&amp;#39;ruby&amp;#39;, 0.00001]]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Really easy, right? So go, checkout the gem and let me know what content you
+start surfacing!&lt;/p&gt;
+</description>
+        <pubDate>Tue, 02 Dec 2014 22:28:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2014/12/02/trending-content-with-ruby-and-redis/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2014/12/02/trending-content-with-ruby-and-redis/</guid>
+        
+        
+        <category>ruby</category>
+        
+        <category>redis</category>
+        
+      </item>
+    
+      <item>
+        <title>Beautiful URLs in Rails. The easy way.</title>
+        <description>&lt;p&gt;&lt;strong&gt;Disclaimer.&lt;/strong&gt; I know &lt;a href=&quot;http://rubygems.org/gems/friendly_id&quot;&gt;FriendlyID&lt;/a&gt; exists,
+and you should probably use it. This approach is for something that was done a
+&lt;em&gt;long&lt;/em&gt; time ago and doesn&amp;#39;t require the &lt;code&gt;slug&lt;/code&gt; to be persisted on the database.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;I&amp;#39;ve always been in love with &lt;a href=&quot;http://warpspire.com/posts/url-design&quot;&gt;beautiful URL design&lt;/a&gt;. Specially for &amp;#39;public&amp;#39; parts of the site. In Rails, it&amp;#39;s pretty common to use the ID of the object in the URL. Well, that &lt;strong&gt;really&lt;/strong&gt; sucks.&lt;/p&gt;
+
+&lt;p&gt;My first approach to solve this problem was started by &lt;a href=&quot;http://mheroin.com&quot;&gt;Federico Builes&lt;/a&gt; a long time ago with a plugin (&lt;a href=&quot;https://github.com/nhocki/make_permalink&quot;&gt;which I now maintain&lt;/a&gt; as a gem) called &lt;a href=&quot;http://rubygems.org/gems/make_permalink&quot;&gt;Make Permalink&lt;/a&gt;. It&amp;#39;s really easy to use and will (up to some point) solve the problem.&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1660555.js?file=make_permalink_example.rb&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The good thing about having &lt;code&gt;/users/1-nhocki&lt;/code&gt; as the URL is that is way better than &lt;code&gt;/users/1&lt;/code&gt; &lt;strong&gt;AND&lt;/strong&gt; you don&amp;#39;t have to change any of your app for that (you can still use &lt;code&gt;find&lt;/code&gt; in your controllers).&lt;/p&gt;
+
+&lt;p&gt;I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have &lt;em&gt;&lt;strong&gt;just&lt;/strong&gt;&lt;/em&gt; the username. I said, well, why don&amp;#39;t you just change the &lt;code&gt;to_param&lt;/code&gt; method to return the username and use &lt;code&gt;User.find_by_username&lt;/code&gt; everywhere?&lt;/p&gt;
+
+&lt;p&gt;Even though this actually works, I would be very tired from writing &lt;code&gt;find_by_username&lt;/code&gt; over and over again. So I told him to write a &lt;code&gt;fetch&lt;/code&gt; method where he could get an user either by the &lt;code&gt;id&lt;/code&gt; or the &lt;code&gt;username&lt;/code&gt;. I think this is pretty convenient and nice, but I would &lt;em&gt;&lt;strong&gt;hate&lt;/strong&gt;&lt;/em&gt; to write that fetch method in every model. So, with some metaprogramming we can easily do this.&lt;/p&gt;
+
+&lt;p&gt;First, I&amp;#39;ve created a &lt;code&gt;fetchable_on&lt;/code&gt; method to use it in your models. This will define a class method called &lt;code&gt;fetch&lt;/code&gt; that will let you get the object by querying on the &lt;code&gt;attribute&lt;/code&gt; &lt;strong&gt;OR&lt;/strong&gt; on the &lt;code&gt;id&lt;/code&gt;. Right now, it won&amp;#39;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&amp;#39;s ok. Here&amp;#39;s the code. Place it in your initializers folder.&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1657758.js&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;That way, you just need to call &lt;code&gt;fetchable_on :attribute&lt;/code&gt; in your model and it&amp;#39;ll adjust the &lt;code&gt;fetch&lt;/code&gt; method to query on that &lt;code&gt;attribute&lt;/code&gt; or the &lt;code&gt;id&lt;/code&gt;. Here&amp;#39;s an example:&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1660555.js?file=fetchable_example.rb&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note that I use &lt;code&gt;find_by_attribute!&lt;/code&gt; to throw an exception if the object is not found. Using the method without a &lt;code&gt;!&lt;/code&gt; will return &lt;code&gt;nil&lt;/code&gt; if there&amp;#39;s no object in the DB.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;How would you implement this? Any good solutions?&lt;/p&gt;
+</description>
+        <pubDate>Sun, 22 Jan 2012 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/01/22/beautiful-urls-in-rails-the-easy-way/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/01/22/beautiful-urls-in-rails-the-easy-way/</guid>
+        
+        
+        <category>rails</category>
+        
+        <category>url design</category>
+        
+        <category>metaprogramming</category>
+        
+      </item>
+    
+      <item>
+        <title>Simple Presenters &amp; Decorators on Rails</title>
+        <description>&lt;p&gt;There&amp;#39;s been a &lt;a href=&quot;http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design&quot;&gt;lot&lt;/a&gt; of &lt;a href=&quot;http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters&quot;&gt;talk&lt;/a&gt; &lt;a href=&quot;http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/&quot;&gt;about&lt;/a&gt; &lt;a href=&quot;http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in&quot;&gt;decorators&lt;/a&gt; and &lt;a href=&quot;http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators&quot;&gt;presenters&lt;/a&gt; (&lt;a href=&quot;https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ&quot;&gt;which are almost the same&lt;/a&gt;) in Rails and how they help you with a &amp;quot;real&amp;quot; OO code. There are great gems and there&amp;#39;s even a &lt;a href=&quot;http://railscasts.com/episodes/287-presenters-from-scratch&quot;&gt;Railscast&lt;/a&gt; (pro) on how to build a presenter from scratch. But, in the new project I&amp;#39;m working on, we (&lt;a href=&quot;https://github.com/febuiles&quot;&gt;he&lt;/a&gt;) have this &lt;strong&gt;very&lt;/strong&gt; simple setup which I feel kind of cleaner.&lt;/p&gt;
+
+&lt;p&gt;What we wanted to have was a &lt;code&gt;present&lt;/code&gt; method in the controller and build the view from its methods. So, we created an &lt;a href=&quot;http://api.rubyonrails.org/classes/ActiveSupport/Concern.html&quot;&gt;ActiveSupport::Concern&lt;/a&gt; called &lt;code&gt;Presentable&lt;/code&gt; and included it in our application controller. Here&amp;#39;s our (once again, his) code for that module.&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1592754.js?file=presentable.rb&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, we just need to create each presenter. But, since there&amp;#39;s a lot of shared logic between presenters we (he) just created a parent &lt;code&gt;Presenter class&lt;/code&gt; with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you &lt;code&gt;method missing&lt;/code&gt;) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&amp;#39;s our &lt;code&gt;Presenter base class&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1592754.js?file=presenter.rb&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, we just need to inherit from the &lt;code&gt;Presenter&lt;/code&gt; class and add our custom, clean methods. Using &lt;code&gt;delegate and method missing&lt;/code&gt; will help us keep the class clean. I won&amp;#39;t show you a presenter here, they&amp;#39;ll look a lot like Ryan&amp;#39;s one in his Railscasts so check that out first.&lt;/p&gt;
+
+&lt;p&gt;I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&amp;#39;s 1 of them:&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1592754.js?file=requests_controller.rb&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Combining &lt;code&gt;presenters&lt;/code&gt; and &lt;code&gt;form builders&lt;/code&gt; will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.&lt;/p&gt;
+
+&lt;p&gt;You&amp;#39;ll be amazed how different you&amp;#39;ll feel when reading some old code or some co-worker&amp;#39;s code.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 10 Jan 2012 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/</guid>
+        
+        
+        <category>rails</category>
+        
+        <category>presenters</category>
+        
+        <category>objects</category>
+        
+        <category>oop</category>
+        
+      </item>
+    
+      <item>
+        <title>Free Services vs Free Software.</title>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in.&lt;/p&gt;
+
+&lt;p&gt;If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Don&amp;#39;t be a Free User - &lt;a href=&quot;http://blog.pinboard.in/2011/12/don_t_be_a_free_user/&quot;&gt;Pinboard Blog&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Tue, 06 Dec 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/12/06/but-free-web-services-are-not-like-free-software/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/12/06/but-free-web-services-are-not-like-free-software/</guid>
+        
+        
+        <category>free web</category>
+        
+        <category>free software</category>
+        
+      </item>
+    
+      <item>
+        <title>Colorize your rake output</title>
+        <description>&lt;p&gt;I&amp;#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&amp;#39;m writing them. I have colors in my tests, but my output is really ugly, so I took &lt;a href=&quot;https://github.com/andmej/chatte/blob/0b5509f800ed514ee302a8019c0f8cd410bf40da/client.rb#L15-24&quot;&gt;some code&lt;/a&gt; from &lt;a href=&quot;https://github.com/andmej/chatte&quot;&gt;Chatte&lt;/a&gt;, - a simple chat application a &lt;a href=&quot;http://andr.esmejia.com/&quot;&gt;friend&lt;/a&gt; (and awesome &lt;a href=&quot;https://github.com/andmej/&quot;&gt;developer&lt;/a&gt;) wrote for college- and made some modifications for it. Here&amp;#39;s my module right now...&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1410582.js&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, you just need to &lt;code&gt;include Colors&lt;/code&gt; in your tasks and enjoy your life.&lt;/p&gt;
+
+&lt;p&gt;I know there&amp;#39;s a &lt;a href=&quot;https://github.com/fazibear/colorize&quot;&gt;colorize&lt;/a&gt; gem out there, but I don&amp;#39;t like their syntax. I prefer Andres&amp;#39; approach much more, so maybe I&amp;#39;ll turn this into a really simple gem. Do you think it&amp;#39;s worth it?&lt;/p&gt;
+</description>
+        <pubDate>Wed, 30 Nov 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/</guid>
+        
+        
+        <category>rake</category>
+        
+        <category>ruby</category>
+        
+        <category>rails</category>
+        
+      </item>
+    
+      <item>
+        <title>Algorithms &amp; entrepreneurship.</title>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;Algorithms are on the cutting edge of entrepreneurship. If you&amp;#39;re talking
+about just re-implementing stuff that people did ten years ago, performance
+isn&amp;#39;t that important at some level.&lt;/p&gt;
+
+&lt;p&gt;But, if you&amp;#39;re talking about doing stuff that nobody has done before, one of
+the reasons often that they haven&amp;#39;t done it is because it&amp;#39;s too time-consuming.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;By Charles Leiserson&lt;/p&gt;
+</description>
+        <pubDate>Wed, 09 Nov 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/</guid>
+        
+        
+        <category>algorithms</category>
+        
+        <category>entrepreneurship</category>
+        
+      </item>
+    
+      <item>
+        <title>Compile assets and push them - no pain involved!</title>
+        <description>&lt;p&gt;This week, I&amp;#39;ve been working on a side project with &lt;a href=&quot;http://andr.esmejia.com/&quot;&gt;Andrés
+Mejía&lt;/a&gt; (&lt;a href=&quot;http://twitter.com/andmej&quot;&gt;@andmej&lt;/a&gt;) and
+for some really really sad reason &lt;a href=&quot;http://heroku.com&quot;&gt;Heroku&lt;/a&gt; is not working
+as expected (a simple git push should do the trick, but we&amp;#39;re having a really
+&lt;a href=&quot;https://github.com/ddollar/rails_log_stdout/issues/4&quot;&gt;weird issue&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;At first, I thought it had something to do with the assets. Even-though
+&lt;a href=&quot;http://heroku.com&quot;&gt;Heroku&lt;/a&gt; has &lt;a href=&quot;h%0Attp://devcenter.heroku.com/articles/rails31_heroku_cedar#the_asset_pipeline&quot;&gt;asset compiling tasks on their Cedar stack&lt;/a&gt;,
+it didn&amp;#39;t really worked for us at first. So I just decided to create a small
+rake task to compile the assets and push them to Github.&lt;/p&gt;
+
+&lt;p&gt;The good thing about this rake task is that it will only push the assets. This
+means, that &lt;strong&gt;you&amp;#39;ll need a clean git tree to run this task or it will die&lt;/strong&gt;.
+This ensures that the automatic push &lt;strong&gt;won&amp;#39;t commit any non-related change to
+the compilation of the assets&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, you only have to run &lt;strong&gt;rake assets:compile&lt;/strong&gt; and sleep well at night.
+Here&amp;#39;s the code. Hope it helps.&lt;/p&gt;
+
+&lt;p&gt;&lt;script src=&quot;https://gist.github.com/1241135.js&quot;&gt; &lt;/script&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 28 Sep 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/</guid>
+        
+        
+        <category>heroku</category>
+        
+        <category>asset-pipeline</category>
+        
+        <category>rake</category>
+        
+        <category>rails</category>
+        
+      </item>
+    
+      <item>
+        <title>Scrollbar synchronization with jQuery</title>
+        <description>&lt;p&gt;I&amp;#39;m working on a really cool project on my University. It&amp;#39;s a web application
+to compare book editions and help professors build what is know as the
+Collatzio. The Collatzio is simply the &amp;quot;original&amp;quot; version of the book. That
+means, to have the book the author wanted to write and not the one that the
+editors wanted to publish.&lt;/p&gt;
+
+&lt;p&gt;I needed to have two versions of the book aligned side by side. So, the
+HTML/CSS was pretty simple. Just have two simple divs with &lt;strong&gt;overflow-y:
+auto;&lt;/strong&gt; to make the scrollbar appears on each div.&lt;/p&gt;
+
+&lt;p&gt;The coffeescript code I used is really simple, here it is:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-coffee&quot; data-lang=&quot;coffee&quot;&gt;&lt;span class=&quot;nx&quot;&gt;jQuery&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;($) -&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.scroll-text&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;scroll&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;(event) -&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;trigger = &lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;element = &lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;trigger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;scrolls&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;scrollTop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;trigger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;scrollTop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;preventDefault&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Hope it helps someone. I struggled a little bit with the &lt;em&gt;common&lt;/em&gt; way of
+scrolling things. People usually use the &lt;code&gt;animate&lt;/code&gt; method to scroll the body,
+but I couldn&amp;#39;t use it because it kept triggering the scroll event on the
+elements, so it was an infinite loop.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;html, body&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;scrollTop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;slow&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        <pubDate>Wed, 21 Sep 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery/</guid>
+        
+        
+        <category>jquery</category>
+        
+      </item>
+    
+      <item>
+        <title>TimeHub, the first winner!</title>
+        <description>&lt;p&gt;I just wanted to &lt;em&gt;personally&lt;/em&gt; say thanks to everyone who voted for our entry on
+the &lt;a href=&quot;http://rallyonrails.com&quot;&gt;Rally on Rails&lt;/a&gt; (Latinamerican Rails Rumble).&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt; won! And this couldn&amp;#39;t be possible without the
+people who voted.&lt;/p&gt;
+
+&lt;p&gt;I would like to thank the Rally on Rails team &amp;amp; judges. They made an excellent
+job and even though there are somethings to improve (like the voting rules),
+&lt;strong&gt;I think that the contest was great!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We had already posted a &lt;em&gt;&lt;a href=&quot;http://blog.timehub.net/post/9404894926/from-medellin-with-love&quot;&gt;thank you
+note&lt;/a&gt;&lt;/em&gt;, in
+the &lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt; blog, but I really wanted to write one
+myself.&lt;/p&gt;
+
+&lt;p&gt;I was pretty spammer during these last 3 days! That will stop now!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Thanks again!&lt;/strong&gt; Hope to see you in &lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt; v2!&lt;/p&gt;
+</description>
+        <pubDate>Fri, 26 Aug 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/</guid>
+        
+        
+        <category>timehub</category>
+        
+        <category>rally on rails</category>
+        
+      </item>
+    
+      <item>
+        <title>TimeHub 48 hours after</title>
+        <description>&lt;p&gt;As you may know, we created &lt;strong&gt;&lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt;&lt;/strong&gt; in under 48
+hours for the Rally on Rails contest. I wanted to write this post because it&amp;#39;s
+been 48 hours since the &lt;strong&gt;public votes were opened&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;First of all, I would like to thank EVERYONE that has talked about Timehub. It&amp;#39;s been really nice to see all the comments and feedback. It&amp;#39;s been even better to see so many votes so fast! We honestly didn&amp;#39;t expected this support and having over 3950 points in under 48 hours! THANK YOU!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;it&amp;#39;s important to note that votes are still open (until August 26th), and if
+you haven&amp;#39;t vote for us, you should! &lt;a href=&quot;http://ranking.timehub.net/how-to-%0Avote&quot;&gt;Click here to get the instructions and a
+free heavenly holly ice-cream at the end&lt;/a&gt; (spanish version &lt;a href=&quot;http://ranking.timehub.net/como-votar&quot;&gt;here&lt;/a&gt;).&lt;/p&gt;
+
+&lt;h2 id=&quot;the-judges&quot;&gt;The Judges&lt;/h2&gt;
+
+&lt;p&gt;It&amp;#39;s an honor to say that we won the judges votes. We got 88 points and got
+the first place. Really really, scary-close was team 53 (moove it) with 86
+points and in third place, it was team 43 (ochoigualiguald) with 82 points!&lt;/p&gt;
+
+&lt;p&gt;We were the only ones with 5/5 in innovation which really made us happy!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;I would like to thank the judges, sponsors and the Rally on Rails team to make this contest possible.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, let&amp;#39;s look at the public votes.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-we-started&quot;&gt;How we started&lt;/h2&gt;
+
+&lt;p&gt;We started tweeting A LOT when we found out the votes were opened. *&lt;em&gt;Sorry for
+all the spam my dear followers. It won&amp;#39;t last long. I promise. *&lt;/em&gt;We really
+needed the first impulse to make people notice us.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://img.skitch.com/20110824-rkkxubg89pdq5a9ctj1xm1i611.jpg&quot; alt=&quot;My spam&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;We tweeted friends, coworkers, students, professors, some ruby-heroes, some
+&amp;quot;public&amp;quot; tweets. Everything. We have a Skype conversation with what we tweeted
+and prepared other tweets too. &lt;strong&gt;We&amp;#39;ve been thinking them for a while (is not
+coincidence that our about page is actually a &amp;quot;showing our love&amp;quot; page (&lt;a href=&quot;http://timehub.net/love&quot;&gt;&lt;a href=&quot;http://timehub.net/love&quot;&gt;http:
+//timehub.net/love&lt;/a&gt;&lt;/a&gt;)&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-we-got&quot;&gt;What we got&lt;/h2&gt;
+
+&lt;p&gt;We really did not expect what came next. A lot of people started talking about
+&lt;strong&gt;Timehub&lt;/strong&gt;. **I had never felt like a rockstar before, but today was my day!
+**We got a lot of nice feedback. Ryan Bates from
+&lt;a href=&quot;http://railscasts.com&quot;&gt;Railscasts&lt;/a&gt;
+&lt;a href=&quot;https://twitter.com/rbates/status/106034170756739072&quot;&gt;responded&lt;/a&gt; (it was
+AWESOME having him reply our tweet!). &lt;a href=&quot;https://github.com/defunkt&quot;&gt;Chris
+Wanstrath&lt;/a&gt; (defunkt - Githubs CEO) &lt;a href=&quot;https://twitter.com/#!/defunkt/status/106061419325308928&quot;&gt;retweeted
+this&lt;/a&gt;. Heck, we even
+got a &lt;a href=&quot;https://twitter.com/jcleblanc/status/105910807119933440&quot;&gt;O&amp;#39;Reilly writer to tweet about
+it&lt;/a&gt;! The coolest
+thing about that is that we really didn&amp;#39;t ask them to do that (we asked Ryan,
+but the writer was just on his own will!) That was beautiful! Matthias Wiemann
+tweeted and got 33 RTs!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/0M1Z0f1a1b0X1M3m1d2q/Screen%20Shot%202011-08-2%0A4%20at%201.49.28%20AM.png&quot; alt=&quot;33 RTS!&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;We were on &lt;a href=&quot;http://news.ycombinator.com/&quot;&gt;Hacker News&lt;/a&gt; main page for a while.
+In fact, that&amp;#39;s were we got the most feedback and visits from (more on that
+later, with some graphs).&lt;/p&gt;
+
+&lt;p&gt;Of course, not everything was rainbows and butterflies. We also got some &amp;quot;bad&amp;quot;
+&lt;a href=&quot;https://twitter.com/#!/ifesdjeen/status/105970902675636224&quot;&gt;comments&lt;/a&gt; and
+feedback (&lt;strong&gt;which we honestly really appreciate&lt;/strong&gt;), but that was expected. We
+admit, and have always admitted that the commit DLS needs to be MUCH better.
+We&amp;#39;ll considering git notes and creating a gem to make it easier and keeping
+commits as clean as possible. But we had 48  hours so for now, that&amp;#39;s the best
+we could do.&lt;/p&gt;
+
+&lt;h2 id=&quot;cheating&quot;&gt;Cheating&lt;/h2&gt;
+
+&lt;p&gt;We were doing great (we still are btw) until some guys started cheating! I
+thought, &lt;strong&gt;&amp;quot;OMG we&amp;#39;re doing SO GREAT that they have to cheat!&amp;quot;&lt;/strong&gt; We created a
+&lt;a href=&quot;http://ranking.timehub.net/cheating&quot;&gt;report&lt;/a&gt; about it, and send it to the
+judges. We decided to remove &lt;a href=&quot;http://ranking.timehub.net/&quot;&gt;our global ranking
+page&lt;/a&gt; while this was fixed. Judges fixed it right
+away and we were back in the game!&lt;/p&gt;
+
+&lt;p&gt;This really made us sad. We worked really hard on the app and were working
+(spamming) a lot to keep people talking about it.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion-and-data&quot;&gt;Conclusion and Data&lt;/h2&gt;
+
+&lt;p&gt;So, according to Google Analytics, we&amp;#39;ve got &lt;strong&gt;7,420 visits **and&lt;/strong&gt; 10,658
+pageviews. **This is amazing for 2 days. Honestly, didn&amp;#39;t expect it!&lt;/p&gt;
+
+&lt;h2 id=&quot;country/territory-of-visits&quot;&gt;Country/Territory of visits&lt;/h2&gt;
+
+&lt;p&gt;Probably what shocked me the most is that we&amp;#39;re now getting more visits from
+the U.S than from Colombia. This is shocking because I expected my friends to
+visit the site, but I don&amp;#39;t have more friends in the U.S than here! Here&amp;#39;s the
+Top Five (out of &lt;strong&gt;104&lt;/strong&gt; countries):&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/1c3A0V1i1y1T0B3I1v22/Screen%20Shot%202011-08%0A-24%20at%202.18.13%20AM.png&quot; alt=&quot;Top Five!&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;Honestly, 2000+ visits agains 800+? That&amp;#39;s a HUGE difference! Here&amp;#39;s the whole
+map&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/3a392z3f0r1I2W3j2i2K/Screen%20Shot%202011-08-24%20at%%0A202.20.59%20AM.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;traffic-sources&quot;&gt;Traffic Sources&lt;/h2&gt;
+
+&lt;p&gt;The traffic sources also amazed me. We&amp;#39;ve had more referred visits than direct
+traffic, but that was not really shocking (who&amp;#39;s gonna write timehub.net
+anyway?)&lt;/p&gt;
+
+&lt;p&gt;What really shocked me is that even though we tweeted A LOT, got a lot of RTs
+and a lot of people tweeted, it was half of the visits we got from Hacker
+News!&lt;/p&gt;
+
+&lt;p&gt;With &lt;strong&gt;2,799 visits *&lt;em&gt;(more than direct traffic visits! - 2,424) Hacker News
+was the #1 referrer and traffic source for us. Twitter (t.co + twitter.com)
+was the second referrer but with *&lt;/em&gt;851 visits (713 from t.co and 130 from
+twitter.com)&lt;/strong&gt;! That means that we got &lt;strong&gt;over 1900 visits from HN compared to
+twitter&lt;/strong&gt;! We were only a few minutes in the main page! I can&amp;#39;t imagine the
+traffic a site will get for being there a whole morning! Here&amp;#39;s the top 10
+(plus one) traffic sources:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/3l1r101q022e330f370z/Screen%20Shot%202%0A011-08-24%20at%202.29.10%20AM.png&quot; alt=&quot;Traffic Sources&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;I added the #11 to show that the traffic &lt;strong&gt;2,799 visits are only from the .com
+domain. We&amp;#39;re getting traffic for .org/.net, ihackernews.com and others like
+that!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;I will be posting more and more details and info about how it goes. If you havent, please vote for us!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;THANKS A LOT,&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nicolás Hock Isaza&lt;/strong&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 24 Aug 2011 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2011/08/24/timehub-48-hours-after/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2011/08/24/timehub-48-hours-after/</guid>
+        
+        
+        <category>timehub</category>
+        
+        <category>analytics</category>
+        
+        <category>stats</category>
+        
+      </item>
+    
+  </channel>
+</rss>
