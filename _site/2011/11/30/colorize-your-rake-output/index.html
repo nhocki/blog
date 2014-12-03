@@ -60,9 +60,31 @@
 
   <article class="post-content">
     <p>I&#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&#39;m writing them. I have colors in my tests, but my output is really ugly, so I took <a href="https://github.com/andmej/chatte/blob/0b5509f800ed514ee302a8019c0f8cd410bf40da/client.rb#L15-24">some code</a> from <a href="https://github.com/andmej/chatte">Chatte</a>, - a simple chat application a <a href="http://andr.esmejia.com/">friend</a> (and awesome <a href="https://github.com/andmej/">developer</a>) wrote for college- and made some modifications for it. Here&#39;s my module right now...</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># https://gist.github.com/nhocki/1410582</span>
+<span class="k">module</span> <span class="nn">Colors</span>
+  <span class="k">def</span> <span class="nf">colorize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">color_code</span><span class="p">)</span>
+    <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[</span><span class="si">#{</span><span class="n">color_code</span><span class="si">}</span><span class="s2">m</span><span class="si">#{</span><span class="n">text</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+  <span class="k">end</span>
 
-<p><script src="https://gist.github.com/1410582.js"> </script></p>
+  <span class="p">{</span>
+    <span class="ss">:black</span>    <span class="o">=&gt;</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="ss">:red</span>      <span class="o">=&gt;</span> <span class="mi">31</span><span class="p">,</span>
+    <span class="ss">:green</span>    <span class="o">=&gt;</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="ss">:yellow</span>   <span class="o">=&gt;</span> <span class="mi">33</span><span class="p">,</span>
+    <span class="ss">:blue</span>     <span class="o">=&gt;</span> <span class="mi">34</span><span class="p">,</span>
+    <span class="ss">:magenta</span>  <span class="o">=&gt;</span> <span class="mi">35</span><span class="p">,</span>
+    <span class="ss">:cyan</span>     <span class="o">=&gt;</span> <span class="mi">36</span><span class="p">,</span>
+    <span class="ss">:white</span>    <span class="o">=&gt;</span> <span class="mi">37</span>
+  <span class="p">}</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">color_code</span><span class="o">|</span>
+    <span class="n">define_method</span> <span class="n">key</span> <span class="k">do</span> <span class="o">|</span><span class="n">text</span><span class="o">|</span>
+      <span class="n">colorize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">color_code</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 
+<span class="c1"># green &quot;Hello&quot;</span>
+<span class="c1">#   =&gt; &quot;\e[32mHello\e[0m&quot;</span>
+</code></pre></div>
 <p>Now, you just need to <code>include Colors</code> in your tasks and enjoy your life.</p>
 
 <p>I know there&#39;s a <a href="https://github.com/fazibear/colorize">colorize</a> gem out there, but I don&#39;t like their syntax. I prefer Andres&#39; approach much more, so maybe I&#39;ll turn this into a really simple gem. Do you think it&#39;s worth it?</p>

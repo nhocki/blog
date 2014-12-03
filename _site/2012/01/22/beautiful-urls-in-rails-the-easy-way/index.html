@@ -68,9 +68,20 @@ and you should probably use it. This approach is for something that was done a
 <p>I&#39;ve always been in love with <a href="http://warpspire.com/posts/url-design">beautiful URL design</a>. Specially for &#39;public&#39; parts of the site. In Rails, it&#39;s pretty common to use the ID of the object in the URL. Well, that <strong>really</strong> sucks.</p>
 
 <p>My first approach to solve this problem was started by <a href="http://mheroin.com">Federico Builes</a> a long time ago with a plugin (<a href="https://github.com/nhocki/make_permalink">which I now maintain</a> as a gem) called <a href="http://rubygems.org/gems/make_permalink">Make Permalink</a>. It&#39;s really easy to use and will (up to some point) solve the problem.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># https://gist.github.com/nhocki/1660555</span>
+<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">make_permalink</span> <span class="ss">:title</span>
 
-<p><script src="https://gist.github.com/1660555.js?file=make_permalink_example.rb"> </script></p>
-
+  <span class="c1"># Override this method to have nice looking</span>
+  <span class="c1"># URLs. You still use `Post.find` in the controller</span>
+  <span class="c1"># and will get URL like this:</span>
+  <span class="c1">#</span>
+  <span class="c1">#    /posts/1-look-mom-i-rock</span>
+  <span class="k">def</span> <span class="nf">to_param</span>
+    <span class="n">permalink</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>The good thing about having <code>/users/1-nhocki</code> as the URL is that is way better than <code>/users/1</code> <strong>AND</strong> you don&#39;t have to change any of your app for that (you can still use <code>find</code> in your controllers).</p>
 
 <p>I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have <em><strong>just</strong></em> the username. I said, well, why don&#39;t you just change the <code>to_param</code> method to return the username and use <code>User.find_by_username</code> everywhere?</p>
@@ -78,13 +89,58 @@ and you should probably use it. This approach is for something that was done a
 <p>Even though this actually works, I would be very tired from writing <code>find_by_username</code> over and over again. So I told him to write a <code>fetch</code> method where he could get an user either by the <code>id</code> or the <code>username</code>. I think this is pretty convenient and nice, but I would <em><strong>hate</strong></em> to write that fetch method in every model. So, with some metaprogramming we can easily do this.</p>
 
 <p>First, I&#39;ve created a <code>fetchable_on</code> method to use it in your models. This will define a class method called <code>fetch</code> that will let you get the object by querying on the <code>attribute</code> <strong>OR</strong> on the <code>id</code>. Right now, it won&#39;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&#39;s ok. Here&#39;s the code. Place it in your initializers folder.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># https://gist.github.com/nhocki/1657758</span>
+<span class="c1"># config/initializers/fetchable.rb</span>
 
-<p><script src="https://gist.github.com/1657758.js"> </script></p>
+<span class="c1"># encoding: UTF-8</span>
 
+<span class="k">module</span> <span class="nn">Extensions</span>
+  <span class="k">module</span> <span class="nn">Fetchable</span>
+    <span class="c1"># Adding `fetchable_on` to a model will define the `fetch` method</span>
+    <span class="c1"># that will allow you to query that model with the `attribute` or `id`.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Having the following:</span>
+    <span class="c1">#</span>
+    <span class="c1">#    class User &lt;&lt; ActiveRecord::Base</span>
+    <span class="c1">#      fetchable_on :username</span>
+    <span class="c1">#    end</span>
+    <span class="c1">#</span>
+    <span class="c1"># Will let you fetch users by username or id.</span>
+    <span class="c1">#</span>
+    <span class="c1">#    User.fetch(&#39;nhocki&#39;).id # =&gt; 1</span>
+    <span class="c1">#    User.fetch(1).username # =&gt; nhocki</span>
+    <span class="k">def</span> <span class="nf">fetchable_on</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+      <span class="n">define_singleton_method</span><span class="p">(</span><span class="s2">&quot;fetch&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|*</span><span class="n">args</span><span class="o">|</span>
+        <span class="n">looked_value</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">shift</span>
+        <span class="k">begin</span>
+          <span class="n">find</span><span class="p">(</span><span class="n">looked_value</span><span class="o">.</span><span class="n">to_i</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">rescue</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordNotFound</span>
+          <span class="nb">send</span><span class="p">(</span><span class="s2">&quot;find_by_</span><span class="si">#{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">looked_value</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="no">Extensions</span><span class="o">::</span><span class="no">Fetchable</span><span class="p">)</span>
+</code></pre></div>
 <p>That way, you just need to call <code>fetchable_on :attribute</code> in your model and it&#39;ll adjust the <code>fetch</code> method to query on that <code>attribute</code> or the <code>id</code>. Here&#39;s an example:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">fetchable_on</span> <span class="ss">:username</span>
 
-<p><script src="https://gist.github.com/1660555.js?file=fetchable_example.rb"> </script></p>
+  <span class="c1"># URL Style: /users/nhocki</span>
+  <span class="k">def</span> <span class="nf">to_param</span>
+    <span class="n">username</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 
+<span class="c1"># Gives you the `fetch` method.</span>
+<span class="c1"># It takes the username or the id.</span>
+<span class="c1"># Use fetch in your controller</span>
+
+<span class="no">User</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s1">&#39;nhocki&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span> <span class="c1"># =&gt; 1</span>
+<span class="no">User</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">username</span>  <span class="c1"># =&gt; &#39;nhocki&#39;</span>
+</code></pre></div>
 <p><strong>Note that I use <code>find_by_attribute!</code> to throw an exception if the object is not found. Using the method without a <code>!</code> will return <code>nil</code> if there&#39;s no object in the DB.</strong></p>
 
 <p>How would you implement this? Any good solutions?</p>

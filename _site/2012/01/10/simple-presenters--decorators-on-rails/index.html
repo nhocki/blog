@@ -62,19 +62,99 @@
     <p>There&#39;s been a <a href="http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design">lot</a> of <a href="http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters">talk</a> <a href="http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/">about</a> <a href="http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in">decorators</a> and <a href="http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators">presenters</a> (<a href="https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ">which are almost the same</a>) in Rails and how they help you with a &quot;real&quot; OO code. There are great gems and there&#39;s even a <a href="http://railscasts.com/episodes/287-presenters-from-scratch">Railscast</a> (pro) on how to build a presenter from scratch. But, in the new project I&#39;m working on, we (<a href="https://github.com/febuiles">he</a>) have this <strong>very</strong> simple setup which I feel kind of cleaner.</p>
 
 <p>What we wanted to have was a <code>present</code> method in the controller and build the view from its methods. So, we created an <a href="http://api.rubyonrails.org/classes/ActiveSupport/Concern.html">ActiveSupport::Concern</a> called <code>Presentable</code> and included it in our application controller. Here&#39;s our (once again, his) code for that module.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># https://gist.github.com/nhocki/1592754</span>
+<span class="c1"># app/concerns/controllers/presentable.rb</span>
 
-<p><script src="https://gist.github.com/1592754.js?file=presentable.rb"> </script></p>
+<span class="c1"># Presentable Concern</span>
+<span class="c1"># Include this module in the controllers where</span>
+<span class="c1"># you need the `present` method.</span>
+<span class="k">module</span> <span class="nn">Presentable</span>
+  <span class="c1"># This method returns a Presenter Object to work</span>
+  <span class="c1"># with in the view.</span>
+  <span class="c1">#</span>
+  <span class="c1"># Attributes:</span>
+  <span class="c1">#   object:   The object to present</span>
+  <span class="c1">#</span>
+  <span class="c1"># Supported Options</span>
+  <span class="c1">#    as:   The presenter class. If this is not suplied</span>
+  <span class="c1">#          the method will try to guess the class</span>
+  <span class="c1">#          e.g: UserPresenter for a User object.</span>
+  <span class="k">def</span> <span class="nf">present</span><span class="p">(</span><span class="n">object</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span> <span class="p">})</span>
+    <span class="k">if</span> <span class="n">object</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:first</span><span class="p">)</span>
+      <span class="k">return</span> <span class="o">[]</span> <span class="k">if</span> <span class="n">object</span><span class="o">.</span><span class="n">empty?</span>
+      <span class="n">presenter</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">object</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">pluralize</span><span class="si">}</span><span class="s2">Presenter&quot;</span>
+    <span class="k">else</span>
+      <span class="n">presenter</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">object</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">Presenter&quot;</span>
+    <span class="k">end</span>
 
+    <span class="n">presenter</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="ss">:as</span><span class="p">)</span> <span class="p">{</span> <span class="nb">eval</span><span class="p">(</span><span class="n">presenter</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">presenter</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">object</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>Now, we just need to create each presenter. But, since there&#39;s a lot of shared logic between presenters we (he) just created a parent <code>Presenter class</code> with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you <code>method missing</code>) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&#39;s our <code>Presenter base class</code>.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># Base presenter class</span>
+<span class="c1"># All presenters should inherit from this one.</span>
+<span class="k">class</span> <span class="nc">Presenter</span>
+  <span class="c1"># Include all the modules you need or</span>
+  <span class="c1"># send the view context to access rails helpers.</span>
+  <span class="kp">include</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">url_helpers</span>
+  <span class="c1"># ...</span>
 
-<p><script src="https://gist.github.com/1592754.js?file=presenter.rb"> </script></p>
+  <span class="kp">include</span> <span class="no">Presentable</span>
 
+  <span class="kp">attr_reader</span> <span class="ss">:record</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+    <span class="vi">@record</span> <span class="o">=</span> <span class="n">record</span>
+    <span class="vi">@klass</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">class</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="o">*</span><span class="n">arguments</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+    <span class="k">super</span> <span class="k">unless</span> <span class="n">record</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="n">record</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="o">*</span><span class="n">arguments</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">translate_field_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="vi">@klass</span><span class="o">.</span><span class="n">human_attribute_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="c1"># UrlHelper was being an ass, easier to go commando.</span>
+  <span class="k">def</span> <span class="nf">link_to</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+    <span class="n">href</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:href</span> <span class="o">=&gt;</span> <span class="n">url</span> <span class="p">}</span>
+    <span class="n">content_tag</span><span class="p">(</span><span class="ss">:a</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">href</span><span class="p">))</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>Then, we just need to inherit from the <code>Presenter</code> class and add our custom, clean methods. Using <code>delegate and method missing</code> will help us keep the class clean. I won&#39;t show you a presenter here, they&#39;ll look a lot like Ryan&#39;s one in his Railscasts so check that out first.</p>
 
 <p>I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&#39;s 1 of them:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">RequestsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">expose</span><span class="p">(</span><span class="ss">:filter</span><span class="p">)</span> <span class="p">{</span> <span class="n">params</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="ss">:filter</span><span class="p">)</span> <span class="p">{</span> <span class="ss">:all</span><span class="p">}</span> <span class="p">}</span>
+  <span class="n">expose</span><span class="p">(</span><span class="ss">:filtered_requests</span><span class="p">)</span> <span class="p">{</span> <span class="no">Request</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">expose</span><span class="p">(</span><span class="ss">:requests</span><span class="p">)</span> <span class="p">{</span> <span class="n">present</span><span class="p">(</span><span class="n">filtered_requests</span><span class="p">)</span> <span class="p">}</span>
 
-<p><script src="https://gist.github.com/1592754.js?file=requests_controller.rb"> </script></p>
+  <span class="n">before_filter</span> <span class="ss">:find_request</span><span class="p">,</span> <span class="ss">:only</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:show</span><span class="p">,</span> <span class="ss">:destroy</span><span class="o">]</span>
 
+  <span class="k">def</span> <span class="nf">index</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="kp">extend</span><span class="p">(</span><span class="no">RequestRedirector</span><span class="p">)</span> <span class="c1"># Another concern</span>
+    <span class="n">redirect_to_request</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">destroy</span>
+    <span class="vi">@request</span><span class="o">.</span><span class="n">destroy</span>
+    <span class="n">redirect_to</span> <span class="n">requests_path</span><span class="p">(</span><span class="ss">:filter</span> <span class="o">=&gt;</span> <span class="s2">&quot;new_requests&quot;</span><span class="p">),</span> <span class="ss">:notice</span> <span class="o">=&gt;</span> <span class="s2">&quot;Se ha eliminado la solicitud&quot;</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">find_request</span>
+    <span class="vi">@request</span> <span class="o">=</span> <span class="no">Request</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>Combining <code>presenters</code> and <code>form builders</code> will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.</p>
 
 <p>You&#39;ll be amazed how different you&#39;ll feel when reading some old code or some co-worker&#39;s code.</p>

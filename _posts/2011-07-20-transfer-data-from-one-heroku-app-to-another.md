@@ -21,7 +21,7 @@ I guess it was my lucky day because [Thoughtbot](http://thoughtbot.com/)
 exactly what I needed. Turns out that using the [PG Backups
 addon](http://addons.heroku.com/pgbackups) it's really easy and fast!
 
-```shell
+```sh
 heroku addons:add pgbackups --remote staging
 heroku addons:add pgbackups --remote production
 heroku pgbackups:capture --remote production

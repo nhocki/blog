@@ -77,9 +77,56 @@ the compilation of the assets</strong>.</p>
 
 <p>Now, you only have to run <strong>rake assets:compile</strong> and sleep well at night.
 Here&#39;s the code. Hope it helps.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># https://gist.github.com/nhocki/1241135</span>
+<span class="n">namespace</span> <span class="ss">:assets</span> <span class="k">do</span>
+  <span class="n">desc</span> <span class="s2">&quot;Compile all the assets named in config.assets.precompile and push them&quot;</span>
+  <span class="n">task</span> <span class="ss">:compile</span> <span class="k">do</span>
+    <span class="no">AssetsCompiler</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">compile</span>
+  <span class="k">end</span>
 
-<p><script src="https://gist.github.com/1241135.js"> </script></p>
+  <span class="k">class</span> <span class="nc">AssetsCompiler</span>
+    <span class="k">def</span> <span class="nf">compile</span>
+      <span class="n">ensure_clean_git</span>
+      <span class="n">removed_previous_assets</span>
+      <span class="n">compile_assets</span>
+      <span class="n">commit_compiled_assets</span>
+      <span class="n">push</span>
+    <span class="k">end</span>
 
+    <span class="k">def</span> <span class="nf">ensure_clean_git</span>
+      <span class="k">raise</span> <span class="s2">&quot;Can&#39;t deploy without a clean git status.&quot;</span> <span class="k">if</span> <span class="n">git_dirty?</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">removed_previous_assets</span>
+      <span class="n">run</span> <span class="s2">&quot;bundle exec rake RAILS_ENV=production assets:clean&quot;</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">compile_assets</span>
+      <span class="n">run</span> <span class="s2">&quot;bundle exec rake RAILS_ENV=production assets:precompile&quot;</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">commit_compiled_assets</span>
+      <span class="n">run</span> <span class="s2">&quot;git add -u &amp;&amp; git add . &amp;&amp; git commit -am &#39;Compiled assets&#39;&quot;</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">push</span>
+      <span class="n">run</span> <span class="s2">&quot;git push&quot;</span>
+    <span class="k">end</span>
+
+    <span class="kp">private</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;+ Running: </span><span class="si">#{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="nb">puts</span> <span class="s2">&quot;-- </span><span class="si">#{</span><span class="nb">system</span> <span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">git_dirty?</span>
+      <span class="sb">`[[ $(git diff --shortstat 2&gt; /dev/null | tail -n1) != &quot;&quot; ]]`</span>
+      <span class="n">dirty</span> <span class="o">=</span> <span class="vg">$?</span><span class="o">.</span><span class="n">success?</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
   </article>
 
 </div>
