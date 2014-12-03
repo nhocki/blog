@@ -2,6 +2,9 @@
 layout: post
 title: Trending Content with Ruby and Redis
 date: 2014-12-02 22:28
+categories:
+  - ruby
+  - redis
 ---
 
 I've released a new gem called [Popular Streams][1], with this gem you can easily
