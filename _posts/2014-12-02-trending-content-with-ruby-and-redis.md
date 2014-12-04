@@ -2,6 +2,7 @@
 layout: post
 title: Trending Content with Ruby and Redis
 date: 2014-12-02 22:28
+excerpt: How you can use the <a href='https://github.com/nhocki/popular_streams'>Popular Streams</a> gem to easily get popular content realtime.
 categories:
   - ruby
   - redis
