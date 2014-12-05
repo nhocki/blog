@@ -12,7 +12,7 @@ timezone: 'America/Bogota'
 relative_permalinks: true
 permalink: /:year/:month/:day/:title/
 
-exclude: ['config.ru', 'Gemfile', 'Gemfile.lock', 'vendor']
+exclude: ['config.ru', 'Gemfile', 'Gemfile.lock', 'vendor', 'Rakefile']
 
 gems:
   - jemoji
