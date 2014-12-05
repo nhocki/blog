@@ -2,19 +2,20 @@
 layout: post
 title: Displaying deploys with Capistrano and Graphite
 excerpt: How a simple Capistrano task can make your Graphite charts much better.
-date: 2014-12-03 22:11
+date: 2014-12-06 22:11
 ---
 
-At We Heart It, we collect a lot of data with and have several graphs & dashboars.
+At [We Heart It][whi], we collect a lot of data in several graphs & dashboars.
 But the graph data alone might not always be enough, sometimes you need context about
 what actually changed to know why the graph changed (like a big change on response times).
 
 Thankfuly, Graphite now supports *[events][1]* (although is not very well documented),
-so it's actually really easy to display when the code was deployed.
+so it's actually really easy to display when the code was deployed and add some information
+about the deploy itself.
 
 We use [Graphana](http://grafana.org/) for most of our dashboards. It is an
 amazing graphing tool, that gets data from [Graphite](http://graphite.wikidot.com/)
-and displays it in a really nice way.
+and displays it in a really nice way. You should really try it.
 
 ## The Basics
 
@@ -58,7 +59,7 @@ end
 The `commit_information` information will give you something like this:
 
 ```
-68305ff - Allow wildcard increment/decrement. - Nicolás Hock Isaza
+68305ff - Allow wildcard increment/decrement on stats counters. - Nicolás Hock Isaza
 ```
 
 You can use this information as a starting point when things go wrong with a
@@ -70,3 +71,4 @@ a lot today as well).
 
 [1]: https://code.launchpad.net/~lucio.torre/graphite/add-events/+merge/69142
 [annotations]: http://grafana.org/docs/features/annotations/
+[whi]: http://weheartit.com
