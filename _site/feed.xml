@@ -6,8 +6,8 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 06 Dec 2014 21:52:14 -0500</pubDate>
-    <lastBuildDate>Sat, 06 Dec 2014 21:52:14 -0500</lastBuildDate>
+    <pubDate>Sat, 06 Dec 2014 23:53:51 -0500</pubDate>
+    <lastBuildDate>Sat, 06 Dec 2014 23:53:51 -0500</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -160,463 +160,454 @@ start surfacing!&lt;/p&gt;
       </item>
     
       <item>
-        <title>Beautiful URLs in Rails. The easy way.</title>
-        <description>&lt;p&gt;&lt;strong&gt;Disclaimer.&lt;/strong&gt; I know &lt;a href=&quot;http://rubygems.org/gems/friendly_id&quot;&gt;FriendlyID&lt;/a&gt; exists,
-and you should probably use it. This approach is for something that was done a
-&lt;em&gt;long&lt;/em&gt; time ago and doesn&amp;#39;t require the &lt;code&gt;slug&lt;/code&gt; to be persisted on the database.&lt;/p&gt;
+        <title>Tower of Hanoi with a stack</title>
+        <description>&lt;p&gt;I&amp;#39;ve recently subscribed to &lt;a href=&quot;http://codingforinterviews.com/&quot;&gt;Coding for Interviews&lt;/a&gt;
+and received my first email today. The content is great and you should join.
+Even if you&amp;#39;re not looking for a job, it&amp;#39;s a short read with nice topics to
+refresh your memory.&lt;/p&gt;
 
-&lt;hr&gt;
+&lt;p&gt;&lt;a href=&quot;http://us2.campaign-archive2.com/?u=cadc6c448cd083a0aeed7f864&amp;amp;id=c550bc59d5&amp;amp;e=5694567579&quot;&gt;Today&amp;#39;s assignment&lt;/a&gt; was with stacks. I&amp;#39;ve used stacks to
+&lt;a href=&quot;http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/&quot;&gt;reverse a list in O(n)&lt;/a&gt;
+but today&amp;#39;s challenge was to solve the &lt;a href=&quot;http://en.wikipedia.org/wiki/Tower_of_Hanoi&quot;&gt;Tower of Hanoi&lt;/a&gt; problem without
+recursion.&lt;/p&gt;
 
-&lt;p&gt;I&amp;#39;ve always been in love with &lt;a href=&quot;http://warpspire.com/posts/url-design&quot;&gt;beautiful URL design&lt;/a&gt;. Specially for &amp;#39;public&amp;#39; parts of the site. In Rails, it&amp;#39;s pretty common to use the ID of the object in the URL. Well, that &lt;strong&gt;really&lt;/strong&gt; sucks.&lt;/p&gt;
+&lt;p&gt;Here&amp;#39;s my solution:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/4716874&lt;/span&gt;
 
-&lt;p&gt;My first approach to solve this problem was started by &lt;a href=&quot;http://mheroin.com&quot;&gt;Federico Builes&lt;/a&gt; a long time ago with a plugin (&lt;a href=&quot;https://github.com/nhocki/make_permalink&quot;&gt;which I now maintain&lt;/a&gt; as a gem) called &lt;a href=&quot;http://rubygems.org/gems/make_permalink&quot;&gt;Make Permalink&lt;/a&gt;. It&amp;#39;s really easy to use and will (up to some point) solve the problem.&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/1660555&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Post&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;make_permalink&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:title&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Hanoi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Struct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:disk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:dest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:spare&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-  &lt;span class=&quot;c1&quot;&gt;# Override this method to have nice looking&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# URLs. You still use `Post.find` in the controller&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# and will get URL like this:&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#    /posts/1-look-mom-i-rock&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;to_param&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;permalink&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;move&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&amp;quot;Move &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;abs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; from &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; to &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dest&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;The good thing about having &lt;code&gt;/users/1-nhocki&lt;/code&gt; as the URL is that is way better than &lt;code&gt;/users/1&lt;/code&gt; &lt;strong&gt;AND&lt;/strong&gt; you don&amp;#39;t have to change any of your app for that (you can still use &lt;code&gt;find&lt;/code&gt; in your controllers).&lt;/p&gt;
 
-&lt;p&gt;I was really glad with this but not too long ago, someone asked me for something similar but for Mongoid. And hell! Mongoid ids are ugly as shit! So, they wanted to have &lt;em&gt;&lt;strong&gt;just&lt;/strong&gt;&lt;/em&gt; the username. I said, well, why don&amp;#39;t you just change the &lt;code&gt;to_param&lt;/code&gt; method to return the username and use &lt;code&gt;User.find_by_username&lt;/code&gt; everywhere?&lt;/p&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Stack&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;p&gt;Even though this actually works, I would be very tired from writing &lt;code&gt;find_by_username&lt;/code&gt; over and over again. So I told him to write a &lt;code&gt;fetch&lt;/code&gt; method where he could get an user either by the &lt;code&gt;id&lt;/code&gt; or the &lt;code&gt;username&lt;/code&gt;. I think this is pretty convenient and nice, but I would &lt;em&gt;&lt;strong&gt;hate&lt;/strong&gt;&lt;/em&gt; to write that fetch method in every model. So, with some metaprogramming we can easily do this.&lt;/p&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unshift&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;p&gt;First, I&amp;#39;ve created a &lt;code&gt;fetchable_on&lt;/code&gt; method to use it in your models. This will define a class method called &lt;code&gt;fetch&lt;/code&gt; that will let you get the object by querying on the &lt;code&gt;attribute&lt;/code&gt; &lt;strong&gt;OR&lt;/strong&gt; on the &lt;code&gt;id&lt;/code&gt;. Right now, it won&amp;#39;t work if your attribute is a numeric value (like the number of bathrooms you have in your house), but most of the times, it&amp;#39;s ok. Here&amp;#39;s the code. Place it in your initializers folder.&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/1657758&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# config/initializers/fetchable.rb&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pop&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shift&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;c1&quot;&gt;# encoding: UTF-8&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;peek&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Extensions&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Fetchable&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Adding `fetchable_on` to a model will define the `fetch` method&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# that will allow you to query that model with the `attribute` or `id`.&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Having the following:&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#    class User &amp;lt;&amp;lt; ActiveRecord::Base&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#      fetchable_on :username&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#    end&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Will let you fetch users by username or id.&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#    User.fetch(&amp;#39;nhocki&amp;#39;).id # =&amp;gt; 1&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;#    User.fetch(1).username # =&amp;gt; nhocki&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fetchable_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;define_singleton_method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;fetch&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;looked_value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shift&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;begin&lt;/span&gt;
-          &lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;looked_value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;rescue&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RecordNotFound&lt;/span&gt;
-          &lt;span class=&quot;nb&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;find_by_&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;looked_value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;empty?&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;empty?&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Extensions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Fetchable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;That way, you just need to call &lt;code&gt;fetchable_on :attribute&lt;/code&gt; in your model and it&amp;#39;ll adjust the &lt;code&gt;fetch&lt;/code&gt; method to query on that &lt;code&gt;attribute&lt;/code&gt; or the &lt;code&gt;id&lt;/code&gt;. Here&amp;#39;s an example:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;fetchable_on&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:username&lt;/span&gt;
 
-  &lt;span class=&quot;c1&quot;&gt;# URL Style: /users/nhocki&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;to_param&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;username&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Resolve the Tower of Hanoi problem with a Stack. You can&amp;#39;t use recursion&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# in it&amp;#39;s traditional way, but adding everything to a stack works the same.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Notice you have to invert the order of the calls to the recursive function&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# since the stack is **Last In - First Out**.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;stacker&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-&lt;span class=&quot;c1&quot;&gt;# Gives you the `fetch` method.&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# It takes the username or the id.&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# Use fetch in your controller&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;until&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;empty?&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pop&lt;/span&gt;
 
-&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;nhocki&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# =&amp;gt; 1&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;username&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# =&amp;gt; &amp;#39;nhocki&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;Note that I use &lt;code&gt;find_by_attribute!&lt;/code&gt; to throw an exception if the object is not found. Using the method without a &lt;code&gt;!&lt;/code&gt; will return &lt;code&gt;nil&lt;/code&gt; if there&amp;#39;s no object in the DB.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;How would you implement this? Any good solutions?&lt;/p&gt;
-</description>
-        <pubDate>Sun, 22 Jan 2012 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/01/22/beautiful-urls-in-rails-the-easy-way/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/01/22/beautiful-urls-in-rails-the-easy-way/</guid>
-        
-        
-        <category>rails</category>
-        
-        <category>url design</category>
-        
-        <category>metaprogramming</category>
-        
-      </item>
-    
-      <item>
-        <title>Simple Presenters &amp; Decorators on Rails</title>
-        <description>&lt;p&gt;There&amp;#39;s been a &lt;a href=&quot;http://blog.steveklabnik.com/posts/2011-09-06-the-secret-to-rails-oo-design&quot;&gt;lot&lt;/a&gt; of &lt;a href=&quot;http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters&quot;&gt;talk&lt;/a&gt; &lt;a href=&quot;http://avdi.org/devblog/2011/11/15/early-access-beta-of-objects-on-rails-now-available-2/&quot;&gt;about&lt;/a&gt; &lt;a href=&quot;http://robots.thoughtbot.com/post/14825364877/evaluating-alternative-decorator-implementations-in&quot;&gt;decorators&lt;/a&gt; and &lt;a href=&quot;http://robots.thoughtbot.com/post/13641910701/tidy-views-and-beyond-with-decorators&quot;&gt;presenters&lt;/a&gt; (&lt;a href=&quot;https://groups.google.com/forum/#!msg/objects-on-rails/htAopf3k_dM/qJMq6QAfMvsJ&quot;&gt;which are almost the same&lt;/a&gt;) in Rails and how they help you with a &amp;quot;real&amp;quot; OO code. There are great gems and there&amp;#39;s even a &lt;a href=&quot;http://railscasts.com/episodes/287-presenters-from-scratch&quot;&gt;Railscast&lt;/a&gt; (pro) on how to build a presenter from scratch. But, in the new project I&amp;#39;m working on, we (&lt;a href=&quot;https://github.com/febuiles&quot;&gt;he&lt;/a&gt;) have this &lt;strong&gt;very&lt;/strong&gt; simple setup which I feel kind of cleaner.&lt;/p&gt;
-
-&lt;p&gt;What we wanted to have was a &lt;code&gt;present&lt;/code&gt; method in the controller and build the view from its methods. So, we created an &lt;a href=&quot;http://api.rubyonrails.org/classes/ActiveSupport/Concern.html&quot;&gt;ActiveSupport::Concern&lt;/a&gt; called &lt;code&gt;Presentable&lt;/code&gt; and included it in our application controller. Here&amp;#39;s our (once again, his) code for that module.&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/1592754&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# app/concerns/controllers/presentable.rb&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# Presentable Concern&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# Include this module in the controllers where&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# you need the `present` method.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Presentable&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# This method returns a Presenter Object to work&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# with in the view.&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# Attributes:&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#   object:   The object to present&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# Supported Options&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#    as:   The presenter class. If this is not suplied&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#          the method will try to guess the class&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;#          e.g: UserPresenter for a User object.&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;present&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;respond_to?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;empty?&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;presenter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pluralize&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Presenter&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+      &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;move&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;presenter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Presenter&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;presenter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:as&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;presenter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;presenter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now, we just need to create each presenter. But, since there&amp;#39;s a lot of shared logic between presenters we (he) just created a parent &lt;code&gt;Presenter class&lt;/code&gt; with all that. Notice that our presenter takes an object as parameter, so we just delegated all the method calls to our record (thank you &lt;code&gt;method missing&lt;/code&gt;) if it responded to that method. You could also send the view context to access Rails helpers inside your presenter. Here&amp;#39;s our &lt;code&gt;Presenter base class&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# Base presenter class&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# All presenters should inherit from this one.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Presenter&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# Include all the modules you need or&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# send the view context to access rails helpers.&lt;/span&gt;
-  &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rails&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;routes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;url_helpers&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;# ...&lt;/span&gt;
-
-  &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Presentable&lt;/span&gt;
-
-  &lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:record&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;vi&quot;&gt;@record&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;
-    &lt;span class=&quot;vi&quot;&gt;@klass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;method_missing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;super&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;respond_to?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;translate_field_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;vi&quot;&gt;@klass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;human_attribute_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;c1&quot;&gt;# UrlHelper was being an ass, easier to go commando.&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;link_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{})&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;href&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:href&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;content_tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;merge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;href&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Then, we just need to inherit from the &lt;code&gt;Presenter&lt;/code&gt; class and add our custom, clean methods. Using &lt;code&gt;delegate and method missing&lt;/code&gt; will help us keep the class clean. I won&amp;#39;t show you a presenter here, they&amp;#39;ll look a lot like Ryan&amp;#39;s one in his Railscasts so check that out first.&lt;/p&gt;
-
-&lt;p&gt;I will show you our controller though. Using the decent_exposure gem we managed to get super tiny controllers. Here&amp;#39;s 1 of them:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RequestsController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;expose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;expose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:filtered_requests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;expose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:requests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;present&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filtered_requests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;before_filter&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:find_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:only&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:destroy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;index&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;show&lt;/span&gt;
-    &lt;span class=&quot;kp&quot;&gt;extend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RequestRedirector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Another concern&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;redirect_to_request&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;destroy&lt;/span&gt;
-    &lt;span class=&quot;vi&quot;&gt;@request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;destroy&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;requests_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;new_requests&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:notice&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Se ha eliminado la solicitud&amp;quot;&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;find_request&lt;/span&gt;
-    &lt;span class=&quot;vi&quot;&gt;@request&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Combining &lt;code&gt;presenters&lt;/code&gt; and &lt;code&gt;form builders&lt;/code&gt; will make your views even cleaner, giving a lot of pleasure to the future you! So please, just pretty-please, start using presenters and builders and leave helpers as simple as possible. Or, leave them for good.&lt;/p&gt;
-
-&lt;p&gt;You&amp;#39;ll be amazed how different you&amp;#39;ll feel when reading some old code or some co-worker&amp;#39;s code.&lt;/p&gt;
-</description>
-        <pubDate>Tue, 10 Jan 2012 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/01/10/simple-presenters--decorators-on-rails/</guid>
-        
-        
-        <category>rails</category>
-        
-        <category>presenters</category>
-        
-        <category>objects</category>
-        
-        <category>oop</category>
-        
-      </item>
-    
-      <item>
-        <title>Free Services vs Free Software.</title>
-        <description>&lt;blockquote&gt;
-&lt;p&gt;But free web services are not like free software. If your free software project suddenly gets popular, you gain resources: testers, developers and people willing to pitch in.&lt;/p&gt;
-
-&lt;p&gt;If your free website takes off, you lose resources. Your time is spent firefighting and your money all goes to the nice people at Linode.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Don&amp;#39;t be a Free User - &lt;a href=&quot;http://blog.pinboard.in/2011/12/don_t_be_a_free_user/&quot;&gt;Pinboard Blog&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 06 Dec 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/12/06/but-free-web-services-are-not-like-free-software/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/12/06/but-free-web-services-are-not-like-free-software/</guid>
-        
-        
-        <category>free web</category>
-        
-        <category>free software</category>
-        
-      </item>
-    
-      <item>
-        <title>Colorize your rake output</title>
-        <description>&lt;p&gt;I&amp;#39;ve been writing a lot of rake tasks lately. I like to have a lot of output (feedback) from my tasks, at least while I&amp;#39;m writing them. I have colors in my tests, but my output is really ugly, so I took &lt;a href=&quot;https://github.com/andmej/chatte/blob/0b5509f800ed514ee302a8019c0f8cd410bf40da/client.rb#L15-24&quot;&gt;some code&lt;/a&gt; from &lt;a href=&quot;https://github.com/andmej/chatte&quot;&gt;Chatte&lt;/a&gt;, - a simple chat application a &lt;a href=&quot;http://andr.esmejia.com/&quot;&gt;friend&lt;/a&gt; (and awesome &lt;a href=&quot;https://github.com/andmej/&quot;&gt;developer&lt;/a&gt;) wrote for college- and made some modifications for it. Here&amp;#39;s my module right now...&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/1410582&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Colors&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;colorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;color_code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\033&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;color_code&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\033&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;[0m&amp;quot;&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:black&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:red&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:green&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:yellow&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;33&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:blue&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;34&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:magenta&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;35&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:cyan&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;36&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;:white&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;37&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;each&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;color_code&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;define_method&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;colorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;color_code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spare&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spare&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# force printing it next time it appears&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;c1&quot;&gt;# green &amp;quot;Hello&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#   =&amp;gt; &amp;quot;\e[32mHello\e[0m&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Resolve the Tower of Hanoi problem with recursion.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;recursive&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;move&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spare&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;disk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spare&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;recursive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;move&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hanoi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;recursive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Hanoi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;A&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;B&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;C&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;recursive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stacker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now, you just need to &lt;code&gt;include Colors&lt;/code&gt; in your tasks and enjoy your life.&lt;/p&gt;
-
-&lt;p&gt;I know there&amp;#39;s a &lt;a href=&quot;https://github.com/fazibear/colorize&quot;&gt;colorize&lt;/a&gt; gem out there, but I don&amp;#39;t like their syntax. I prefer Andres&amp;#39; approach much more, so maybe I&amp;#39;ll turn this into a really simple gem. Do you think it&amp;#39;s worth it?&lt;/p&gt;
+&lt;p&gt;There&amp;#39;s another iterative solution but I haven&amp;#39;t implemented it. So, if you did
+or have some other way to solve this, I&amp;#39;d love to know on
+&lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;Twitter @nhocki&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Wed, 30 Nov 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/11/30/colorize-your-rake-output/</guid>
-        
-        
-        <category>rake</category>
-        
-        <category>ruby</category>
-        
-        <category>rails</category>
-        
-      </item>
-    
-      <item>
-        <title>Algorithms &amp; entrepreneurship.</title>
-        <description>&lt;blockquote&gt;
-&lt;p&gt;Algorithms are on the cutting edge of entrepreneurship. If you&amp;#39;re talking
-about just re-implementing stuff that people did ten years ago, performance
-isn&amp;#39;t that important at some level.&lt;/p&gt;
-
-&lt;p&gt;But, if you&amp;#39;re talking about doing stuff that nobody has done before, one of
-the reasons often that they haven&amp;#39;t done it is because it&amp;#39;s too time-consuming.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;By Charles Leiserson&lt;/p&gt;
-</description>
-        <pubDate>Wed, 09 Nov 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/11/09/algorithms-are-on-the-cutting-edge-of-entrepreneurship/</guid>
+        <pubDate>Tue, 05 Feb 2013 14:37:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2013/02/05/tower-of-hanoi-with-a-stack/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2013/02/05/tower-of-hanoi-with-a-stack/</guid>
         
         
         <category>algorithms</category>
         
-        <category>entrepreneurship</category>
+        <category>programming</category>
+        
+        <category>interview tips</category>
         
       </item>
     
       <item>
-        <title>Compile assets and push them - no pain involved!</title>
-        <description>&lt;p&gt;This week, I&amp;#39;ve been working on a side project with &lt;a href=&quot;http://andr.esmejia.com/&quot;&gt;Andrés
-Mejía&lt;/a&gt; (&lt;a href=&quot;http://twitter.com/andmej&quot;&gt;@andmej&lt;/a&gt;) and
-for some really really sad reason &lt;a href=&quot;http://heroku.com&quot;&gt;Heroku&lt;/a&gt; is not working
-as expected (a simple git push should do the trick, but we&amp;#39;re having a really
-&lt;a href=&quot;https://github.com/ddollar/rails_log_stdout/issues/4&quot;&gt;weird issue&lt;/a&gt;).&lt;/p&gt;
+        <title>Stop using config files for secret data</title>
+        <description>&lt;p&gt;Seriously, it&amp;#39;s &lt;strong&gt;your&lt;/strong&gt; fault that GitHub exposed your keys. If you want to
+add everything to your repo (not that this is a good idea though), at least
+make it private.&lt;/p&gt;
 
-&lt;p&gt;At first, I thought it had something to do with the assets. Even-though
-&lt;a href=&quot;http://heroku.com&quot;&gt;Heroku&lt;/a&gt; has &lt;a href=&quot;h%0Attp://devcenter.heroku.com/articles/rails31_heroku_cedar#the_asset_pipeline&quot;&gt;asset compiling tasks on their Cedar stack&lt;/a&gt;,
-it didn&amp;#39;t really worked for us at first. So I just decided to create a small
-rake task to compile the assets and push them to Github.&lt;/p&gt;
+&lt;p&gt;If you want to have &lt;strong&gt;per-environment variables, use the environment variables&lt;/strong&gt;.
+&lt;em&gt;But my development env would be full of crap!&lt;/em&gt; some of you may cry... well,
+there&amp;#39;s a simple solution for that. Use &lt;a href=&quot;https://github.com/bkeepers/dotenv&quot;&gt;Dotenv&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;The good thing about this rake task is that it will only push the assets. This
-means, that &lt;strong&gt;you&amp;#39;ll need a clean git tree to run this task or it will die&lt;/strong&gt;.
-This ensures that the automatic push &lt;strong&gt;won&amp;#39;t commit any non-related change to
-the compilation of the assets&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;With &lt;em&gt;Dotenv&lt;/em&gt; you only need to add a &lt;code&gt;.env&lt;/code&gt; file to your application root directory
+and you&amp;#39;re done. Here&amp;#39;s a quick example:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# .env&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;S3_BUCKET&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;some_development_bucket
+&lt;span class=&quot;nv&quot;&gt;S3_SECRET&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;a_secret_key
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Then in your code, simply use &lt;code&gt;ENV[]&lt;/code&gt; and be happy (and safe, but mostly happy)&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# some config file&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fog_directory&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;S3_BUCKET&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And just like that, you can setup your server&amp;#39;s config environments and not
+worry about &lt;em&gt;supposed-to-be-private&lt;/em&gt; public information.&lt;/p&gt;
 
-&lt;p&gt;Now, you only have to run &lt;strong&gt;rake assets:compile&lt;/strong&gt; and sleep well at night.
-Here&amp;#39;s the code. Hope it helps.&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/1241135&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:assets&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Compile all the assets named in config.assets.precompile and push them&amp;quot;&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:compile&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;no&quot;&gt;AssetsCompiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compile&lt;/span&gt;
+&lt;p&gt;One really cool thing about this is that this variables will only be loaded
+in that specific application. It won&amp;#39;t change &lt;strong&gt;your&lt;/strong&gt; environment. So when
+you stop the servers, your environment won&amp;#39;t have the &lt;code&gt;.env&lt;/code&gt; variables.&lt;/p&gt;
+
+&lt;p&gt;You can read more about &lt;a href=&quot;http://opensoul.org/blog/archives/2012/07/24/dotenv/&quot;&gt;Dotenv here&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 25 Jan 2013 11:02:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data/</guid>
+        
+        
+        <category>ruby</category>
+        
+        <category>gems</category>
+        
+      </item>
+    
+      <item>
+        <title>Easily add versions to your Gemfile</title>
+        <description>&lt;p&gt;Since &lt;a href=&quot;http://gembundler.com/&quot; title=&quot;Bundler&quot;&gt;bundler&lt;/a&gt; came out, managing dependencies
+on ruby applications has been amazing. Combined with &lt;a href=&quot;http://37signals.com/svn/posts/2998-setting-up-a-new-machine-for-ruby-development&quot; title=&quot;37 Signals bootstrap script&quot;&gt;some&lt;/a&gt; &lt;a href=&quot;http://zachholman.com/talk/unsucking-your-teams-development-environment/&quot; title=&quot;Zach Holman&amp;#39;s talk on development environment&quot;&gt;bootstrap&lt;/a&gt; &lt;a href=&quot;http://ngauthier.com/2012/08/one-click-development.html&quot; title=&quot;One click development&quot;&gt;script&lt;/a&gt;,
+it&amp;#39;s really easy to download some source code, install, and run an application.&lt;/p&gt;
+
+&lt;p&gt;There is still some room for improvement though. I&amp;#39;ve always supported the use
+of &lt;a href=&quot;http://semver.org/&quot; title=&quot;SemVer: Semantic Versioning&quot;&gt;SemVer&lt;/a&gt; and pessimistic locking (the &lt;code&gt;~&amp;gt;&lt;/code&gt;). This will allow you to
+update applications without pain. And, with all this rails vulnerabilities,
+you need just that.&lt;/p&gt;
+
+&lt;p&gt;But, since people don&amp;#39;t always have the versions on their &lt;code&gt;Gemfile&lt;/code&gt;, &lt;a href=&quot;http://tenderlovemaking.com/2012/12/18/rails-4-and-your-gemfile.html&quot; title=&quot;Rails 4 and your Gemfile&quot;&gt;this can get
+a little messy&lt;/a&gt;. So, I&amp;#39;ve created a simple gem to help you with that.&lt;/p&gt;
+
+&lt;h3 id=&quot;welcome-version_gemfile&quot;&gt;Welcome version_gemfile&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;1. Simply install it: &lt;code&gt;$ gem install version_gemfile&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;2. Go to your rails application: &lt;code&gt;$ cd ~/my/ruby/application&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;3. And add the versions to your &lt;em&gt;Gemfile&lt;/em&gt;: &lt;code&gt;$ version_gemfile&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;how-does-it-work?&quot;&gt;How does it work?&lt;/h2&gt;
+
+&lt;p&gt;This gem will go through each line in your &lt;code&gt;Gemfile&lt;/code&gt; looking for dependencies
+that have no versions. Then, will look into your &lt;code&gt;Gemfile.lock&lt;/code&gt; for the version
+you are currently using and add a pessimistic lock on that version.&lt;/p&gt;
+
+&lt;p&gt;The code can be found on &lt;a href=&quot;https://github.com/nhocki/version_gemfile&quot; title=&quot;Version Gemfile source code&quot;&gt;Github&lt;/a&gt;. If you have any problems, open an issue there
+or ping me on &lt;a href=&quot;https://twitter.com/nhocki&quot; title=&quot;My twitter profile&quot;&gt;Twitter&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 15 Jan 2013 22:31:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2013/01/15/easily-add-versions-to-your-gemfile/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2013/01/15/easily-add-versions-to-your-gemfile/</guid>
+        
+        
+        <category>ruby</category>
+        
+        <category>bundler</category>
+        
+      </item>
+    
+      <item>
+        <title>Reverse a list in O(n)</title>
+        <description>&lt;p&gt;For about a year, I&amp;#39;ve always had a question I ask someone I&amp;#39;m interviewing for
+a programming position. I&amp;#39;ve asked this around 3 times and got some nice
+answers, but I had never implemented it. The question is really simple:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Given a linked list, how would you reverse it in &lt;code&gt;O(n)&lt;/code&gt;?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#39;s my solution:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/4392454&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Struct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Build the list&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;times&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;each_with_index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;reverse_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Get the next node on the list.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;# Make the new tail point to nil (end of the new list).&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Save that new tail on a tmp variable (to point to it later)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Change the `current` node to the `next` one. Move ahead.&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;          &lt;span class=&quot;c1&quot;&gt;# If I&amp;#39;m not at the end of the list.&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Save the next node on the original list.&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Reverse the list (point back from `current`)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Save the current node to point later.&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Move ahead once.&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AssetsCompiler&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compile&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;ensure_clean_git&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;removed_previous_assets&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;compile_assets&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;commit_compiled_assets&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;push&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ensure_clean_git&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Can&amp;#39;t deploy without a clean git status.&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git_dirty?&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;removed_previous_assets&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bundle exec rake RAILS_ENV=production assets:clean&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compile_assets&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bundle exec rake RAILS_ENV=production assets:precompile&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;commit_compiled_assets&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;git add -u &amp;amp;&amp;amp; git add . &amp;amp;&amp;amp; git commit -am &amp;#39;Compiled assets&amp;#39;&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;push&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;git push&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;+ Running: &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;-- &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;git_dirty?&lt;/span&gt;
-      &lt;span class=&quot;sb&quot;&gt;`[[ $(git diff --shortstat 2&amp;gt; /dev/null | tail -n1) != &amp;quot;&amp;quot; ]]`&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;dirty&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vg&quot;&gt;$?&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;success?&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-        <pubDate>Wed, 28 Sep 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/09/28/compile-assets-and-push-them---no-pain-involved/</guid>
+
+&lt;span class=&quot;n&quot;&gt;print_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;print_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;How would you do it? There&amp;#39;s a really simple solution using a
+&lt;a href=&quot;https://gist.github.com/nhocki/4392454#comment-676651&quot;&gt;stack&lt;/a&gt;, but if you
+find another one, I&amp;#39;d love to hear about it on
+&lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;Twitter @nhocki&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 27 Dec 2012 16:53:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/</guid>
         
         
-        <category>heroku</category>
+        <category>programming</category>
         
-        <category>asset-pipeline</category>
+        <category>algorithms</category>
         
-        <category>rake</category>
+      </item>
+    
+      <item>
+        <title>Using Liquid `include` with DB templates</title>
+        <description>&lt;p&gt;I am working on a new application that will use some &lt;a href=&quot;http://liquidmarkup.org/&quot; title=&quot;Liquid Markup&quot;&gt;Liquid&lt;/a&gt; templates to
+allow our clients to edit some templates.&lt;/p&gt;
+
+&lt;p&gt;We will store these templates in the Database, load them, parse them and render
+them. So far, no magic.&lt;/p&gt;
+
+&lt;p&gt;But, I needed to have some &amp;quot;partials&amp;quot; for these. I wanted some common elements
+(like image galleries) to be available for the client to use in that specific
+template.&lt;/p&gt;
+
+&lt;p&gt;The way you normally accomplish this is by using an &lt;code&gt;include&lt;/code&gt; tag, but I needed
+a little bit more control. Not all the clients will have the same partials and
+I also wanted the clients to be able to edit these partials.&lt;/p&gt;
+
+&lt;p&gt;So after reading the &lt;a href=&quot;https://github.com/Shopify/liquid/blob/master/lib/liquid/tags/include.rb#L49-61&quot; title=&quot;Liquid include source code&quot;&gt;Liquid source code&lt;/a&gt;, I found a really easy way to do
+this.&lt;/p&gt;
+
+&lt;p&gt;You just need an object that responds to &lt;code&gt;read_template_file&lt;/code&gt; and it can take
+1 or 2 arguments (please, go for 2). This method must return the Liquid &lt;strong&gt;source&lt;/strong&gt;
+of the partial (not a parsed template).&lt;/p&gt;
+
+&lt;p&gt;So, here&amp;#39;s a really simple one that will work:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/3645632&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Class to be used as a Liquid File System for the `include` tag&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LiquidTemplateSystem&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Return a valid liquid template string&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;read_template_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;partials&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find_by_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;liquid_source&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+
+&lt;span class=&quot;c1&quot;&gt;# In the view:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# This `template` has an {% include %} tag.&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;%=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;registers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;file_system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;LiquidTemplateSystem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;default-filesystem&quot;&gt;Default FileSystem&lt;/h2&gt;
+
+&lt;p&gt;You could also set the default &lt;code&gt;FileSystem&lt;/code&gt; with
+&lt;code&gt;Liquid::Template.file_system = MyNewFileSystem.new&lt;/code&gt;. This may be useful if you
+want the partials to be shared on the database but not different for every user.&lt;/p&gt;
+
+&lt;h2 id=&quot;any-other-way?&quot;&gt;Any other way?&lt;/h2&gt;
+
+&lt;p&gt;Even though I find this to be &lt;em&gt;really&lt;/em&gt; easy, another way may exist. If you know
+of a better way to do this, please &lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;let me know&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 05 Sep 2012 17:37:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/09/05/using-liquid-include-with-db-templates/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/09/05/using-liquid-include-with-db-templates/</guid>
+        
         
         <category>rails</category>
         
-      </item>
-    
-      <item>
-        <title>Scrollbar synchronization with jQuery</title>
-        <description>&lt;p&gt;I&amp;#39;m working on a really cool project on my University. It&amp;#39;s a web application
-to compare book editions and help professors build what is know as the
-Collatzio. The Collatzio is simply the &amp;quot;original&amp;quot; version of the book. That
-means, to have the book the author wanted to write and not the one that the
-editors wanted to publish.&lt;/p&gt;
-
-&lt;p&gt;I needed to have two versions of the book aligned side by side. So, the
-HTML/CSS was pretty simple. Just have two simple divs with &lt;strong&gt;overflow-y:
-auto;&lt;/strong&gt; to make the scrollbar appears on each div.&lt;/p&gt;
-
-&lt;p&gt;The coffeescript code I used is really simple, here it is:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-coffee&quot; data-lang=&quot;coffee&quot;&gt;&lt;span class=&quot;nx&quot;&gt;jQuery&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;($) -&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.scroll-text&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;scroll&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;(event) -&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nv&quot;&gt;trigger = &lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;nv&quot;&gt;element = &lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;trigger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;scrolls&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;scrollTop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;trigger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;scrollTop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;preventDefault&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Hope it helps someone. I struggled a little bit with the &lt;em&gt;common&lt;/em&gt; way of
-scrolling things. People usually use the &lt;code&gt;animate&lt;/code&gt; method to scroll the body,
-but I couldn&amp;#39;t use it because it kept triggering the scroll event on the
-elements, so it was an infinite loop.&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;html, body&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;scrollTop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;slow&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-        <pubDate>Wed, 21 Sep 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/09/21/simple-scrollbar-synchronization-with-jquery/</guid>
+        <category>liquid</category>
         
-        
-        <category>jquery</category>
+        <category>rails views</category>
         
       </item>
     
       <item>
-        <title>TimeHub, the first winner!</title>
-        <description>&lt;p&gt;I just wanted to &lt;em&gt;personally&lt;/em&gt; say thanks to everyone who voted for our entry on
-the &lt;a href=&quot;http://rallyonrails.com&quot;&gt;Rally on Rails&lt;/a&gt; (Latinamerican Rails Rumble).&lt;/p&gt;
+        <title>Seriously just do it</title>
+        <description>&lt;p&gt;I have finished my first &amp;quot;working season&amp;quot; at &lt;a href=&quot;http://mit.edu&quot;&gt;MIT&lt;/a&gt;. I got here
+on October 4. It&amp;#39;s been an amazing and weird journey.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt; won! And this couldn&amp;#39;t be possible without the
-people who voted.&lt;/p&gt;
+&lt;p&gt;But I have to admit that at first I was a bad employee. I was &lt;strong&gt;really&lt;/strong&gt; used
+to have somebody telling me what to do all the time. When I arrived at MIT that
+didn&amp;#39;t happen. &lt;strong&gt;At all&lt;/strong&gt;. I was given some &amp;quot;long term&amp;quot; tasks and that was it.
+I just had to do them.&lt;/p&gt;
 
-&lt;p&gt;I would like to thank the Rally on Rails team &amp;amp; judges. They made an excellent
-job and even though there are somethings to improve (like the voting rules),
-&lt;strong&gt;I think that the contest was great!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Since no one was all over me checking my progress or asking me how I was
+doing on everything, I was waisting a lot (&lt;em&gt;most&lt;/em&gt;) of my time.
+&lt;a href=&quot;http://www.espndeportes.com&quot;&gt;ESPNDeportes&lt;/a&gt; got a lot of visits from me.
+I started using Facebook on regular basis. &lt;a href=&quot;http://www.threadless.com&quot;&gt;Threadless&lt;/a&gt;
+didn&amp;#39;t have enough T-shirts for me. &lt;a href=&quot;http://twitter.com/nhocki&quot;&gt;Twitter&lt;/a&gt; was
+not &amp;quot;real time enough&amp;quot;...&lt;/p&gt;
 
-&lt;p&gt;We had already posted a &lt;em&gt;&lt;a href=&quot;http://blog.timehub.net/post/9404894926/from-medellin-with-love&quot;&gt;thank you
-note&lt;/a&gt;&lt;/em&gt;, in
-the &lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt; blog, but I really wanted to write one
-myself.&lt;/p&gt;
+&lt;p&gt;But, with time, I started working and I can&amp;#39;t say how grateful I am for &lt;a href=&quot;http://tomayko.com/writings/management-style&quot;&gt;this
+way of managing&lt;/a&gt;. I&amp;#39;ve learned
+to be much more productive on my own. To manage my time. To be much more
+responsible. But, I guess the best thing about this was that I learned that
+you just need to &lt;strong&gt;shut up, close all the meaningless things you have open and
+get shit done&lt;/strong&gt;.&lt;/p&gt;
 
-&lt;p&gt;I was pretty spammer during these last 3 days! That will stop now!&lt;/p&gt;
+&lt;p&gt;Sure, if you need help, ask. If what you&amp;#39;re doing is wrong, try again. But you
+won&amp;#39;t know something doesn&amp;#39;t work if it&amp;#39;s just an idea.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;Thanks again!&lt;/strong&gt; Hope to see you in &lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt; v2!&lt;/p&gt;
+&lt;p&gt;I became much more productive in everything. Not only MIT work stuff. Personal
+(disposable) things I wanted to try.
+&lt;a href=&quot;http://shop.oreilly.com/product/0636920021810.do&quot;&gt;Things&lt;/a&gt; I wanted to learn.
+&lt;a href=&quot;http://shop.oreilly.com/product/0636920019664.do&quot;&gt;Things I&lt;/a&gt;
+&lt;a href=&quot;http://designinghypermediaapis.com/&quot;&gt;wanted&lt;/a&gt; &lt;a href=&quot;http://objectsonrails.com/&quot;&gt;to&lt;/a&gt;
+&lt;a href=&quot;http://pragprog.com/book/warv/the-rails-view&quot;&gt;read&lt;/a&gt; (even my
+&lt;a href=&quot;http://instapaper.com&quot;&gt;Instapaper&lt;/a&gt; queue went down. By a lot!).&lt;/p&gt;
+
+&lt;p&gt;So, just try it out. It may take more than a week to get used to it, but just
+try it. &lt;strong&gt;Close this post and every other distracting thing and do something&lt;/strong&gt;.&lt;/p&gt;
 </description>
-        <pubDate>Fri, 26 Aug 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/08/26/timehub-the-first-winner/</guid>
+        <pubDate>Thu, 26 Jul 2012 01:07:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/07/26/seriously-just-do-it/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/07/26/seriously-just-do-it/</guid>
         
         
-        <category>timehub</category>
+        <category>mit</category>
         
-        <category>rally on rails</category>
+        <category>random thoughts</category>
+        
+        <category>management</category>
+        
+      </item>
+    
+      <item>
+        <title>Use the community for something more</title>
+        <description>&lt;p&gt;For a while, this idea has been wondering around in my head.&lt;/p&gt;
+
+&lt;p&gt;I would love to have some web-development community in Medellín, but I would
+like it to be &amp;quot;something more&amp;quot;. I love the idea of learning from others,
+teaching and getting people involved. I know there are
+&lt;a href=&quot;http://coffeegrid.org/&quot;&gt;more people&lt;/a&gt; that are looking forward for this.&lt;/p&gt;
+
+&lt;p&gt;Sadly, we don&amp;#39;t have a community like the one in Boston. It&amp;#39;s amazing how
+many events there are here. &lt;a href=&quot;http://bostonrb.org/&quot;&gt;Boston.rb&lt;/a&gt; meets up to
+3 times a month! It&amp;#39;s just crazy! You just need to go to
+&lt;a href=&quot;http://www.meetup.com/&quot;&gt;Meetup&lt;/a&gt; to find an event of your interest! All
+filled with people eager to share and help!&lt;/p&gt;
+
+&lt;p&gt;But I would love to put all that lovin&amp;#39; to some &amp;quot;charity&amp;quot; work. Get real
+projects for people that need it. &lt;strong&gt;It doesn&amp;#39;t have to be 100% free&lt;/strong&gt;,
+but not charging nearly as much as you would normally do it!&lt;/p&gt;
+
+&lt;p&gt;For example, I know a &lt;a href=&quot;http://www.bomberosenvigado.org/&quot;&gt;&lt;strong&gt;Volunteer&lt;/strong&gt; Fire Fighter Department&lt;/a&gt;
+that needs to build a simple learning system to distribute knowledge because
+&lt;strong&gt;ignorance is taking a lot of lives&lt;/strong&gt; (from firefighters and people they&amp;#39;re
+trying to save). Hell, they also need a new website!&lt;/p&gt;
+
+&lt;p&gt;I also know about a guy that needs a website for an organisation that helps
+small kids with cancer in Africa.&lt;/p&gt;
+
+&lt;p&gt;All these projects could use the expertise of &amp;quot;old&amp;quot; developers and enthusiasm
+from the ones that are just learning. I&amp;#39;ve found that working on a real
+project is way better than learning on your backyard. So why not take something
+that could use more man-power and pair program on these websites?&lt;/p&gt;
+
+&lt;p&gt;I&amp;#39;m not saying we should not have presentations! Presentations should still
+be the center of this. Sharing new stuff is the most important part for the
+community. But maybe having some &lt;em&gt;hackathons&lt;/em&gt; where we work on these projects.&lt;/p&gt;
+
+&lt;p&gt;So, what do you think? Would something like this work? Would people be
+interested? Those organizations could, for example, sponsor the meetings
+giving some beer and food! Developing companies could also sponsor this
+and get some mention on the created websites. I know
+&lt;a href=&quot;http://www.zinergia.co&quot;&gt;we&lt;/a&gt; would do it!&lt;/p&gt;
+
+&lt;p&gt;I can&amp;#39;t do it right now. I&amp;#39;m 2.5K miles away! And I don&amp;#39;t think it&amp;#39;s an
+easy thing to organize, but I would like to know if people is actually
+interested before I throw myself sending emails and talking to people,
+so please contact me if you are, either by leaving a comment or
+&lt;a href=&quot;http://twitter.com/nhocki&quot;&gt;pinging me on Twitter(@nhocki)&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you liked this idea, you might one to &lt;a href=&quot;http://news.ycombinator.com/item?id=4227721&quot;&gt;up vote it in Hackernews&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 10 Jul 2012 23:25:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/07/10/use-the-community-for-something-more/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/07/10/use-the-community-for-something-more/</guid>
+        
+        
+        <category>web development</category>
+        
+        <category>meetups</category>
+        
+        <category>community</category>
+        
+      </item>
+    
+      <item>
+        <title>Fix Xcode Path</title>
+        <description>&lt;p&gt;I updated my Xcode version this week and to my surprise they moved it from &lt;code&gt;/Developer&lt;/code&gt; to &lt;code&gt;/Applications/Xcode&lt;/code&gt;, the problem is that now all the developer tools went missing. Here&amp;#39;s the easy solution for this:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;sudo /usr/bin/xcode-select -switch /Applications/Xcode.app/Contents/Developer/&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;That&amp;#39;s it. Just let Xcode know where to look for the developer tools again.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 09 May 2012 19:38:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2012/05/09/fix-xcode-path/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2012/05/09/fix-xcode-path/</guid>
+        
+        
+        <category>xcode</category>
+        
+        <category>lion</category>
         
       </item>
     
