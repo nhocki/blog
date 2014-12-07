@@ -6,9 +6,73 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 05 Dec 2014 01:41:10 -0500</pubDate>
-    <lastBuildDate>Fri, 05 Dec 2014 01:41:10 -0500</lastBuildDate>
+    <pubDate>Sat, 06 Dec 2014 21:52:14 -0500</pubDate>
+    <lastBuildDate>Sat, 06 Dec 2014 21:52:14 -0500</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Displaying deploys with Capistrano and Graphite</title>
+        <description>&lt;p&gt;At &lt;a href=&quot;http://weheartit.com&quot;&gt;We Heart It&lt;/a&gt;, we collect a lot of data in several graphs &amp;amp; dashboars.
+But the graph data alone might not always be enough, sometimes you need context about
+what actually changed to know why the graph changed (like a big change on response times).&lt;/p&gt;
+
+&lt;p&gt;Thankfuly, Graphite now supports &lt;em&gt;&lt;a href=&quot;https://code.launchpad.net/%7Elucio.torre/graphite/add-events/+merge/69142&quot;&gt;events&lt;/a&gt;&lt;/em&gt; (although is not very well documented),
+so it&amp;#39;s actually really easy to display when the code was deployed and add some information
+about the deploy itself.&lt;/p&gt;
+
+&lt;p&gt;We use &lt;a href=&quot;http://grafana.org/&quot;&gt;Graphana&lt;/a&gt; for most of our dashboards. It is an
+amazing graphing tool, that gets data from &lt;a href=&quot;http://graphite.wikidot.com/&quot;&gt;Graphite&lt;/a&gt;
+and displays it in a really nice way. You should really try it.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-basics&quot;&gt;The Basics&lt;/h2&gt;
+
+&lt;p&gt;First we need to create an event. This is easily done by &lt;code&gt;POST&lt;/code&gt;ing some simple JSON:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;curl -X POST http://graphite.example.com/events -d &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;&amp;#39;{&amp;quot;what&amp;quot;: &amp;quot;Code deploy&amp;quot;, &amp;quot;tags&amp;quot;: &amp;quot;rails-deploy&amp;quot;, data: &amp;quot;commit information&amp;quot;}&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Then we need to enable &lt;a href=&quot;http://grafana.org/docs/features/annotations/&quot;&gt;Graphana annotations&lt;/a&gt; and display the &lt;code&gt;rails-deploy&lt;/code&gt;
+tag on our dashboard. The result will look like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://blog.nhocki.com/assets/deploy_events.png&quot; alt=&quot;Deploy Events&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;using-capistrano&quot;&gt;Using Capistrano&lt;/h2&gt;
+
+&lt;p&gt;Since we use Capistrano to deploy our apps, we can automatically create deploy
+events every time a deploy finishes, here&amp;#39;s our task:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;after&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;deploy&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;graphite:mark_deploy&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:graphite&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:mark_deploy&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;commit_information&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`git log -n 1 --pretty=format:&amp;#39;%h - %s - %an&amp;#39; --abbrev-commit`&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;auth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;foo&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bar&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;body&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;what&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;rails code deployed.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;rails-deploy&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:branch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; deployed at &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ( &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;commit_information&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; )&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;HTTParty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;https://graphite.example.com/events/&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;basic_auth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;auth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_json&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Deploy sent to Graphite.&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The &lt;code&gt;commit_information&lt;/code&gt; information will give you something like this:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;68305ff - Allow wildcard increment/decrement on stats counters. - Nicolás Hock Isaza
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can use this information as a starting point when things go wrong with a
+deploy.&lt;/p&gt;
+
+&lt;p&gt;This is a very easy thing to add and gives you a lot of extra context around your
+graphs, I found it really useful when we added it for the first time (and use it
+a lot today as well).&lt;/p&gt;
+</description>
+        <pubDate>Sat, 06 Dec 2014 18:51:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2014/12/06/displaying-deploys-with-capistrano-and-graphite/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2014/12/06/displaying-deploys-with-capistrano-and-graphite/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Trending Content with Ruby and Redis</title>
@@ -553,148 +617,6 @@ myself.&lt;/p&gt;
         <category>timehub</category>
         
         <category>rally on rails</category>
-        
-      </item>
-    
-      <item>
-        <title>TimeHub 48 hours after</title>
-        <description>&lt;p&gt;As you may know, we created &lt;strong&gt;&lt;a href=&quot;http://timehub.net&quot;&gt;TimeHub&lt;/a&gt;&lt;/strong&gt; in under 48
-hours for the Rally on Rails contest. I wanted to write this post because it&amp;#39;s
-been 48 hours since the &lt;strong&gt;public votes were opened&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;First of all, I would like to thank EVERYONE that has talked about Timehub. It&amp;#39;s been really nice to see all the comments and feedback. It&amp;#39;s been even better to see so many votes so fast! We honestly didn&amp;#39;t expected this support and having over 3950 points in under 48 hours! THANK YOU!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;it&amp;#39;s important to note that votes are still open (until August 26th), and if
-you haven&amp;#39;t vote for us, you should! &lt;a href=&quot;http://ranking.timehub.net/how-to-%0Avote&quot;&gt;Click here to get the instructions and a
-free heavenly holly ice-cream at the end&lt;/a&gt; (spanish version &lt;a href=&quot;http://ranking.timehub.net/como-votar&quot;&gt;here&lt;/a&gt;).&lt;/p&gt;
-
-&lt;h2 id=&quot;the-judges&quot;&gt;The Judges&lt;/h2&gt;
-
-&lt;p&gt;It&amp;#39;s an honor to say that we won the judges votes. We got 88 points and got
-the first place. Really really, scary-close was team 53 (moove it) with 86
-points and in third place, it was team 43 (ochoigualiguald) with 82 points!&lt;/p&gt;
-
-&lt;p&gt;We were the only ones with 5/5 in innovation which really made us happy!&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;I would like to thank the judges, sponsors and the Rally on Rails team to make this contest possible.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Now, let&amp;#39;s look at the public votes.&lt;/p&gt;
-
-&lt;h2 id=&quot;how-we-started&quot;&gt;How we started&lt;/h2&gt;
-
-&lt;p&gt;We started tweeting A LOT when we found out the votes were opened. *&lt;em&gt;Sorry for
-all the spam my dear followers. It won&amp;#39;t last long. I promise. *&lt;/em&gt;We really
-needed the first impulse to make people notice us.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://img.skitch.com/20110824-rkkxubg89pdq5a9ctj1xm1i611.jpg&quot; alt=&quot;My spam&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;We tweeted friends, coworkers, students, professors, some ruby-heroes, some
-&amp;quot;public&amp;quot; tweets. Everything. We have a Skype conversation with what we tweeted
-and prepared other tweets too. &lt;strong&gt;We&amp;#39;ve been thinking them for a while (is not
-coincidence that our about page is actually a &amp;quot;showing our love&amp;quot; page (&lt;a href=&quot;http://timehub.net/love&quot;&gt;&lt;a href=&quot;http://timehub.net/love&quot;&gt;http:
-//timehub.net/love&lt;/a&gt;&lt;/a&gt;)&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;what-we-got&quot;&gt;What we got&lt;/h2&gt;
-
-&lt;p&gt;We really did not expect what came next. A lot of people started talking about
-&lt;strong&gt;Timehub&lt;/strong&gt;. **I had never felt like a rockstar before, but today was my day!
-**We got a lot of nice feedback. Ryan Bates from
-&lt;a href=&quot;http://railscasts.com&quot;&gt;Railscasts&lt;/a&gt;
-&lt;a href=&quot;https://twitter.com/rbates/status/106034170756739072&quot;&gt;responded&lt;/a&gt; (it was
-AWESOME having him reply our tweet!). &lt;a href=&quot;https://github.com/defunkt&quot;&gt;Chris
-Wanstrath&lt;/a&gt; (defunkt - Githubs CEO) &lt;a href=&quot;https://twitter.com/#!/defunkt/status/106061419325308928&quot;&gt;retweeted
-this&lt;/a&gt;. Heck, we even
-got a &lt;a href=&quot;https://twitter.com/jcleblanc/status/105910807119933440&quot;&gt;O&amp;#39;Reilly writer to tweet about
-it&lt;/a&gt;! The coolest
-thing about that is that we really didn&amp;#39;t ask them to do that (we asked Ryan,
-but the writer was just on his own will!) That was beautiful! Matthias Wiemann
-tweeted and got 33 RTs!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/0M1Z0f1a1b0X1M3m1d2q/Screen%20Shot%202011-08-2%0A4%20at%201.49.28%20AM.png&quot; alt=&quot;33 RTS!&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;We were on &lt;a href=&quot;http://news.ycombinator.com/&quot;&gt;Hacker News&lt;/a&gt; main page for a while.
-In fact, that&amp;#39;s were we got the most feedback and visits from (more on that
-later, with some graphs).&lt;/p&gt;
-
-&lt;p&gt;Of course, not everything was rainbows and butterflies. We also got some &amp;quot;bad&amp;quot;
-&lt;a href=&quot;https://twitter.com/#!/ifesdjeen/status/105970902675636224&quot;&gt;comments&lt;/a&gt; and
-feedback (&lt;strong&gt;which we honestly really appreciate&lt;/strong&gt;), but that was expected. We
-admit, and have always admitted that the commit DLS needs to be MUCH better.
-We&amp;#39;ll considering git notes and creating a gem to make it easier and keeping
-commits as clean as possible. But we had 48  hours so for now, that&amp;#39;s the best
-we could do.&lt;/p&gt;
-
-&lt;h2 id=&quot;cheating&quot;&gt;Cheating&lt;/h2&gt;
-
-&lt;p&gt;We were doing great (we still are btw) until some guys started cheating! I
-thought, &lt;strong&gt;&amp;quot;OMG we&amp;#39;re doing SO GREAT that they have to cheat!&amp;quot;&lt;/strong&gt; We created a
-&lt;a href=&quot;http://ranking.timehub.net/cheating&quot;&gt;report&lt;/a&gt; about it, and send it to the
-judges. We decided to remove &lt;a href=&quot;http://ranking.timehub.net/&quot;&gt;our global ranking
-page&lt;/a&gt; while this was fixed. Judges fixed it right
-away and we were back in the game!&lt;/p&gt;
-
-&lt;p&gt;This really made us sad. We worked really hard on the app and were working
-(spamming) a lot to keep people talking about it.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion-and-data&quot;&gt;Conclusion and Data&lt;/h2&gt;
-
-&lt;p&gt;So, according to Google Analytics, we&amp;#39;ve got &lt;strong&gt;7,420 visits **and&lt;/strong&gt; 10,658
-pageviews. **This is amazing for 2 days. Honestly, didn&amp;#39;t expect it!&lt;/p&gt;
-
-&lt;h2 id=&quot;country/territory-of-visits&quot;&gt;Country/Territory of visits&lt;/h2&gt;
-
-&lt;p&gt;Probably what shocked me the most is that we&amp;#39;re now getting more visits from
-the U.S than from Colombia. This is shocking because I expected my friends to
-visit the site, but I don&amp;#39;t have more friends in the U.S than here! Here&amp;#39;s the
-Top Five (out of &lt;strong&gt;104&lt;/strong&gt; countries):&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/1c3A0V1i1y1T0B3I1v22/Screen%20Shot%202011-08%0A-24%20at%202.18.13%20AM.png&quot; alt=&quot;Top Five!&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;Honestly, 2000+ visits agains 800+? That&amp;#39;s a HUGE difference! Here&amp;#39;s the whole
-map&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/3a392z3f0r1I2W3j2i2K/Screen%20Shot%202011-08-24%20at%%0A202.20.59%20AM.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;traffic-sources&quot;&gt;Traffic Sources&lt;/h2&gt;
-
-&lt;p&gt;The traffic sources also amazed me. We&amp;#39;ve had more referred visits than direct
-traffic, but that was not really shocking (who&amp;#39;s gonna write timehub.net
-anyway?)&lt;/p&gt;
-
-&lt;p&gt;What really shocked me is that even though we tweeted A LOT, got a lot of RTs
-and a lot of people tweeted, it was half of the visits we got from Hacker
-News!&lt;/p&gt;
-
-&lt;p&gt;With &lt;strong&gt;2,799 visits *&lt;em&gt;(more than direct traffic visits! - 2,424) Hacker News
-was the #1 referrer and traffic source for us. Twitter (t.co + twitter.com)
-was the second referrer but with *&lt;/em&gt;851 visits (713 from t.co and 130 from
-twitter.com)&lt;/strong&gt;! That means that we got &lt;strong&gt;over 1900 visits from HN compared to
-twitter&lt;/strong&gt;! We were only a few minutes in the main page! I can&amp;#39;t imagine the
-traffic a site will get for being there a whole morning! Here&amp;#39;s the top 10
-(plus one) traffic sources:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://f.cl.ly/items/3l1r101q022e330f370z/Screen%20Shot%202%0A011-08-24%20at%202.29.10%20AM.png&quot; alt=&quot;Traffic Sources&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;I added the #11 to show that the traffic &lt;strong&gt;2,799 visits are only from the .com
-domain. We&amp;#39;re getting traffic for .org/.net, ihackernews.com and others like
-that!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;I will be posting more and more details and info about how it goes. If you havent, please vote for us!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;THANKS A LOT,&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Nicolás Hock Isaza&lt;/strong&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 24 Aug 2011 00:00:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2011/08/24/timehub-48-hours-after/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2011/08/24/timehub-48-hours-after/</guid>
-        
-        
-        <category>timehub</category>
-        
-        <category>analytics</category>
-        
-        <category>stats</category>
         
       </item>
     

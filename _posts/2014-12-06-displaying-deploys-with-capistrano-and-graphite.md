@@ -2,7 +2,7 @@
 layout: post
 title: Displaying deploys with Capistrano and Graphite
 excerpt: How a simple Capistrano task can make your Graphite charts much better.
-date: 2014-12-06 22:11
+date: 2014-12-06 18:51
 ---
 
 At [We Heart It][whi], we collect a lot of data in several graphs & dashboars.
