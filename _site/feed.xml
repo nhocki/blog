@@ -6,9 +6,175 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 06 Dec 2014 23:53:51 -0500</pubDate>
-    <lastBuildDate>Sat, 06 Dec 2014 23:53:51 -0500</lastBuildDate>
+    <pubDate>Fri, 12 Dec 2014 03:41:19 -0500</pubDate>
+    <lastBuildDate>Fri, 12 Dec 2014 03:41:19 -0500</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Getting my Emacs config playing nice with Boxen</title>
+        <description>&lt;p&gt;I&amp;#39;m moving all my development environment to &lt;a href=&quot;https://boxen.github.com&quot;&gt;Boxen&lt;/a&gt; and it&amp;#39;s been great,
+but I have to admit I&amp;#39;ve had some problems configuring some of my stuff &lt;sup id=&quot;fnref1&quot;&gt;&lt;a href=&quot;#fn1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here is how I got my &lt;a href=&quot;https://github.com/nhocki/dotemacs&quot;&gt;emacs config&lt;/a&gt; working (after fighting it for
+over 2 hours!).&lt;/p&gt;
+
+&lt;h2 id=&quot;cloning-my-config&quot;&gt;Cloning my config&lt;/h2&gt;
+
+&lt;p&gt;Cloning the &lt;a href=&quot;https://github.com/nhocki/dotemacs&quot;&gt;repository&lt;/a&gt; was probably the easiest part, there are a lot
+of manifests showing how to do this so I got this working pretty quickly:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$emacs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;${home}/src/emacsdotd&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$emacs:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;ensure&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;directory&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;repository&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$emacs:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;source&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;nhocki/dotemacs&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$emacs]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;pull emacs config&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;git pull origin master&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;cwd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$emacs&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This will create a directory at &lt;code&gt;~/src/emacsdotd&lt;/code&gt; and clone my &lt;a href=&quot;https://github.com/nhocki/dotemacs&quot;&gt;repo&lt;/a&gt;
+there.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;require =&amp;gt; File[$emacs]&lt;/code&gt; attribute will let Puppet know that this block
+can only be excecuted when the &lt;code&gt;$emacs&lt;/code&gt; one has finished (makes sure the directory
+is created before cloning the repo).&lt;/p&gt;
+
+&lt;h2 id=&quot;installing-cask&quot;&gt;Installing Cask&lt;/h2&gt;
+
+&lt;p&gt;I use &lt;a href=&quot;https://github.com/cask/cask&quot;&gt;Cask&lt;/a&gt; to manage my emacs dependencies. The easiest way to install
+it is &lt;a href=&quot;http://brew.sh/&quot;&gt;homebrew&lt;/a&gt;, so to install it within Boxen, I just needed to:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;cask&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;ensure&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;present&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;With Cask installed, I needed to make it work with my configuration.&lt;/p&gt;
+
+&lt;p&gt;My &lt;code&gt;init.el&lt;/code&gt; file looks for the &lt;code&gt;cask.el&lt;/code&gt; file at &lt;code&gt;~/.cask/cask.el&lt;/code&gt; (the
+default location) but since I installed Cask and Homebrew with Boxen it gets
+was at &lt;code&gt;/opt/boxen/homebrew/opt/cask/&lt;/code&gt; which is kind of a weird place.&lt;/p&gt;
+
+&lt;p&gt;So I needed to create a symlink between that folder and &lt;code&gt;~/.cask&lt;/code&gt;. For this
+I added the following &lt;code&gt;file&lt;/code&gt; block:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$homebrew&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;${boxen::config::home}/homebrew/opt&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;${home}/.cask&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;ensure&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;link&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;target&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;${homebrew}/cask&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;cask&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Notice that I needed the &lt;code&gt;require&lt;/code&gt; attribute to point to the package installation
+so &lt;strong&gt;this block will only be executed when the Cask installation is finished&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;ensure =&amp;gt; &amp;#39;link&amp;#39;&lt;/code&gt; makes this &lt;code&gt;file&lt;/code&gt; block a symlink... Let&amp;#39;s talk about
+this for a second.&lt;/p&gt;
+
+&lt;h2 id=&quot;puppet-symlinks&quot;&gt;Puppet Symlinks&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;#39;s be clear, &lt;a href=&quot;http://www.puppetcookbook.com/posts/creating-a-symlink.html&quot;&gt;Puppet Symlinks&lt;/a&gt; are &lt;strong&gt;really fucked up&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#39;re going to create a symbolic link between &lt;code&gt;&amp;lt;source_file&amp;gt;&lt;/code&gt; and
+&lt;code&gt;&amp;lt;target_file&amp;gt;&lt;/code&gt; &lt;sup id=&quot;fnref2&quot;&gt;&lt;a href=&quot;#fn2&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;, you would normally do &lt;code&gt;ln -s &amp;lt;source_file&amp;gt; &amp;lt;target_file&amp;gt;&lt;/code&gt;,
+here&amp;#39;s the usage message from &lt;code&gt;ln&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ ln
+usage: ln [-Ffhinsv] source_file [target_file]
+       ln [-Ffhinsv] source_file ... target_dir
+       link source_file target_file
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;But for some reason &lt;strong&gt;in Puppet the &lt;code&gt;target&lt;/code&gt; attribute is the &lt;code&gt;source_file&lt;/code&gt;&lt;/strong&gt;,
+which honestly WHAT THE FUCK!&lt;/p&gt;
+
+&lt;p&gt;We could use the &lt;em&gt;long&lt;/em&gt; syntax (where the block&amp;#39;s title is &lt;em&gt;not&lt;/em&gt; the &lt;code&gt;path&lt;/code&gt;) and it
+is still &lt;strong&gt;very&lt;/strong&gt; confussing:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;&lt;span class=&quot;k&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;create symlink&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;path&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;target_file&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;source_file&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;ensure&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;link&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I don&amp;#39;t really know &lt;em&gt;why&lt;/em&gt; they named the &lt;code&gt;source_file&lt;/code&gt; &lt;em&gt;target&lt;/em&gt; when &lt;code&gt;target&lt;/code&gt; is the
+name for the symlink in the actual &lt;code&gt;ln&lt;/code&gt; command. This is really confussing and I
+lost a lot of time on this!&lt;/p&gt;
+
+&lt;p&gt;Now that we know how to symlink stuff in Puppet, we can create the link for the
+emacs configuration:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;&lt;span class=&quot;k&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;create symlink&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;path&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;${home}/.emacs.d&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$emacs,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;ensure&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;link&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This will create the &lt;code&gt;~/.emacs.d&lt;/code&gt; directory and point to the project (&lt;code&gt;~/src/emacsdotd&lt;/code&gt;).
+Emacs will look for the &lt;code&gt;~/.emacs.d/init.el&lt;/code&gt; file by default.&lt;/p&gt;
+
+&lt;h2 id=&quot;installing-the-dependencies&quot;&gt;Installing the dependencies&lt;/h2&gt;
+
+&lt;p&gt;Now that we have a &lt;em&gt;kind-of-working&lt;/em&gt; installation and everything is in the right
+place, we can install all the dependencies in the &lt;code&gt;Cask&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;p&gt;We need to make sure that the repo has been cloned, and for some reason this
+command (&lt;code&gt;cask install&lt;/code&gt;) sometimes fails (can&amp;#39;t find some file - happens
+randomly AFAIK), so we&amp;#39;ll need to be prepared for that:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$emacsIns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;pull emacs config&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;install emacs dependencies with Cask&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;cask install&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;cwd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$emacs,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$emacsIns],&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;tries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;try_sleep&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This block will run &lt;code&gt;cask install&lt;/code&gt; in our repo directory and try at most 3 times.&lt;/p&gt;
+
+&lt;p&gt;It will only run it once the &lt;code&gt;pull&lt;/code&gt; action has happened in the repo directory. This is
+really important because if we run &lt;code&gt;cask install&lt;/code&gt; without a &lt;code&gt;Cask&lt;/code&gt; file, the command
+will fail.&lt;/p&gt;
+
+&lt;p&gt;It will also install or update automatically the dependencies if they ever change
+in the Emacs repository, which is awesome.&lt;/p&gt;
+
+&lt;p&gt;With all this I got my installation working and now I can run &lt;code&gt;boxen&lt;/code&gt; and have
+everything configured.&lt;/p&gt;
+
+&lt;h2 id=&quot;hope-this-helps&quot;&gt;Hope this helps&lt;/h2&gt;
+
+&lt;p&gt;First of all, you can find the whole file &lt;a href=&quot;https://gist.github.com/nhocki/7744a6f939abd71880a9&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I wrote this because I spent over 2 hours trying to figure out how to make this
+works, hopefully you&amp;#39;ll find this and don&amp;#39;t go through the same pain I did,
+specially with the symlinks.&lt;/p&gt;
+
+&lt;p&gt;If for any reason you know &lt;strong&gt;why&lt;/strong&gt; Puppet chose to name &lt;code&gt;source&lt;/code&gt; as &lt;code&gt;target&lt;/code&gt; I
+would really like to know, so please ping me on &lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;Twitter&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+
+&lt;li id=&quot;fn1&quot;&gt;
+&lt;p&gt;Probably because I have no idea how to use Puppet well.&amp;nbsp;&lt;a href=&quot;#fnref1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li id=&quot;fn2&quot;&gt;
+&lt;p&gt;I did not came up with those names, those are the ones in the &lt;code&gt;ln&lt;/code&gt; documentation!&amp;nbsp;&lt;a href=&quot;#fnref2&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Thu, 11 Dec 2014 23:28:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2014/12/11/getting-my-emacs-config-with-boxen/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2014/12/11/getting-my-emacs-config-with-boxen/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Displaying deploys with Capistrano and Graphite</title>
@@ -589,25 +755,6 @@ so please contact me if you are, either by leaving a comment or
         <category>meetups</category>
         
         <category>community</category>
-        
-      </item>
-    
-      <item>
-        <title>Fix Xcode Path</title>
-        <description>&lt;p&gt;I updated my Xcode version this week and to my surprise they moved it from &lt;code&gt;/Developer&lt;/code&gt; to &lt;code&gt;/Applications/Xcode&lt;/code&gt;, the problem is that now all the developer tools went missing. Here&amp;#39;s the easy solution for this:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;sudo /usr/bin/xcode-select -switch /Applications/Xcode.app/Contents/Developer/&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;That&amp;#39;s it. Just let Xcode know where to look for the developer tools again.&lt;/p&gt;
-</description>
-        <pubDate>Wed, 09 May 2012 19:38:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/05/09/fix-xcode-path/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/05/09/fix-xcode-path/</guid>
-        
-        
-        <category>xcode</category>
-        
-        <category>lion</category>
         
       </item>
     

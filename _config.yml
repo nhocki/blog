@@ -28,3 +28,4 @@ redcarpet:
     - no_intra_emphasis
     - with_toc_data
     - superscript
+    - footnotes
