@@ -6,9 +6,75 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 12 Dec 2014 03:41:19 -0500</pubDate>
-    <lastBuildDate>Fri, 12 Dec 2014 03:41:19 -0500</lastBuildDate>
-    <generator>Jekyll v2.5.2</generator>
+    <pubDate>Tue, 17 Feb 2015 18:08:58 -0500</pubDate>
+    <lastBuildDate>Tue, 17 Feb 2015 18:08:58 -0500</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Simplest Librato Metrics library</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://www.librato.com/&quot;&gt;Librato&lt;/a&gt; is a great platform to track metrics and has a really simple
+gem to track your &lt;a href=&quot;https://github.com/librato/librato-rack&quot;&gt;rack based apps&lt;/a&gt;, but what if yours is not one? And if
+you&amp;#39;re on Heroku you can&amp;#39;t use &lt;a href=&quot;https://github.com/etsy/statsd/&quot;&gt;StatsD&lt;/a&gt;... So what do you do?&lt;/p&gt;
+
+&lt;p&gt;It turns out that &lt;strong&gt;Librato can get metrics from the you application&amp;#39;s log&lt;/strong&gt; so by
+&lt;a href=&quot;http://support.metrics.librato.com/knowledgebase/articles/265391-heroku-native-and-custom-metrics-without-the-libra&quot;&gt;adding a drain&lt;/a&gt; to your Heroku app you&amp;#39;ll have the simplest metrics
+tracking library ever:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Metrics&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;increment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;amount&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;count#&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;block_given?&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;start_time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start_time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;measure#&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;ms&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;total&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;gauge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample#&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;logger&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@logger&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Logger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;STDOUT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;private_class_method&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:logger&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And now getting metrics from your application is really, really simple:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Metrics&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;increment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;shares&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Metrics&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gauge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;queue_size&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Metrics&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;expensive_operation&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# do some work }&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can check out all the things you can do with Librato and log metrics at the
+&lt;a href=&quot;https://devcenter.heroku.com/articles/librato#custom-log-based-metrics&quot;&gt;Heroku DevCenter&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;metrics-in-your-logs&quot;&gt;Metrics in your logs&lt;/h2&gt;
+
+&lt;p&gt;Probably the thing I like the most about this approach is having your metrics
+in your application log waiting for them to be can be consumed and analyzed
+from any service... &lt;strong&gt;Your application is a producer, Librato is
+&lt;em&gt;just&lt;/em&gt; a consumer&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;You could add &lt;a href=&quot;http://www.elasticsearch.org/overview/kibana/&quot;&gt;Kibana&lt;/a&gt; with its powerful queries to get stuff out from
+the metrics (and other data), or have multiple teams consume the metrics
+and build different applications.&lt;/p&gt;
+
+&lt;p&gt;Setting up alerts based on metrics becomes trivial with services like
+&lt;a href=&quot;https://papertrailapp.com/&quot;&gt;Papertrail&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Bottom line, &lt;a href=&quot;http://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying&quot;&gt;logs are awesome&lt;/a&gt;, and &lt;strong&gt;you should take advantage of that&lt;/strong&gt;!&lt;/p&gt;
+</description>
+        <pubDate>Tue, 17 Feb 2015 11:27:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2015/02/17/simplest-librato-metrics-library/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2015/02/17/simplest-librato-metrics-library/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Getting my Emacs config playing nice with Boxen</title>
@@ -692,69 +758,6 @@ try it. &lt;strong&gt;Close this post and every other distracting thing and do s
         <category>random thoughts</category>
         
         <category>management</category>
-        
-      </item>
-    
-      <item>
-        <title>Use the community for something more</title>
-        <description>&lt;p&gt;For a while, this idea has been wondering around in my head.&lt;/p&gt;
-
-&lt;p&gt;I would love to have some web-development community in Medellín, but I would
-like it to be &amp;quot;something more&amp;quot;. I love the idea of learning from others,
-teaching and getting people involved. I know there are
-&lt;a href=&quot;http://coffeegrid.org/&quot;&gt;more people&lt;/a&gt; that are looking forward for this.&lt;/p&gt;
-
-&lt;p&gt;Sadly, we don&amp;#39;t have a community like the one in Boston. It&amp;#39;s amazing how
-many events there are here. &lt;a href=&quot;http://bostonrb.org/&quot;&gt;Boston.rb&lt;/a&gt; meets up to
-3 times a month! It&amp;#39;s just crazy! You just need to go to
-&lt;a href=&quot;http://www.meetup.com/&quot;&gt;Meetup&lt;/a&gt; to find an event of your interest! All
-filled with people eager to share and help!&lt;/p&gt;
-
-&lt;p&gt;But I would love to put all that lovin&amp;#39; to some &amp;quot;charity&amp;quot; work. Get real
-projects for people that need it. &lt;strong&gt;It doesn&amp;#39;t have to be 100% free&lt;/strong&gt;,
-but not charging nearly as much as you would normally do it!&lt;/p&gt;
-
-&lt;p&gt;For example, I know a &lt;a href=&quot;http://www.bomberosenvigado.org/&quot;&gt;&lt;strong&gt;Volunteer&lt;/strong&gt; Fire Fighter Department&lt;/a&gt;
-that needs to build a simple learning system to distribute knowledge because
-&lt;strong&gt;ignorance is taking a lot of lives&lt;/strong&gt; (from firefighters and people they&amp;#39;re
-trying to save). Hell, they also need a new website!&lt;/p&gt;
-
-&lt;p&gt;I also know about a guy that needs a website for an organisation that helps
-small kids with cancer in Africa.&lt;/p&gt;
-
-&lt;p&gt;All these projects could use the expertise of &amp;quot;old&amp;quot; developers and enthusiasm
-from the ones that are just learning. I&amp;#39;ve found that working on a real
-project is way better than learning on your backyard. So why not take something
-that could use more man-power and pair program on these websites?&lt;/p&gt;
-
-&lt;p&gt;I&amp;#39;m not saying we should not have presentations! Presentations should still
-be the center of this. Sharing new stuff is the most important part for the
-community. But maybe having some &lt;em&gt;hackathons&lt;/em&gt; where we work on these projects.&lt;/p&gt;
-
-&lt;p&gt;So, what do you think? Would something like this work? Would people be
-interested? Those organizations could, for example, sponsor the meetings
-giving some beer and food! Developing companies could also sponsor this
-and get some mention on the created websites. I know
-&lt;a href=&quot;http://www.zinergia.co&quot;&gt;we&lt;/a&gt; would do it!&lt;/p&gt;
-
-&lt;p&gt;I can&amp;#39;t do it right now. I&amp;#39;m 2.5K miles away! And I don&amp;#39;t think it&amp;#39;s an
-easy thing to organize, but I would like to know if people is actually
-interested before I throw myself sending emails and talking to people,
-so please contact me if you are, either by leaving a comment or
-&lt;a href=&quot;http://twitter.com/nhocki&quot;&gt;pinging me on Twitter(@nhocki)&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;If you liked this idea, you might one to &lt;a href=&quot;http://news.ycombinator.com/item?id=4227721&quot;&gt;up vote it in Hackernews&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Tue, 10 Jul 2012 23:25:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/07/10/use-the-community-for-something-more/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/07/10/use-the-community-for-something-more/</guid>
-        
-        
-        <category>web development</category>
-        
-        <category>meetups</category>
-        
-        <category>community</category>
         
       </item>
     
