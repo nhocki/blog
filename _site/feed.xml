@@ -6,8 +6,8 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 17 Feb 2015 18:08:58 -0500</pubDate>
-    <lastBuildDate>Tue, 17 Feb 2015 18:08:58 -0500</lastBuildDate>
+    <pubDate>Tue, 17 Feb 2015 19:39:34 -0500</pubDate>
+    <lastBuildDate>Tue, 17 Feb 2015 19:39:34 -0500</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -16,7 +16,7 @@
 gem to track your &lt;a href=&quot;https://github.com/librato/librato-rack&quot;&gt;rack based apps&lt;/a&gt;, but what if yours is not one? And if
 you&amp;#39;re on Heroku you can&amp;#39;t use &lt;a href=&quot;https://github.com/etsy/statsd/&quot;&gt;StatsD&lt;/a&gt;... So what do you do?&lt;/p&gt;
 
-&lt;p&gt;It turns out that &lt;strong&gt;Librato can get metrics from the you application&amp;#39;s log&lt;/strong&gt; so by
+&lt;p&gt;It turns out that &lt;strong&gt;Librato can get metrics from the application&amp;#39;s log&lt;/strong&gt; so by
 &lt;a href=&quot;http://support.metrics.librato.com/knowledgebase/articles/265391-heroku-native-and-custom-metrics-without-the-libra&quot;&gt;adding a drain&lt;/a&gt; to your Heroku app you&amp;#39;ll have the simplest metrics
 tracking library ever:&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Metrics&lt;/span&gt;

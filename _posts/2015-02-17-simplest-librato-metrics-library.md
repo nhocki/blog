@@ -9,7 +9,7 @@ date: 2015-02-17 11:27
 gem to track your [rack based apps][lr], but what if yours is not one? And if
 you're on Heroku you can't use [StatsD][sd]... So what do you do?
 
-It turns out that **Librato can get metrics from the you application's log** so by
+It turns out that **Librato can get metrics from the application's log** so by
 [adding a drain][drain] to your Heroku app you'll have the simplest metrics
 tracking library ever:
 
