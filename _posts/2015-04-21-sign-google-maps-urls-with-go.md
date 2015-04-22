@@ -7,9 +7,9 @@ date: 2015-04-21
 
 [Google Maps API][api] is very powerful. You can easily create static images
 with routes, calculate distance, time, turn-by-turn directions between two points,
-and a lot more. While it's free for most cases, but if your product depends on
-it you're probably using [Maps for Work][mfw] to be able to do more requests you
-hit the [rate limit][rate].
+and a lot more. While it's free for most cases, if your product depends on
+it you're probably using [Maps for Work][mfw] to be able to do more requests
+before you hit the [rate limit][rate].
 
 As a Maps for Work user, you need to _authenticate_ your requests. This is kind
 of a pain since it's not adding a `token` as a header, or adding a `key` param,
