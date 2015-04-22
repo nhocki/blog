@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width initial-scale=1">
+  <meta name="author" content="Nicolás Hock-Isaza">
+
+  <title>Sign Google Maps URLs with Go</title>
+  <meta name="description" content="A simple way to sign your Google Maps for Work URLs with Go so you don't have to worry about it everywhere in your codebase.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.nhocki.com/2015/04/21/sign-google-maps-urls-with-go/">
+  <link rel="alternate" type="application/atom+xml" title="Nicolás Hock-Isaza" href="http://blog.nhocki.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Nicolás Hock-Isaza</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Sign Google Maps URLs with Go</h1>
+    <p class="post-meta">Apr 21, 2015 &nbsp;&nbsp;•&nbsp;&nbsp; Nicolás Hock-Isaza</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="https://developers.google.com/maps/documentation/webservices/">Google Maps API</a> is very powerful. You can easily create static images
+with routes, calculate distance, time, turn-by-turn directions between two points,
+and a lot more. While it&#39;s free for most cases, but if your product depends on
+it you&#39;re probably using <a href="https://www.google.com/intx/en/work/mapsearth/">Maps for Work</a> to be able to do more requests you
+hit the <a href="https://developers.google.com/maps/documentation/business/articles/usage_limits">rate limit</a>.</p>
+
+<p>As a Maps for Work user, you need to <em>authenticate</em> your requests. This is kind
+of a pain since it&#39;s not adding a <code>token</code> as a header, or adding a <code>key</code> param,
+but instead you need to <strong>sign</strong> the request with the <code>CLIENT</code> and <code>SECRET</code>
+pair from Google&#39;s console.</p>
+
+<h2 id="creating-the-signature">Creating the Signature</h2>
+
+<p>To create a valid signature you&#39;ll need to get the full path (<code>path</code> and <code>query</code>
+parts from the URL - make sure the query has your <code>CLIENT</code>) and then using the
+<code>SECRET</code> you sign the full path using the HMAC-SHA1 algorithm.</p>
+
+<p>It gets a little bit tricky since you get the <code>SECRET</code> in a modified base64
+encoding and you need to use an unmodified version to create the signature, and
+then encode the signature in the modified encoding. Luckily, the <code>base64</code>
+package has the <code>base64.URLEncoding</code> scheme to handle this for you.</p>
+
+<p>At <a href="https://www.ride.com">Ride</a> we extracted all this in a simple function that takes an
+<code>url.URL</code> object and <em>adds both the client and signature</em> to the query params. 
+Notice that it will <strong>use the free, public URL if there are no credentials</strong>,
+making it great for testing and development environments (so you don&#39;t consume
+your rate quota on tests).</p>
+
+<p>Here&#39;s it is:</p>
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="c1">// SignURL adds the signature to a Google URL.</span>
+<span class="c1">// Needed to make authenticated responses.</span>
+<span class="c1">// https://developers.google.com/maps/documentation/business/webservices/auth#generating_valid_signatures</span>
+<span class="kd">func</span> <span class="nx">SignURL</span><span class="p">(</span><span class="nx">reqURL</span> <span class="o">*</span><span class="nx">url</span><span class="p">.</span><span class="nx">URL</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">url</span><span class="p">.</span><span class="nx">URL</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">googleClientID</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Getenv</span><span class="p">(</span><span class="s">&quot;GOOGLE_MAPS_API_CLIENT_ID&quot;</span><span class="p">)</span>
+  <span class="nx">googleKey</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Getenv</span><span class="p">(</span><span class="s">&quot;GOOGLE_MAPS_API_KEY&quot;</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="nx">googleKey</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="o">||</span> <span class="nx">googleClientID</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">reqURL</span><span class="p">,</span> <span class="kc">nil</span>
+  <span class="p">}</span>
+
+  <span class="nx">googleBinaryKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">base64</span><span class="p">.</span><span class="nx">URLEncoding</span><span class="p">.</span><span class="nx">DecodeString</span><span class="p">(</span><span class="nx">googleKey</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;[ERROR] Can&#39;t decode Google key.&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+  <span class="p">}</span>
+
+  <span class="nx">queryString</span> <span class="o">:=</span> <span class="nx">reqURL</span><span class="p">.</span><span class="nx">Query</span><span class="p">()</span>
+  <span class="nx">queryString</span><span class="p">.</span><span class="nx">Set</span><span class="p">(</span><span class="s">&quot;client&quot;</span><span class="p">,</span> <span class="nx">googleClientID</span><span class="p">)</span>
+  <span class="nx">reqURL</span><span class="p">.</span><span class="nx">RawQuery</span> <span class="p">=</span> <span class="nx">queryString</span><span class="p">.</span><span class="nx">Encode</span><span class="p">()</span>
+
+  <span class="nx">uri</span> <span class="o">:=</span> <span class="nx">reqURL</span><span class="p">.</span><span class="nx">Path</span> <span class="o">+</span> <span class="s">&quot;?&quot;</span> <span class="o">+</span> <span class="nx">reqURL</span><span class="p">.</span><span class="nx">RawQuery</span>
+  <span class="nx">mac</span> <span class="o">:=</span> <span class="nx">hmac</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">sha1</span><span class="p">.</span><span class="nx">New</span><span class="p">,</span> <span class="nx">googleBinaryKey</span><span class="p">)</span>
+  <span class="nx">mac</span><span class="p">.</span><span class="nx">Write</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">uri</span><span class="p">))</span>
+
+  <span class="nx">signature</span> <span class="o">:=</span> <span class="nx">base64</span><span class="p">.</span><span class="nx">URLEncoding</span><span class="p">.</span><span class="nx">EncodeToString</span><span class="p">(</span><span class="nx">mac</span><span class="p">.</span><span class="nx">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>
+  <span class="nx">reqURL</span><span class="p">.</span><span class="nx">RawQuery</span> <span class="p">=</span> <span class="nx">reqURL</span><span class="p">.</span><span class="nx">RawQuery</span> <span class="o">+</span> <span class="s">&quot;&amp;signature=&quot;</span> <span class="o">+</span> <span class="nx">signature</span>
+
+  <span class="k">return</span> <span class="nx">reqURL</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="signing-urls">Signing URLs</h2>
+
+<p>It&#39;s pretty easy to sign every maps API URL, we just create the URL and call the
+function with it.</p>
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="c1">// No error handling shown here.</span>
+<span class="nx">mapsForWork</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">Parse</span><span class="p">(</span><span class="s">&quot;some-google-maps-url&quot;</span><span class="p">)</span>
+<span class="nx">mapsForWork</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">maps</span><span class="p">.</span><span class="nx">SignURL</span><span class="p">(</span><span class="nx">mapsForWork</span><span class="p">)</span>
+</code></pre></div>
+<p>And that&#39;s it. We&#39;ll have a signed URL in production and a free on in
+development and tests.</p>
+
+<h2 id="testing-it">Testing it</h2>
+
+<p>Talking about tests, this function is really simple to test using <a href="https://developers.google.com/maps/documentation/business/webservices/auth#signature_examples">Google&#39;s
+example keys</a>. We simple set the environment to have those keys and sign
+the example URL:</p>
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// Setup Google&#39;s example test keys</span>
+  <span class="nx">os</span><span class="p">.</span><span class="nx">Setenv</span><span class="p">(</span><span class="s">&quot;GOOGLE_MAPS_API_CLIENT_ID&quot;</span><span class="p">,</span> <span class="s">&quot;clientID&quot;</span><span class="p">)</span>
+  <span class="nx">os</span><span class="p">.</span><span class="nx">Setenv</span><span class="p">(</span><span class="s">&quot;GOOGLE_MAPS_API_KEY&quot;</span><span class="p">,</span> <span class="s">&quot;vNIXE0xscrmjlyV-12Nj_BvUPaw=&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// https://developers.google.com/maps/documentation/business/webservices/auth#signature_examples</span>
+<span class="kd">func</span> <span class="nx">TestSignURI</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">tests</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">uri</span>       <span class="kt">string</span>
+    <span class="nx">signedURI</span> <span class="kt">string</span>
+  <span class="p">}{</span>
+    <span class="p">{</span>
+      <span class="s">&quot;/maps/api/geocode/json?address=new+york&quot;</span><span class="p">,</span>
+      <span class="s">&quot;/maps/api/geocode/json?address=new+york&amp;client=clientid&amp;signature=charf2htjkoscpr-rqcehzbszie=&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tt</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tests</span> <span class="p">{</span>
+    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">tt</span><span class="p">.</span><span class="nx">uri</span><span class="p">)</span>
+    <span class="nx">testing</span><span class="p">.</span><span class="nx">ok</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+
+    <span class="nx">requrl</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">signurl</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+    <span class="nx">testing</span><span class="p">.</span><span class="nx">ok</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+
+    <span class="nx">testing</span><span class="p">.</span><span class="nx">equals</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">signedURI</span><span class="p">,</span> <span class="nx">reqURL</span><span class="p">.</span><span class="nx">String</span><span class="p">())</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>As a closing note, I have to admit I have been enjoying Go way too much. I find
+it really simple and easy to learn. There are amazing <a href="https://www.docker.com/">open</a>
+<a href="https://coreos.com/">source</a> <a href="http://influxdb.com/">projects</a> using it making them great learning
+resources.</p>
+
+<p>I&#39;m looking forward to attend <a href="http://www.gophercon.com/">Gophercon</a> later this
+year to learn even more about it. If you&#39;re looking into learning a new
+language, give Go a try. You won&#39;t regret it.</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Nicolás Hock-Isaza</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Nicolás Hock-Isaza</li>
+          <li><a href="mailto:nhocki@gmail.com">nhocki@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/nhocki">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">nhocki</span>
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/nhocki">
+              <span class="icon  icon--twitter">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                  c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+                </svg>
+              </span>
+
+              <span class="username">nhocki</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Thoughts about programming, development & other stuff.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+    <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '547ec2cce32bb42c1201e69d');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25223573-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  </body>
+
+</html>

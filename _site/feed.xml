@@ -6,9 +6,132 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 17 Feb 2015 19:39:34 -0500</pubDate>
-    <lastBuildDate>Tue, 17 Feb 2015 19:39:34 -0500</lastBuildDate>
+    <pubDate>Tue, 21 Apr 2015 23:31:10 -0500</pubDate>
+    <lastBuildDate>Tue, 21 Apr 2015 23:31:10 -0500</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Sign Google Maps URLs with Go</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://developers.google.com/maps/documentation/webservices/&quot;&gt;Google Maps API&lt;/a&gt; is very powerful. You can easily create static images
+with routes, calculate distance, time, turn-by-turn directions between two points,
+and a lot more. While it&amp;#39;s free for most cases, but if your product depends on
+it you&amp;#39;re probably using &lt;a href=&quot;https://www.google.com/intx/en/work/mapsearth/&quot;&gt;Maps for Work&lt;/a&gt; to be able to do more requests you
+hit the &lt;a href=&quot;https://developers.google.com/maps/documentation/business/articles/usage_limits&quot;&gt;rate limit&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;As a Maps for Work user, you need to &lt;em&gt;authenticate&lt;/em&gt; your requests. This is kind
+of a pain since it&amp;#39;s not adding a &lt;code&gt;token&lt;/code&gt; as a header, or adding a &lt;code&gt;key&lt;/code&gt; param,
+but instead you need to &lt;strong&gt;sign&lt;/strong&gt; the request with the &lt;code&gt;CLIENT&lt;/code&gt; and &lt;code&gt;SECRET&lt;/code&gt;
+pair from Google&amp;#39;s console.&lt;/p&gt;
+
+&lt;h2 id=&quot;creating-the-signature&quot;&gt;Creating the Signature&lt;/h2&gt;
+
+&lt;p&gt;To create a valid signature you&amp;#39;ll need to get the full path (&lt;code&gt;path&lt;/code&gt; and &lt;code&gt;query&lt;/code&gt;
+parts from the URL - make sure the query has your &lt;code&gt;CLIENT&lt;/code&gt;) and then using the
+&lt;code&gt;SECRET&lt;/code&gt; you sign the full path using the HMAC-SHA1 algorithm.&lt;/p&gt;
+
+&lt;p&gt;It gets a little bit tricky since you get the &lt;code&gt;SECRET&lt;/code&gt; in a modified base64
+encoding and you need to use an unmodified version to create the signature, and
+then encode the signature in the modified encoding. Luckily, the &lt;code&gt;base64&lt;/code&gt;
+package has the &lt;code&gt;base64.URLEncoding&lt;/code&gt; scheme to handle this for you.&lt;/p&gt;
+
+&lt;p&gt;At &lt;a href=&quot;https://www.ride.com&quot;&gt;Ride&lt;/a&gt; we extracted all this in a simple function that takes an
+&lt;code&gt;url.URL&lt;/code&gt; object and &lt;em&gt;adds both the client and signature&lt;/em&gt; to the query params. 
+Notice that it will &lt;strong&gt;use the free, public URL if there are no credentials&lt;/strong&gt;,
+making it great for testing and development environments (so you don&amp;#39;t consume
+your rate quota on tests).&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#39;s it is:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// SignURL adds the signature to a Google URL.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Needed to make authenticated responses.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// https://developers.google.com/maps/documentation/business/webservices/auth#generating_valid_signatures&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SignURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;URL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;URL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;googleClientID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;GOOGLE_MAPS_API_CLIENT_ID&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;googleKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;GOOGLE_MAPS_API_KEY&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;googleKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;googleClientID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;googleBinaryKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;base64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;URLEncoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DecodeString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;googleKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;[ERROR] Can&amp;#39;t decode Google key.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;queryString&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Query&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;client&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;googleClientID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;RawQuery&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;uri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;?&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;RawQuery&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;mac&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;hmac&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sha1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;googleBinaryKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;mac&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;uri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;signature&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;base64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;URLEncoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;EncodeToString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mac&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;RawQuery&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;RawQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;amp;signature=&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;signature&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;signing-urls&quot;&gt;Signing URLs&lt;/h2&gt;
+
+&lt;p&gt;It&amp;#39;s pretty easy to sign every maps API URL, we just create the URL and call the
+function with it.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// No error handling shown here.&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;mapsForWork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;some-google-maps-url&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;mapsForWork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;maps&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;SignURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mapsForWork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And that&amp;#39;s it. We&amp;#39;ll have a signed URL in production and a free on in
+development and tests.&lt;/p&gt;
+
+&lt;h2 id=&quot;testing-it&quot;&gt;Testing it&lt;/h2&gt;
+
+&lt;p&gt;Talking about tests, this function is really simple to test using &lt;a href=&quot;https://developers.google.com/maps/documentation/business/webservices/auth#signature_examples&quot;&gt;Google&amp;#39;s
+example keys&lt;/a&gt;. We simple set the environment to have those keys and sign
+the example URL:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// Setup Google&amp;#39;s example test keys&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Setenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;GOOGLE_MAPS_API_CLIENT_ID&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;clientID&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Setenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;GOOGLE_MAPS_API_KEY&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;vNIXE0xscrmjlyV-12Nj_BvUPaw=&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// https://developers.google.com/maps/documentation/business/webservices/auth#signature_examples&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;TestSignURI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;tests&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;uri&lt;/span&gt;       &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;signedURI&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;s&quot;&gt;&amp;quot;/maps/api/geocode/json?address=new+york&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;s&quot;&gt;&amp;quot;/maps/api/geocode/json?address=new+york&amp;amp;client=clientid&amp;amp;signature=charf2htjkoscpr-rqcehzbszie=&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tests&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;uri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;requrl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;signurl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;signedURI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reqURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;As a closing note, I have to admit I have been enjoying Go way too much. I find
+it really simple and easy to learn. There are amazing &lt;a href=&quot;https://www.docker.com/&quot;&gt;open&lt;/a&gt;
+&lt;a href=&quot;https://coreos.com/&quot;&gt;source&lt;/a&gt; &lt;a href=&quot;http://influxdb.com/&quot;&gt;projects&lt;/a&gt; using it making them great learning
+resources.&lt;/p&gt;
+
+&lt;p&gt;I&amp;#39;m looking forward to attend &lt;a href=&quot;http://www.gophercon.com/&quot;&gt;Gophercon&lt;/a&gt; later this
+year to learn even more about it. If you&amp;#39;re looking into learning a new
+language, give Go a try. You won&amp;#39;t regret it.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 21 Apr 2015 00:00:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2015/04/21/sign-google-maps-urls-with-go/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2015/04/21/sign-google-maps-urls-with-go/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Simplest Librato Metrics library</title>
@@ -707,57 +830,6 @@ of a better way to do this, please &lt;a href=&quot;https://twitter.com/nhocki&q
         <category>liquid</category>
         
         <category>rails views</category>
-        
-      </item>
-    
-      <item>
-        <title>Seriously just do it</title>
-        <description>&lt;p&gt;I have finished my first &amp;quot;working season&amp;quot; at &lt;a href=&quot;http://mit.edu&quot;&gt;MIT&lt;/a&gt;. I got here
-on October 4. It&amp;#39;s been an amazing and weird journey.&lt;/p&gt;
-
-&lt;p&gt;But I have to admit that at first I was a bad employee. I was &lt;strong&gt;really&lt;/strong&gt; used
-to have somebody telling me what to do all the time. When I arrived at MIT that
-didn&amp;#39;t happen. &lt;strong&gt;At all&lt;/strong&gt;. I was given some &amp;quot;long term&amp;quot; tasks and that was it.
-I just had to do them.&lt;/p&gt;
-
-&lt;p&gt;Since no one was all over me checking my progress or asking me how I was
-doing on everything, I was waisting a lot (&lt;em&gt;most&lt;/em&gt;) of my time.
-&lt;a href=&quot;http://www.espndeportes.com&quot;&gt;ESPNDeportes&lt;/a&gt; got a lot of visits from me.
-I started using Facebook on regular basis. &lt;a href=&quot;http://www.threadless.com&quot;&gt;Threadless&lt;/a&gt;
-didn&amp;#39;t have enough T-shirts for me. &lt;a href=&quot;http://twitter.com/nhocki&quot;&gt;Twitter&lt;/a&gt; was
-not &amp;quot;real time enough&amp;quot;...&lt;/p&gt;
-
-&lt;p&gt;But, with time, I started working and I can&amp;#39;t say how grateful I am for &lt;a href=&quot;http://tomayko.com/writings/management-style&quot;&gt;this
-way of managing&lt;/a&gt;. I&amp;#39;ve learned
-to be much more productive on my own. To manage my time. To be much more
-responsible. But, I guess the best thing about this was that I learned that
-you just need to &lt;strong&gt;shut up, close all the meaningless things you have open and
-get shit done&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;Sure, if you need help, ask. If what you&amp;#39;re doing is wrong, try again. But you
-won&amp;#39;t know something doesn&amp;#39;t work if it&amp;#39;s just an idea.&lt;/p&gt;
-
-&lt;p&gt;I became much more productive in everything. Not only MIT work stuff. Personal
-(disposable) things I wanted to try.
-&lt;a href=&quot;http://shop.oreilly.com/product/0636920021810.do&quot;&gt;Things&lt;/a&gt; I wanted to learn.
-&lt;a href=&quot;http://shop.oreilly.com/product/0636920019664.do&quot;&gt;Things I&lt;/a&gt;
-&lt;a href=&quot;http://designinghypermediaapis.com/&quot;&gt;wanted&lt;/a&gt; &lt;a href=&quot;http://objectsonrails.com/&quot;&gt;to&lt;/a&gt;
-&lt;a href=&quot;http://pragprog.com/book/warv/the-rails-view&quot;&gt;read&lt;/a&gt; (even my
-&lt;a href=&quot;http://instapaper.com&quot;&gt;Instapaper&lt;/a&gt; queue went down. By a lot!).&lt;/p&gt;
-
-&lt;p&gt;So, just try it out. It may take more than a week to get used to it, but just
-try it. &lt;strong&gt;Close this post and every other distracting thing and do something&lt;/strong&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Thu, 26 Jul 2012 01:07:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/07/26/seriously-just-do-it/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/07/26/seriously-just-do-it/</guid>
-        
-        
-        <category>mit</category>
-        
-        <category>random thoughts</category>
-        
-        <category>management</category>
         
       </item>
     
