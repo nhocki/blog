@@ -31,7 +31,7 @@ At [Ride][ride] we extracted all this in a simple function that takes an
 `url.URL` object and *adds both the client and signature* to the query params. 
 Notice that it will **use the free, public URL if there are no credentials**,
 making it great for testing and development environments (so you don't consume
-your rate quota on tests).
+your quota on tests).
 
 Here's it is:
 
@@ -79,7 +79,7 @@ mapsForWork, err := url.Parse("some-google-maps-url")
 mapsForWork, err = maps.SignURL(mapsForWork)
 ```
 
-And that's it. We'll have a signed URL in production and a free on in
+And that's it. We'll have a signed URL in production and a free one in
 development and tests.
 
 ## Testing it

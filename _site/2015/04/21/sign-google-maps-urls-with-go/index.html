@@ -85,7 +85,7 @@ package has the <code>base64.URLEncoding</code> scheme to handle this for you.</
 <code>url.URL</code> object and <em>adds both the client and signature</em> to the query params. 
 Notice that it will <strong>use the free, public URL if there are no credentials</strong>,
 making it great for testing and development environments (so you don&#39;t consume
-your rate quota on tests).</p>
+your quota on tests).</p>
 
 <p>Here&#39;s it is:</p>
 <div class="highlight"><pre><code class="language-go" data-lang="go"><span class="c1">// SignURL adds the signature to a Google URL.</span>
@@ -127,7 +127,7 @@ function with it.</p>
 <span class="nx">mapsForWork</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">Parse</span><span class="p">(</span><span class="s">&quot;some-google-maps-url&quot;</span><span class="p">)</span>
 <span class="nx">mapsForWork</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">maps</span><span class="p">.</span><span class="nx">SignURL</span><span class="p">(</span><span class="nx">mapsForWork</span><span class="p">)</span>
 </code></pre></div>
-<p>And that&#39;s it. We&#39;ll have a signed URL in production and a free on in
+<p>And that&#39;s it. We&#39;ll have a signed URL in production and a free one in
 development and tests.</p>
 
 <h2 id="testing-it">Testing it</h2>
