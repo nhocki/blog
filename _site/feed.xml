@@ -6,9 +6,71 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 22 Apr 2015 09:35:14 -0500</pubDate>
-    <lastBuildDate>Wed, 22 Apr 2015 09:35:14 -0500</lastBuildDate>
+    <pubDate>Wed, 03 Jun 2015 21:05:37 -0500</pubDate>
+    <lastBuildDate>Wed, 03 Jun 2015 21:05:37 -0500</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Add helper methods to your Rails console with Pry</title>
+        <description>&lt;p&gt;There is no doubt that the rails console is amazingly helpful. At &lt;a href=&quot;https://www.ride.com&quot;&gt;Ride&lt;/a&gt;
+we use it every day on our production application, so we wanted to add some
+custom helpers to make things easier for us.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;But we use Pry and things got messy.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;how-does-it-normally-work?&quot;&gt;How does it normally work?&lt;/h2&gt;
+
+&lt;p&gt;Normally adding a method is quite simple, &lt;a href=&quot;http://opensoul.org/2012/11/08/add-helper-methods-to-your-rails-console/&quot;&gt;Brandon Keepers has a &lt;strong&gt;great
+post&lt;/strong&gt;&lt;/a&gt; about it. I added helpers that way at &lt;a href=&quot;http://www.weheartit.com&quot;&gt;We Heart It&lt;/a&gt; where
+we used the default Rails console (&lt;code&gt;IRB&lt;/code&gt;), but Ride uses &lt;a href=&quot;https://github.com/pry/pry&quot;&gt;Pry&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;For the default setup, you just &lt;code&gt;include&lt;/code&gt; a module in the &lt;code&gt;Rails::ConsoleMethods&lt;/code&gt;
+module from a &lt;code&gt;console&lt;/code&gt; block in your &lt;code&gt;config/application.rb&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;p&gt;This works because, rails &lt;a href=&quot;https://github.com/rails/rails/blob/7fb45a6130598703b3da8fe9ef29a5c7a1eb9d09/railties/lib/rails/commands/console.rb#L62-L64&quot;&gt;extends&lt;/a&gt; &lt;code&gt;IRB::ExtendCommandBundle&lt;/code&gt; with that
+module so everything in there is available by default.&lt;/p&gt;
+
+&lt;p&gt;This is how you get the &lt;code&gt;controller&lt;/code&gt; method and other &lt;a href=&quot;https://signalvnoise.com/posts/3176-three-quick-rails-console-tips&quot;&gt;useful methods&lt;/a&gt;
+in your console.&lt;/p&gt;
+
+&lt;p&gt;But this doesn&amp;#39;t work with Pry! &lt;em&gt;Why?&lt;/em&gt; Because &lt;code&gt;Pry&lt;/code&gt; only defines
+&lt;code&gt;Pry::ExtendCommandBundle&lt;/code&gt; as an (empty) module &lt;a href=&quot;https://github.com/pry/pry/blob/ee2513bdb43ad272bba6895645ce04bb2c3d6377/lib/pry.rb#L121&quot;&gt;to not break Rails&lt;/a&gt;
+but never uses it.&lt;/p&gt;
+
+&lt;h2 id=&quot;making-it-work-with-pry&quot;&gt;Making it work with Pry&lt;/h2&gt;
+
+&lt;p&gt;After about 2 hours of reading Rails and Pry&amp;#39;s source code, I found a way
+to add our methods to the console by default. Instead of including our module in
+the rails module, we need to &lt;code&gt;extend&lt;/code&gt; Pry&amp;#39;s default bindings
+(&lt;code&gt;TOPLEVEL_BINDING&lt;/code&gt;) like this:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# config/application.rb&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;console&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;my_app/console&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;TOPLEVEL_BINDING&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;self&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extend&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MyApp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Console&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is &lt;a href=&quot;https://github.com/rweng/pry-rails/blob/69f5990f3a687e2be209ff4083ecfdf5e9a6b7d4/lib/pry-rails/railtie.rb#L25&quot;&gt;exactly what happens&lt;/a&gt; in the &lt;code&gt;pry-rails&lt;/code&gt; gem to add the
+&lt;code&gt;Rails::ConsoleMethods&lt;/code&gt; methods, but since this also happens inside a &lt;code&gt;console&lt;/code&gt;
+block we can&amp;#39;t add our methods to the Rails module before it gets added to the
+binding, that&amp;#39;s why we have to manually extend it.&lt;/p&gt;
+
+&lt;p&gt;I &lt;a href=&quot;https://github.com/rweng/pry-rails/issues/74&quot;&gt;opened an issue&lt;/a&gt; in &lt;code&gt;pry-rails&lt;/code&gt; since extending the &lt;code&gt;TOPLEVEL_BINDING&lt;/code&gt;
+seems like a hack to me, but I could not find another way to do it. I had
+spent a lot of time trying to make it work and that worked, so ¯\&lt;em&gt;(ツ)&lt;/em&gt;/¯.&lt;/p&gt;
+
+&lt;p&gt;I really hope this saves someone&amp;#39;s time (and sanity), I got really frustrated for
+a while since there was no information about how to make this work (until now).&lt;/p&gt;
+</description>
+        <pubDate>Wed, 03 Jun 2015 20:12:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2015/06/03/add-helper-methods-to-your-rails-console-with-pry/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2015/06/03/add-helper-methods-to-your-rails-console-with-pry/</guid>
+        
+        
+        <category>pry</category>
+        
+        <category>rails</category>
+        
+      </item>
     
       <item>
         <title>Sign Google Maps URLs with Go</title>
@@ -761,75 +823,6 @@ find another one, I&amp;#39;d love to hear about it on
         <category>programming</category>
         
         <category>algorithms</category>
-        
-      </item>
-    
-      <item>
-        <title>Using Liquid `include` with DB templates</title>
-        <description>&lt;p&gt;I am working on a new application that will use some &lt;a href=&quot;http://liquidmarkup.org/&quot; title=&quot;Liquid Markup&quot;&gt;Liquid&lt;/a&gt; templates to
-allow our clients to edit some templates.&lt;/p&gt;
-
-&lt;p&gt;We will store these templates in the Database, load them, parse them and render
-them. So far, no magic.&lt;/p&gt;
-
-&lt;p&gt;But, I needed to have some &amp;quot;partials&amp;quot; for these. I wanted some common elements
-(like image galleries) to be available for the client to use in that specific
-template.&lt;/p&gt;
-
-&lt;p&gt;The way you normally accomplish this is by using an &lt;code&gt;include&lt;/code&gt; tag, but I needed
-a little bit more control. Not all the clients will have the same partials and
-I also wanted the clients to be able to edit these partials.&lt;/p&gt;
-
-&lt;p&gt;So after reading the &lt;a href=&quot;https://github.com/Shopify/liquid/blob/master/lib/liquid/tags/include.rb#L49-61&quot; title=&quot;Liquid include source code&quot;&gt;Liquid source code&lt;/a&gt;, I found a really easy way to do
-this.&lt;/p&gt;
-
-&lt;p&gt;You just need an object that responds to &lt;code&gt;read_template_file&lt;/code&gt; and it can take
-1 or 2 arguments (please, go for 2). This method must return the Liquid &lt;strong&gt;source&lt;/strong&gt;
-of the partial (not a parsed template).&lt;/p&gt;
-
-&lt;p&gt;So, here&amp;#39;s a really simple one that will work:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/3645632&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# Class to be used as a Liquid File System for the `include` tag&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LiquidTemplateSystem&lt;/span&gt;
-  &lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;vi&quot;&gt;@user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;c1&quot;&gt;# Return a valid liquid template string&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;read_template_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;partials&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find_by_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;liquid_source&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-
-&lt;span class=&quot;c1&quot;&gt;# In the view:&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# This `template` has an {% include %} tag.&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;&amp;lt;%=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;registers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;file_system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;LiquidTemplateSystem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h2 id=&quot;default-filesystem&quot;&gt;Default FileSystem&lt;/h2&gt;
-
-&lt;p&gt;You could also set the default &lt;code&gt;FileSystem&lt;/code&gt; with
-&lt;code&gt;Liquid::Template.file_system = MyNewFileSystem.new&lt;/code&gt;. This may be useful if you
-want the partials to be shared on the database but not different for every user.&lt;/p&gt;
-
-&lt;h2 id=&quot;any-other-way?&quot;&gt;Any other way?&lt;/h2&gt;
-
-&lt;p&gt;Even though I find this to be &lt;em&gt;really&lt;/em&gt; easy, another way may exist. If you know
-of a better way to do this, please &lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;let me know&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Wed, 05 Sep 2012 17:37:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/09/05/using-liquid-include-with-db-templates/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/09/05/using-liquid-include-with-db-templates/</guid>
-        
-        
-        <category>rails</category>
-        
-        <category>liquid</category>
-        
-        <category>rails views</category>
         
       </item>
     
