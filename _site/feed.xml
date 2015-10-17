@@ -6,9 +6,50 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 04 Jun 2015 08:00:20 -0500</pubDate>
-    <lastBuildDate>Thu, 04 Jun 2015 08:00:20 -0500</lastBuildDate>
+    <pubDate>Fri, 16 Oct 2015 21:48:34 -0500</pubDate>
+    <lastBuildDate>Fri, 16 Oct 2015 21:48:34 -0500</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Queue Based Architectures at RubyConf Colombia</title>
+        <description>&lt;p&gt;For the first time, we have a &lt;a href=&quot;http://www.rubyconf.co/&quot;&gt;RubyConf in Colombia&lt;/a&gt; and I had the
+privilege to be a speaker. I think the event was amazing. &lt;strong&gt;Thanks a lot to all
+the organizers&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;I talked about &lt;strong&gt;Queue Based Architectures&lt;/strong&gt; and how they can help you develop
+and maintain your application in the modern days.&lt;/p&gt;
+
+&lt;p&gt;If there&amp;#39;s something I wanted people to take away from my talk was that&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Asynchronous messaging is fundamentally a pragmatic reaction to the problems
+of distributed systems. Sending a message does not require both systems to be up
+and ready at the same time.&lt;/p&gt;
+
+&lt;p&gt;-- Enterprise Integration Patterns&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;That quote gives a short summary of the biggest advantage of having a reliable
+queue handling the communication between services: Your users will feel that your
+application is working even if some parts of it are not.&lt;/p&gt;
+
+&lt;p&gt;Here are my slides both in English and Spanish. I&amp;#39;d really appreciate any
+feedback, so ping me &lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;on twitter&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;english-slides&quot;&gt;English Slides&lt;/h2&gt;
+
+&lt;script async class=&quot;speakerdeck-embed&quot; data-id=&quot;4d51d7e680104baabffd726874b540f1&quot; data-ratio=&quot;1.77777777777778&quot; src=&quot;//speakerdeck.com/assets/embed.js&quot;&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;spanish-slides&quot;&gt;Spanish Slides&lt;/h2&gt;
+
+&lt;script async class=&quot;speakerdeck-embed&quot; data-id=&quot;7b29ce2d85b74fba93c8816c841d23a8&quot; data-ratio=&quot;1.77777777777778&quot; src=&quot;//speakerdeck.com/assets/embed.js&quot;&gt;&lt;/script&gt;
+</description>
+        <pubDate>Fri, 16 Oct 2015 21:36:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2015/10/16/queue-based-architectures-at-rubyconf-colombia/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2015/10/16/queue-based-architectures-at-rubyconf-colombia/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Add helper methods to your Rails console with Pry</title>
@@ -761,68 +802,6 @@ or ping me on &lt;a href=&quot;https://twitter.com/nhocki&quot; title=&quot;My t
         <category>ruby</category>
         
         <category>bundler</category>
-        
-      </item>
-    
-      <item>
-        <title>Reverse a list in O(n)</title>
-        <description>&lt;p&gt;For about a year, I&amp;#39;ve always had a question I ask someone I&amp;#39;m interviewing for
-a programming position. I&amp;#39;ve asked this around 3 times and got some nice
-answers, but I had never implemented it. The question is really simple:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Given a linked list, how would you reverse it in &lt;code&gt;O(n)&lt;/code&gt;?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Here&amp;#39;s my solution:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# https://gist.github.com/nhocki/4392454&lt;/span&gt;
-
-&lt;span class=&quot;no&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Struct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# Build the list&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;times&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;each_with_index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;reverse_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Get the next node on the list.&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;# Make the new tail point to nil (end of the new list).&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Save that new tail on a tmp variable (to point to it later)&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Change the `current` node to the `next` one. Move ahead.&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;          &lt;span class=&quot;c1&quot;&gt;# If I&amp;#39;m not at the end of the list.&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Save the next node on the original list.&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Reverse the list (point back from `current`)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Save the current node to point later.&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prox&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;# Move ahead once.&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;last&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;print_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;print_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;How would you do it? There&amp;#39;s a really simple solution using a
-&lt;a href=&quot;https://gist.github.com/nhocki/4392454#comment-676651&quot;&gt;stack&lt;/a&gt;, but if you
-find another one, I&amp;#39;d love to hear about it on
-&lt;a href=&quot;https://twitter.com/nhocki&quot;&gt;Twitter @nhocki&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 27 Dec 2012 16:53:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2012/12/27/reverse-a-list-in-o-n/</guid>
-        
-        
-        <category>programming</category>
-        
-        <category>algorithms</category>
         
       </item>
     
