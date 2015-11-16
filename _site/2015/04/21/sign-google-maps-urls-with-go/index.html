@@ -82,7 +82,7 @@ then encode the signature in the modified encoding. Luckily, the <code>base64</c
 package has the <code>base64.URLEncoding</code> scheme to handle this for you.</p>
 
 <p>At <a href="https://www.ride.com">Ride</a> we extracted all this in a simple function that takes an
-<code>url.URL</code> object and <em>adds both the client and signature</em> to the query params. 
+<code>url.URL</code> object and <em>adds both the client and signature</em> to the query params.
 Notice that it will <strong>use the free, public URL if there are no credentials</strong>,
 making it great for testing and development environments (so you don&#39;t consume
 your quota on tests).</p>

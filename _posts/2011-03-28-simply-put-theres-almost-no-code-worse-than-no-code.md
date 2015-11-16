@@ -7,4 +7,4 @@ categories: quotes
 ---
 > Simply put, there’s almost no code worse than no code.
 
---David Eisinger, Viget Labs
+--[David Eisinger, Viget Labs](https://viget.com/extend/getting-into-open-source)

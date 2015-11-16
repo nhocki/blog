@@ -3,6 +3,10 @@ layout: post
 title: Sign Google Maps URLs with Go
 excerpt: A simple way to sign your Google Maps for Work URLs with Go so you don't have to worry about it everywhere in your codebase.
 date: 2015-04-21
+categories:
+- google
+- golang
+
 ---
 
 [Google Maps API][api] is very powerful. You can easily create static images
@@ -28,7 +32,7 @@ then encode the signature in the modified encoding. Luckily, the `base64`
 package has the `base64.URLEncoding` scheme to handle this for you.
 
 At [Ride][ride] we extracted all this in a simple function that takes an
-`url.URL` object and *adds both the client and signature* to the query params. 
+`url.URL` object and *adds both the client and signature* to the query params.
 Notice that it will **use the free, public URL if there are no credentials**,
 making it great for testing and development environments (so you don't consume
 your quota on tests).
