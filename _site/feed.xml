@@ -6,9 +6,105 @@
     <description>Thoughts about programming, development &amp; other stuff.</description>
     <link>http://blog.nhocki.com/</link>
     <atom:link href="http://blog.nhocki.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 17 Nov 2015 01:26:24 -0500</pubDate>
-    <lastBuildDate>Tue, 17 Nov 2015 01:26:24 -0500</lastBuildDate>
+    <pubDate>Wed, 23 Dec 2015 19:07:19 -0500</pubDate>
+    <lastBuildDate>Wed, 23 Dec 2015 19:07:19 -0500</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Managing Docker Machines with Ease</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/machine/&quot;&gt;Docker Machine&lt;/a&gt; is amazing. It lets you create Docker hosts virtually
+anywhere. Mix it with &lt;a href=&quot;https://docs.docker.com/compose/&quot;&gt;Docker Compose&lt;/a&gt; and you&amp;#39;ll be able to setup all your
+systems pretty much anywhere.&lt;/p&gt;
+
+&lt;p&gt;Together, they are a great option for automated end-to-end testing. You can also
+distribute development builds of features without deploying them to production servers.&lt;/p&gt;
+
+&lt;p&gt;At &lt;a href=&quot;https://www.ride.com/&quot;&gt;Ride&lt;/a&gt;, we can create servers in &lt;a href=&quot;https://www.digitalocean.com/&quot;&gt;Digital Ocean&lt;/a&gt; and have the whole
+backend running there. We have a repo with a &lt;code&gt;docker-compose&lt;/code&gt; file that sets up
+all systems &lt;strong&gt;(thanks &lt;a href=&quot;https://github.com/sergiobuj&quot;&gt;Sergio&lt;/a&gt;!)&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;But working with many machines can get a little bit confusing and long to type.&lt;/p&gt;
+
+&lt;h2 id=&quot;multiple-machines&quot;&gt;Multiple Machines&lt;/h2&gt;
+
+&lt;p&gt;Imagine we have two machines configured. &lt;code&gt;development&lt;/code&gt; will be a local machine
+and &lt;code&gt;json-api-10&lt;/code&gt; will be hosted in Digital Ocean.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker-machine create --driver virtualbox development
+
+Running pre-create checks...
+Creating machine...
+(development) Creating VirtualBox VM...
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker-machine create --driver digitalocean \
+      --digitalocean-size 2gb --digitalocean-access-token \
+      $TOKEN json-api-10
+
+Running pre-create checks...
+Creating machine...
+(json-api-10) Creating SSH key...
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;To make our docker client point to a specific machine, we need to set up some
+environment variables...&lt;/p&gt;
+
+&lt;p&gt;But who wants to type (or remembers) &lt;code&gt;eval &amp;quot;$(docker-machine env &amp;lt;name&amp;gt;)&amp;quot;&lt;/code&gt; anyway?!&lt;/p&gt;
+
+&lt;h2 id=&quot;use-a-machine&quot;&gt;Use a Machine&lt;/h2&gt;
+
+&lt;p&gt;We created the &lt;code&gt;use&lt;/code&gt; function that will do just that:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;use () {
+    eval &amp;quot;$(docker-machine env $1)&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now changing is really easy &lt;code&gt;use json-api-10&lt;/code&gt; will point to the remote machine!&lt;/p&gt;
+
+&lt;p&gt;We can check that everything&amp;#39;s working with &lt;code&gt;docker-machine ls&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ use json-api-10
+
+$ docker-machine ls
+NAME           ACTIVE   DRIVER         STATE     URL                      
+json-api-10    *        digitalocean   Running   tcp://1.1.1.1:1234       
+development    -        virtualbox     Running   tcp://192.168.99.100:2376
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;But this is not enough, when you have a lot of machines it&amp;#39;s hard to remember
+the names, so we need autocomplete...&lt;/p&gt;
+
+&lt;h2 id=&quot;adding-autocomplete&quot;&gt;Adding Autocomplete&lt;/h2&gt;
+
+&lt;p&gt;To add autocomplete (in zsh) we need to have a file called &lt;code&gt;_&amp;lt;command&amp;gt;&lt;/code&gt; in a
+directory that&amp;#39;s in &lt;code&gt;$FPATH&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In my case I have &lt;code&gt;~/.zsh/completion&lt;/code&gt; there, so I added the following file &lt;code&gt;~/.zsh/completion/_use&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#compdef use
+
+_arguments &amp;quot;1: :(`docker-machine ls -q`)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This makes everything better now! You can now &lt;code&gt;use &amp;lt;TAB&amp;gt;&lt;/code&gt; and you&amp;#39;ll get all
+your machines there!&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;[~] use
+api-json-api-10  development
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I hope this saves you some time and helps you work with Docker even more. It&amp;#39;s
+totally worth it to give it a try!&lt;/p&gt;
+
+&lt;div class=&#39;big-skip&#39;&gt; &lt;/div&gt;
+
+&lt;h4 id=&quot;extra-aliases&quot;&gt;Extra Aliases&lt;/h4&gt;
+
+&lt;p&gt;I also have the following aliases because &lt;code&gt;docker-machine&lt;/code&gt; and &lt;code&gt;docker-compose&lt;/code&gt;
+is pretty long and I&amp;#39;m very lazy:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;alias d=&amp;#39;docker&amp;#39;
+alias dc=&amp;#39;docker-compose&amp;#39;
+alias dm=&amp;#39;docker-machine&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you miss &lt;code&gt;dc&lt;/code&gt; (the polish calculator), you can still access it with &lt;code&gt;\dc&lt;/code&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 23 Dec 2015 16:51:00 -0500</pubDate>
+        <link>http://blog.nhocki.com/2015/12/23/managing-docker-machines-with-ease/</link>
+        <guid isPermaLink="true">http://blog.nhocki.com/2015/12/23/managing-docker-machines-with-ease/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Scheduling tasks in Go à la Sidekiq</title>
@@ -966,46 +1062,6 @@ or have some other way to solve this, I&amp;#39;d love to know on
         <category>programming</category>
         
         <category>interview tips</category>
-        
-      </item>
-    
-      <item>
-        <title>Stop using config files for secret data</title>
-        <description>&lt;p&gt;Seriously, it&amp;#39;s &lt;strong&gt;your&lt;/strong&gt; fault that GitHub exposed your keys. If you want to
-add everything to your repo (not that this is a good idea though), at least
-make it private.&lt;/p&gt;
-
-&lt;p&gt;If you want to have &lt;strong&gt;per-environment variables, use the environment variables&lt;/strong&gt;.
-&lt;em&gt;But my development env would be full of crap!&lt;/em&gt; some of you may cry... well,
-there&amp;#39;s a simple solution for that. Use &lt;a href=&quot;https://github.com/bkeepers/dotenv&quot;&gt;Dotenv&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;With &lt;em&gt;Dotenv&lt;/em&gt; you only need to add a &lt;code&gt;.env&lt;/code&gt; file to your application root directory
-and you&amp;#39;re done. Here&amp;#39;s a quick example:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;c&quot;&gt;# .env&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;S3_BUCKET&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;some_development_bucket
-&lt;span class=&quot;nv&quot;&gt;S3_SECRET&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;a_secret_key
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Then in your code, simply use &lt;code&gt;ENV[]&lt;/code&gt; and be happy (and safe, but mostly happy)&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# some config file&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fog_directory&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;S3_BUCKET&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And just like that, you can setup your server&amp;#39;s config environments and not
-worry about &lt;em&gt;supposed-to-be-private&lt;/em&gt; public information.&lt;/p&gt;
-
-&lt;p&gt;One really cool thing about this is that this variables will only be loaded
-in that specific application. It won&amp;#39;t change &lt;strong&gt;your&lt;/strong&gt; environment. So when
-you stop the servers, your environment won&amp;#39;t have the &lt;code&gt;.env&lt;/code&gt; variables.&lt;/p&gt;
-
-&lt;p&gt;You can read more about &lt;a href=&quot;http://opensoul.org/blog/archives/2012/07/24/dotenv/&quot;&gt;Dotenv here&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Fri, 25 Jan 2013 11:02:00 -0500</pubDate>
-        <link>http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data/</link>
-        <guid isPermaLink="true">http://blog.nhocki.com/2013/01/25/stop-using-config-files-for-secret-data/</guid>
-        
-        
-        <category>ruby</category>
-        
-        <category>gems</category>
         
       </item>
     
