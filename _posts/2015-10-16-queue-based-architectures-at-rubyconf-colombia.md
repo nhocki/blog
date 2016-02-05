@@ -24,8 +24,10 @@ That quote gives a short summary of the biggest advantage of having a reliable
 queue handling the communication between services: Your users will feel that your
 application is working even if some parts of it are not.
 
-Here are my slides both in English and Spanish. I'd really appreciate any
-feedback, so ping me [on twitter](https://twitter.com/nhocki).
+Here's the video (in Spanish) and slides (English & Spanish). I'd really
+appreciate any feedback, so ping me [on twitter](https://twitter.com/nhocki).
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/naZg0PZQJyw" frameborder="0" allowfullscreen></iframe>
 
 ## English Slides
 
